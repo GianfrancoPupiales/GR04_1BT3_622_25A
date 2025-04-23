@@ -64,7 +64,7 @@ public class LoginController extends HttpServlet {
 
             req.setAttribute("messageType", "info");
             req.setAttribute("message", "Login successful! Welcome!");
-            resp.sendRedirect("ManageProductsController?route=list");
+            resp.sendRedirect("ManageProductsController?route=list&view=home");
         } else {
             req.setAttribute("messageType", "error");
             req.setAttribute("message", "Invalid credentials. Please try again.");

@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRUKEA</title>
+    <title>HOME</title>
     <!-- Bootstrap CSS -->
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -17,6 +17,36 @@
 </head>
 
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4" style="position: sticky; top: 0; z-index: 1030;">
+    <div class="container-fluid">
+        <!-- Inicio: Sección izquierda -->
+        <div class="d-flex">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
+                        <i class="fas fa-box"></i> My Products
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Fin: Sección derecha -->
+        <div class="d-flex">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="${pageContext.request.contextPath}/LoginController?route=logOut">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <!-- Main Content -->
 <main class="container my-4">
     <!-- Feedback Message -->
@@ -27,25 +57,11 @@
         <c:remove var="message" scope="session"/>
     </c:if>
 
-
     <div class="row">
         <!-- PRODUCT Section -->
-        <div class="col-md-8">
-            <div class="mb-4"><h4><a class="dropdown-item"
-                                     href="${pageContext.request.contextPath}/LoginController?route=logOut"><i
-                    class="fas fa-sign-out-alt"></i> Logout</a></h4>
-            </div>
+        <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-
-                <h1 class="mb-0">
-                    Products
-                </h1>
-
-                <a href="ManageProductsController?route=add"
-                   class="btn btn-primary"> <i class="fas fa-plus-circle"></i>
-                    Add PRODUCT
-                </a>
-
+                <h1 class="mb-0"> Products </h1>
             </div>
             <div class="row">
                 <c:forEach var="product" items="${products}">
@@ -72,21 +88,6 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
-
-                                <div class="d-flex justify-content-end">
-                                    <!-- Botón de editar -->
-                                    <a
-                                            href="ManageProductsController?route=edit&idProduct=${product.idProduct}"
-                                            class="btn btn-primary btn-sm me-2 px-3"> <i
-                                            class="fas fa-pen"></i> Edit
-                                    </a>
-                                    <!-- Botón de eliminar -->
-                                    <a
-                                            href="ManageProductsController?route=delete&idProduct=${product.idProduct}"
-                                            class="btn btn-danger btn-sm px-3"> <i
-                                            class="fas fa-trash-alt"></i> Delete
-                                    </a>
-                                </div>
                             </div>
                         </div>
                     </div>

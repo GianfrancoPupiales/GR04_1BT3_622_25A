@@ -164,12 +164,23 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        String viewType = req.getParameter("view"); // "home" o "user"
+        ProductDAO dao = new ProductDAO();
         List<Product> products;
-        products = new ProductDAO().findProductsByIdUser(user.getIdUser());
-        req.setAttribute("products", products);
-        req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+
+        if ("home".equals(viewType)) {
+            // Mostrar todos los productos (HOME.jsp)
+            products = dao.findAll();
+            req.setAttribute("products", products);
+            req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
+        } else {
+            // Mostrar productos del usuario (PRODUCT.jsp)
+            HttpSession session = req.getSession();
+            User user = (User) session.getAttribute("user");
+            products = dao.findProductsByIdUser(user.getIdUser());
+            req.setAttribute("products", products);
+            req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+        }
     }
 
     private Product parseProductFromRequest(HttpServletRequest req) {

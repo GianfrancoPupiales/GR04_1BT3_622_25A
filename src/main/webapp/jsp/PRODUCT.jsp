@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRUKEA</title>
+    <title>My Products</title>
     <!-- Bootstrap CSS -->
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -17,6 +17,38 @@
 </head>
 
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4" style="position: sticky; top: 0; z-index: 1030;">
+    <div class="container-fluid">
+        <!-- Inicio: Sección izquierda -->
+        <div class="d-flex">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
+                        <i class="fas fa-box"></i> My Products </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Fin: Sección derecha -->
+        <div class="d-flex">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-danger"
+                       href="${pageContext.request.contextPath}/LoginController?route=logOut">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <!-- Main Content -->
 <main class="container my-4">
     <!-- Feedback Message -->
@@ -30,18 +62,12 @@
 
     <div class="row">
         <!-- PRODUCT Section -->
-        <div class="col-md-8">
-            <div class="mb-4"><h4><a class="dropdown-item"
-                                     href="${pageContext.request.contextPath}/LoginController?route=logOut"><i
-                    class="fas fa-sign-out-alt"></i> Logout</a></h4>
+        <div class="col-12">
 
-                <a href="${pageContext.request.contextPath}/HOME.jsp">HOME</a>
-                <a href="${pageContext.request.contextPath}/PRODUCT.jsp">PRODUCT</a>
-            </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
 
                 <h1 class="mb-0">
-                    Products
+                    My Products
                 </h1>
 
                 <a href="ManageProductsController?route=add"
@@ -168,8 +194,8 @@
                         <label for="DescriptionEdit" class="form-label fw-bold">Description
                         </label>
                         <input id="DescriptionEdit" type="text"
-                                        class="form-control" name="txtDescription"
-                                        value="${product.description}" placeholder="Enter description">
+                               class="form-control" name="txtDescription"
+                               value="${product.description}" placeholder="Enter description">
                     </div>
                     <div class="mb-3">
                         <label for="StateEdit" class="form-label fw-bold">State

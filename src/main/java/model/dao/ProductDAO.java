@@ -21,4 +21,16 @@ public class ProductDAO extends GenericDAO<Product> {
             return List.of();
         }
     }
+
+    /*Prueba de función para obtener el producto por ID*/
+    public List<Product> findProductById(int idProduct) {
+        try (EntityManager em = getEntityManager()) {
+            String jpql = "SELECT p FROM Product p WHERE p.idProduct = :idProduct";
+            return em.createQuery(jpql, Product.class)
+                    .setParameter("idProduct", idProduct)
+                    .getResultList();
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
 }

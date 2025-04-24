@@ -6,6 +6,7 @@
 	<persistence-unit name="GR04_1BT3_622_25A">
 		<class>model.entities.User</class>
 		<class>model.entities.Product</class>
+		<class>model.entities.Offer</class>
 
 		<properties>
 			<!-- Driver de H2 -->

@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OFFER</title>
+    <title>MAKE AN OFFER</title>
     <!-- Bootstrap CSS -->
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -61,7 +61,7 @@
         <!-- PRODUCT TO OFFER Section -->
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="mb-0"> Products </h1>
+                <h1 class="mb-0"> Make An Offer </h1>
             </div>
             <div class="row">
                 <c:forEach var="product" items="${products}">
@@ -92,10 +92,21 @@
                         </div>
                     </div>
 
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               name="selectedProducts" value="${availableProducts.id}" id="productCheckbox${availableProducts.id}">
+                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${availableProducts.id}">
+                            Offer this one ...
+                        </label>
+                    </div>
+
                 </c:forEach>
+
+                <a href="#" class="btn btn-danger">Confirm Offer</a>
+
             </div>
             <c:if test="${empty products}">
-                <div class="alert alert-warning text-center">You have not available products to offer.</div>
+                <div class="alert alert-warning text-center">You have not created any product.</div>
             </c:if>
         </div>
     </div>

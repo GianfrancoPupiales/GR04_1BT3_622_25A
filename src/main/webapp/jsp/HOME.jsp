@@ -68,7 +68,7 @@
                     <div class="col-md-6 mb-3">
                         <div class="card border-0 rounded-3">
                             <div class="card-body p-4">
-                                <h2 class="card-title text-dark fw-bold">${product.title}</h2>
+                                <a class="card-title text-dark fw-bold" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">${product.title}</a>
                                 <p class="card-text text-secondary small mb-4">
                                     <i class="fa-solid fa-align-left me-2"></i>${product.description}
                                 </p>

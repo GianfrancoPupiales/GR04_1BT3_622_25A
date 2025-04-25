@@ -54,12 +54,16 @@ public class MakeOfferController extends HttpServlet{
     }
 
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        int idProduct = Integer.parseInt(req.getParameter("idProduct"));
-        ProductDAO productDAO = new ProductDAO();
-        List<Product> availableProducts = productDAO.findProductById(idProduct);
-        req.setAttribute("messageType", "info");
-        req.setAttribute("message", "Available products found successfully.");
-        req.getRequestDispatcher("MakeOfferController?route=list").forward(req, resp);
+        String viewType = req.getParameter("view"); // "home" o "user"
+        String id = req.getParameter("id");
+        ProductDAO dao = new ProductDAO();
+        List<Product> availableProducts;
+        // Mostrar productos del usuario (PRODUCT_OFF.jsp)
+        HttpSession session = req.getSession();
+        Product product = (Product) session.getAttribute("product");
+        availableProducts = dao.findProductById(Integer.parseInt(id));
+        req.setAttribute("availableProducts", availableProducts);
+        req.getRequestDispatcher("jsp/PROD_OFFER.jsp").forward(req, resp);
     }
 
     private void makeOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -88,14 +92,13 @@ public class MakeOfferController extends HttpServlet{
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String viewType = req.getParameter("view"); // "home" o "user"
         ProductDAO dao = new ProductDAO();
-        List<Product> availableProducts;
-            // Mostrar productos del usuario (PRODUCT_OFF.jsp)
-            HttpSession session = req.getSession();
-            User user = (User) session.getAttribute("user");
-            availableProducts = dao.findProductById(user.getIdUser());
-            req.setAttribute("AvailableProducts", availableProducts);
-            req.getRequestDispatcher("jsp/PRODUCT_OFF.jsp").forward(req, resp);
-
+        List<Product> products;
+        // Mostrar productos del usuario (PRODUCT.jsp)
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+        products = dao.findAvailableProductsByIdUser(user.getIdUser());
+        req.setAttribute("products", products);
+        req.getRequestDispatcher("jsp/OFFER.jsp").forward(req, resp);
     }
 
     private Offer parseOfferFromRequest(HttpServletRequest req) {

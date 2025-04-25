@@ -56,6 +56,10 @@ public class MakeOfferController extends HttpServlet{
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         String viewType = req.getParameter("view"); // "home" o "user"
         String id = req.getParameter("id");
+        String productToOffer = req.getParameter("id");
+        if (productToOffer != null && !productToOffer.isEmpty()) {
+            req.getSession().setAttribute("idProductToOffer", productToOffer);
+        }
         ProductDAO dao = new ProductDAO();
         List<Product> availableProducts;
         // Mostrar productos del usuario (PRODUCT_OFF.jsp)
@@ -76,7 +80,9 @@ public class MakeOfferController extends HttpServlet{
     }
 
     private void confirmOffer(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        String productToOffer = (String) req.getSession().getAttribute("idProductToOffer");
         Offer offer = parseOfferFromRequest(req);
+        offer.setProductToOffer(productToOffer);
         OfferDAO offerDAO = new OfferDAO();
         if (offerDAO.create(offer)) {
             req.setAttribute("messageType", "info");
@@ -116,7 +122,7 @@ public class MakeOfferController extends HttpServlet{
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
         String offeredProducts = req.getParameter("listOfferedProducts");
-        String productToOffer = req.getParameter("txtProductToOffer");
+        String productToOffer = req.getParameter("productToOffer");
 
         return new Offer(idOffer, offeredProducts, productToOffer);
     }

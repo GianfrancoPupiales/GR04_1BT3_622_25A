@@ -94,15 +94,17 @@
 
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox"
-                               name="selectedProducts" value="${availableProducts.id}" id="productCheckbox${availableProducts.id}">
-                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${availableProducts.id}">
+                               name="selectedProducts" value="${product.idProduct}" id="productCheckbox${product.idProduct}">
+                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${product.idProduct}">
                             Offer this one ...
                         </label>
                     </div>
 
                 </c:forEach>
 
-                <a href="#" class="btn btn-danger">Confirm Offer</a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    Confirm Offer
+                </button>
 
             </div>
             <c:if test="${empty products}">
@@ -125,6 +127,26 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-3">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Quieres completar esta oferta con los productos seleccionados?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" id="confirmOfferBtn" class="btn btn-danger">Sí</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -158,5 +180,23 @@
         }
     });
 </script>
+<script>
+    document.getElementById("confirmOfferBtn").addEventListener("click", function () {
+        // Obtener todos los checkboxes marcados
+        const selected = document.querySelectorAll('input[name="selectedProducts"]:checked');
+        if (selected.length === 0) {
+            alert("No has seleccionado ningún producto.");
+            return;
+        }
+
+        // Construir array con los IDs
+        const ids = Array.from(selected).map(cb => cb.value);
+        const selectedIds = ids.join(",");
+
+        // Redirigir a la ruta deseada con los IDs (como query string)
+        window.location.href = `MakeOfferController?route=confirm&listOfferedProducts=${selectedIds}`;
+    });
+</script>
+
 </body>
 </html>

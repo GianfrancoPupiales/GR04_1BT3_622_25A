@@ -1,9 +1,0 @@
-controllers\RegisterController.class
-controllers\LoginController.class
-model\dao\UserDAO.class
-model\entities\User.class
-model\service\UserService.class
-model\dao\GenericDAO.class
-model\entities\Product.class
-controllers\ManageProductsController.class
-model\dao\ProductDAO.class

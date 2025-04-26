@@ -32,6 +32,11 @@
                         <i class="fas fa-box"></i> My Products
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/RespondOfferController?route=list">
+                        <i class="fas fa-handshake"></i> Offers
+                    </a>
+                </li>
             </ul>
         </div>
 

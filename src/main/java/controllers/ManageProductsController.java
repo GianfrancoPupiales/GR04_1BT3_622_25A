@@ -172,6 +172,7 @@ public class ManageProductsController extends HttpServlet {
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
 
+
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");

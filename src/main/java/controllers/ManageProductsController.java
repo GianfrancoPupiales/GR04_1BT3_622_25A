@@ -168,14 +168,17 @@ public class ManageProductsController extends HttpServlet {
         ProductDAO dao = new ProductDAO();
         List<Product> products;
 
+        HttpSession session = null;
         if ("home".equals(viewType)) {
-            // Mostrar todos los productos (HOME.jsp)
-            products = dao.findAll();
+            // Mostrar todos los productos excepto los del usuario (HOME.jsp)
+            session = req.getSession();
+            User user = (User) session.getAttribute("user");
+            products = dao.findProductsToShow(user.getIdUser());
             req.setAttribute("products", products);
             req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
         } else {
             // Mostrar productos del usuario (PRODUCT.jsp)
-            HttpSession session = req.getSession();
+            session = req.getSession();
             User user = (User) session.getAttribute("user");
             products = dao.findProductsByIdUser(user.getIdUser());
             req.setAttribute("products", products);

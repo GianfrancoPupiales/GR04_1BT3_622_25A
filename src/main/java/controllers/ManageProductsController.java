@@ -2,7 +2,6 @@ package controllers;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.util.Date;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -37,7 +36,17 @@ public class ManageProductsController extends HttpServlet {
 
         switch (route) {
             case "list":
-                this.viewMyProducts(req, resp);
+                String viewType = req.getParameter("view");
+                if (viewType == null || viewType.isEmpty()) {
+                    viewType = "user"; // Valor por defecto si no viene el parámetro "view"
+                }
+                if ("home".equals(viewType)) {
+                    this.viewProducts(req, resp);
+                } else if ("user".equals(viewType)) {
+                    this.viewMyProducts(req, resp);
+                } else {
+                    throw new IllegalArgumentException("Unknown view type: " + viewType);
+                }
                 break;
             case "add":
                 this.addProduct(req, resp);
@@ -107,10 +116,10 @@ public class ManageProductsController extends HttpServlet {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
-        ProductDAO productJPA = new ProductDAO();
-        Product product = productJPA.findById(idProduct);
+        ProductDAO productDAO = new ProductDAO();
+        Product product = productDAO.findById(idProduct);
 
-        List<Product> products = productJPA.findProductsByIdUser(user.getIdUser());
+        List<Product> products = productDAO.findProductsByIdUser(user.getIdUser());
         req.setAttribute("products", products);
 
         if (product != null) {
@@ -163,24 +172,20 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
-    private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String viewType = req.getParameter("view"); // "home" o "user"
-        ProductDAO dao = new ProductDAO();
-        List<Product> products;
+    private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ProductDAO productDAO = new ProductDAO();
+        List<Product> products = productDAO.findAll();
+        req.setAttribute("products", products);
+        req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
+    }
 
-        if ("home".equals(viewType)) {
-            // Mostrar todos los productos (HOME.jsp)
-            products = dao.findAll();
-            req.setAttribute("products", products);
-            req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
-        } else {
-            // Mostrar productos del usuario (PRODUCT.jsp)
-            HttpSession session = req.getSession();
-            User user = (User) session.getAttribute("user");
-            products = dao.findProductsByIdUser(user.getIdUser());
-            req.setAttribute("products", products);
-            req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
-        }
+    private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+        ProductDAO productDAO = new ProductDAO();
+        List<Product> products = productDAO.findProductsByIdUser(user.getIdUser());
+        req.setAttribute("products", products);
+        req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
     }
 
     private Product parseProductFromRequest(HttpServletRequest req) {

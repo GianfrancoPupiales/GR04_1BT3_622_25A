@@ -91,7 +91,7 @@ public class ManageProductsController extends HttpServlet {
         List<Product> products = new ProductDAO().findProductsByIdUser(user.getIdUser());
         req.setAttribute("products", products);
         req.setAttribute("route", "add");
-        req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+        req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
     }
 
     private void deleteProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -105,7 +105,7 @@ public class ManageProductsController extends HttpServlet {
         if (product != null) {
             req.setAttribute("product", product);
             req.setAttribute("products", products);
-            req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+            req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
         } else {
             session.setAttribute("message", "Product could not be found");
             resp.sendRedirect("ManageProductsController?route=list");
@@ -124,7 +124,7 @@ public class ManageProductsController extends HttpServlet {
 
         if (product != null) {
             req.setAttribute("product", product);
-            req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+            req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
         } else {
             session.setAttribute("message", "Product not found");
             resp.sendRedirect("ManageProductsController?route=list");
@@ -178,7 +178,7 @@ public class ManageProductsController extends HttpServlet {
         ProductDAO productDAO = new ProductDAO();
         List<Product> products = productDAO.findProductsByIdUser(user.getIdUser());
         req.setAttribute("products", products);
-        req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+        req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
     }
 
     private Product parseProductFromRequest(HttpServletRequest req) {

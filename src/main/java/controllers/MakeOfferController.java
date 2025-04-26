@@ -99,7 +99,7 @@ public class MakeOfferController extends HttpServlet{
         String viewType = req.getParameter("view"); // "home" o "user"
         ProductDAO dao = new ProductDAO();
         List<Product> products;
-        // Mostrar productos del usuario (PRODUCT.jsp)
+        // Mostrar productos del usuario (MY_PRODUCT.jsp)
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
         products = dao.findAvailableProductsByIdUser(user.getIdUser());

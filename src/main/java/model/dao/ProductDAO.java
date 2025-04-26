@@ -22,6 +22,17 @@ public class ProductDAO extends GenericDAO<Product> {
         }
     }
 
+    public List<Product> findAvailableProductsByIdUser(int idUser) {
+        try (EntityManager em = getEntityManager()) {
+            String jpql = "SELECT p FROM Product p WHERE p.user.idUser = :idUser AND p.isAvailable = true";
+            return em.createQuery(jpql, Product.class)
+                    .setParameter("idUser", idUser)
+                    .getResultList();
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
     public List<Product> findProductsToShow(int idUser) {
         try (EntityManager em = getEntityManager()) {
             String jpql = "SELECT p FROM Product p WHERE p.user.idUser != :idUser";

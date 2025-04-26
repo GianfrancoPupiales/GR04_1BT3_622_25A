@@ -132,26 +132,19 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        int idProduct = Integer.parseInt(req.getParameter("txtIdProduct"));
         ProductDAO productDAO = new ProductDAO();
-        Product existingProduct = productDAO.findById(idProduct);
+        Product product = parseProductFromRequest(req);
+        // Solo actualizamos lo que viene del formulario
+        product.setTitle(req.getParameter("txtTitle"));
+        product.setDescription(req.getParameter("txtDescription"));
+        product.setState(req.getParameter("txtState"));
 
-        if (existingProduct != null) {
-            // Solo actualizamos lo que viene del formulario
-            existingProduct.setTitle(req.getParameter("txtTitle"));
-            existingProduct.setDescription(req.getParameter("txtDescription"));
-            existingProduct.setState(req.getParameter("txtState"));
-
-            if (productDAO.update(existingProduct)) {
-                req.setAttribute("messageType", "info");
-                req.setAttribute("message", "Product updated successfully.");
-            } else {
-                req.setAttribute("messageType", "error");
-                req.setAttribute("message", "Failed to update product.");
-            }
+        if (productDAO.update(product)) {
+            req.setAttribute("messageType", "info");
+            req.setAttribute("message", "Product updated successfully.");
         } else {
             req.setAttribute("messageType", "error");
-            req.setAttribute("message", "Product not found.");
+            req.setAttribute("message", "Failed to update product.");
         }
 
         req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);

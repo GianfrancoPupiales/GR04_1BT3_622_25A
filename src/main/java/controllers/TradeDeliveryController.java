@@ -113,27 +113,16 @@ public class TradeDeliveryController extends HttpServlet {
         Offer offer = offerService.findById(offerId);
 
         if (offer != null && offer.getStatus().equals("accepted")) {
+            boolean success = offerService.confirmDeliveryAndUpdateOffer(offer);
 
-            EntityManager em = entityManagerFactory.createEntityManager();
-            try {
-                em.getTransaction().begin();
-                for (Product product : offer.getOfferedProducts()) {
-                    product.setAvailable(false);
-                    em.merge(product);
-                }
-                em.getTransaction().commit();
-            } catch (Exception e) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                throw e;
-            } finally {
-                em.close();
+            if (success) {
+                resp.sendRedirect(req.getContextPath() + "/TradeDeliveryController?route=showRatingForm&offerId=" + offerId + "&toUserId=" + toUserId);
+            } else {
+                req.setAttribute("errorMessage", "⚠️ Error al confirmar la entrega.");
+                this.listDeliveries(req, resp);
             }
-
-            resp.sendRedirect(req.getContextPath() + "/TradeDeliveryController?route=showRatingForm&offerId=" + offerId + "&toUserId=" + toUserId);
         } else {
-            req.setAttribute("errorMessage", "⚠️ Offer not found or not accepted.");
+            req.setAttribute("errorMessage", "⚠️ Oferta no encontrada o no aceptada.");
             this.listDeliveries(req, resp);
         }
     }
@@ -146,7 +135,6 @@ public class TradeDeliveryController extends HttpServlet {
 
         if (offer != null && offer.getStatus().equals("accepted")) {
             boolean rejected = offerService.changeOfferStatusToPending(offer);
-
             if (rejected) {
                 req.setAttribute("successMessage", "⚠️ The offer has been rejected and is now pending.");
             } else {

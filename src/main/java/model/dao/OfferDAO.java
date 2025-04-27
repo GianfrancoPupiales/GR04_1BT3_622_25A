@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import model.entities.Offer;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OfferDAO extends GenericDAO<Offer> {
@@ -86,20 +87,22 @@ public class OfferDAO extends GenericDAO<Offer> {
 
         try {
             em.getTransaction().begin();
-            em.merge(offer);
 
             ProductDAO productDAO = new ProductDAO();
             productDAO.updateProductAvailability(offer.getOfferedProducts(), false);
+            productDAO.updateProductAvailability(Collections.singletonList(offer.getProductToOffer()), false);
 
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
             return false;
         } finally {
             em.close();
         }
     }
+
 
 
     // Método para cambiar el estado de la oferta a "pending"

@@ -39,4 +39,7 @@ public class OfferService {
         return offerDAO.changeOfferStatusToPending(offer);
     }
 
+    public boolean confirmDeliveryAndUpdateOffer(Offer offer) {
+        return  offerDAO.confirmDeliveryAndUpdateOffer(offer);
+    }
 }

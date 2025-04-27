@@ -167,7 +167,9 @@ public class ManageProductsController extends HttpServlet {
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
-        List<Product> products = productDAO.findAll();
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+        List<Product> products = productDAO.findProductsToShow(user.getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }

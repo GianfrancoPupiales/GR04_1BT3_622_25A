@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Product implements Serializable {
@@ -34,6 +35,8 @@ public class Product implements Serializable {
     @JoinColumn(name = "idUser")
     private User user;
 
+    @ManyToMany(mappedBy = "offeredProducts")
+    private List<Offer> offers;
     public Product() {
     }
 
@@ -101,6 +104,18 @@ public class Product implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public List<Offer> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(List<Offer> offers) {
+        this.offers = offers;
     }
 
     @Override

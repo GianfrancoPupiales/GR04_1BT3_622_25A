@@ -21,4 +21,5 @@ public class UserService {
     public boolean createUser(User user) {
         return userDAO.create(user);
     }
+
 }

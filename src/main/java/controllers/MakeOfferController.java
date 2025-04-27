@@ -1,5 +1,8 @@
 package controllers;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,10 +17,12 @@ import model.entities.User;
 
 import java.io.IOException;
 import java.io.Serial;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/MakeOfferController")
-public class MakeOfferController extends HttpServlet{
+public class MakeOfferController extends HttpServlet {
+    private static EntityManagerFactory entityManagerFactory;
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -80,9 +85,19 @@ public class MakeOfferController extends HttpServlet{
     }
 
     private void confirmOffer(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        String productToOffer = (String) req.getSession().getAttribute("idProductToOffer");
+        String productToOfferId = (String) req.getSession().getAttribute("idProductToOffer");
         Offer offer = parseOfferFromRequest(req);
+
+        ProductDAO productDAO = new ProductDAO();
+        Product productToOffer = productDAO.findById(Integer.parseInt(productToOfferId));
+
         offer.setProductToOffer(productToOffer);
+
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        offer.setOfferedByUser(user);
+
         OfferDAO offerDAO = new OfferDAO();
         if (offerDAO.create(offer)) {
             req.setAttribute("messageType", "info");
@@ -94,7 +109,6 @@ public class MakeOfferController extends HttpServlet{
             req.getRequestDispatcher("MakeOfferController?route=list").forward(req, resp);
         }
     }
-
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String viewType = req.getParameter("view"); // "home" o "user"
         ProductDAO dao = new ProductDAO();
@@ -121,9 +135,39 @@ public class MakeOfferController extends HttpServlet{
 
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        String offeredProducts = req.getParameter("listOfferedProducts");
-        String productToOffer = req.getParameter("productToOffer");
 
-        return new Offer(idOffer, offeredProducts, productToOffer);
+        // Validación de "listOfferedProducts" para asegurarse de que no esté vacío
+        String[] offeredProductIds = req.getParameterValues("listOfferedProducts");
+        List<Product> offeredProducts = new ArrayList<>();
+        if (offeredProductIds != null && offeredProductIds.length > 0) {
+            for (String id : offeredProductIds) {
+                if (id != null && !id.trim().isEmpty()) {  // Verificar que no sea vacío
+                    try {
+                        Product product = new ProductDAO().findById(Integer.parseInt(id));
+                        if (product != null) {
+                            offeredProducts.add(product);  // Añadir el producto si es válido
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error al convertir el ID del producto: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        // Validación para el producto principal a ofrecer
+        String productToOfferId = req.getParameter("productToOffer");
+        Product productToOffer = null;
+        if (productToOfferId != null && !productToOfferId.trim().isEmpty()) {
+            try {
+                productToOffer = new ProductDAO().findById(Integer.parseInt(productToOfferId));
+            } catch (NumberFormatException e) {
+                System.out.println("Error al convertir el ID del producto a ofrecer: " + e.getMessage());
+            }
+        }
+
+        // Retornar la oferta con los productos
+        return new Offer(idOffer, offeredProducts, productToOffer, "pending");
     }
+
+
 }

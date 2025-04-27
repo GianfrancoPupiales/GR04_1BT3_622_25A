@@ -55,4 +55,22 @@ public class ProductDAO extends GenericDAO<Product> {
             return List.of();
         }
     }
+
+
+    public boolean updateProductAvailability(List<Product> products, boolean available) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            for (Product product : products) {
+                product.setAvailable(available);
+                em.merge(product);
+            }
+            em.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

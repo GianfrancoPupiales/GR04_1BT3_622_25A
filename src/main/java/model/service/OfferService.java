@@ -35,6 +35,8 @@ public class OfferService {
     public Offer findById(int offerId) {
         return offerDAO.findById(offerId);
     }
-
+    public boolean changeOfferStatusToPending(Offer offer) {
+        return offerDAO.changeOfferStatusToPending(offer);
+    }
 
 }

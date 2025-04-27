@@ -41,6 +41,9 @@ public class TradeDeliveryController extends HttpServlet {
             case "rateUser":
                 this.rateUser(req, resp);
                 break;
+            case "rejectOffer":
+                this.rejectOffer(req, resp);
+                break;
             default:
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -110,7 +113,6 @@ public class TradeDeliveryController extends HttpServlet {
         Offer offer = offerService.findById(offerId);
 
         if (offer != null && offer.getStatus().equals("accepted")) {
-            System.out.println("Estado de la entraga: " + offer.isDelivered());
 
             EntityManager em = entityManagerFactory.createEntityManager();
             try {
@@ -135,5 +137,27 @@ public class TradeDeliveryController extends HttpServlet {
             this.listDeliveries(req, resp);
         }
     }
+
+    private void rejectOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int offerId = Integer.parseInt(req.getParameter("offerId"));
+
+        OfferService offerService = new OfferService();
+        Offer offer = offerService.findById(offerId);
+
+        if (offer != null && offer.getStatus().equals("accepted")) {
+            boolean rejected = offerService.changeOfferStatusToPending(offer);
+
+            if (rejected) {
+                req.setAttribute("successMessage", "⚠️ The offer has been rejected and is now pending.");
+            } else {
+                req.setAttribute("errorMessage", "⚠️ An error occurred while rejecting the offer.");
+            }
+            this.listDeliveries(req, resp);
+        } else {
+            req.setAttribute("errorMessage", "⚠️ Offer not found or not accepted.");
+            this.listDeliveries(req, resp);  // Mostrar la página con el mensaje de error
+        }
+    }
+
 
 }

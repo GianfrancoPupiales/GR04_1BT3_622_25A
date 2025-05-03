@@ -20,10 +20,6 @@ public class ProductService {
         return productDAO.findAvailableProductsByUserId(userId);
     }
 
-    public List<Product> getProductsToShow(int userId) {
-        return productDAO.findProductsToShow(userId);
-    }
-
     public boolean updateProductAvailability(List<Product> products, boolean available) {
         return productDAO.updateProductAvailability(products, available);
     }
@@ -36,9 +32,11 @@ public class ProductService {
     public boolean updateProduct(Product product) {
         return productDAO.update(product);
     }
-    public boolean removeProduct(Product product) {
-        return productDAO.remove(product);
+
+    public boolean removeProduct(int idProduct) {
+        return productDAO.remove(idProduct);
     }
+
     public Product findProductById(int idProduct) {
         return productDAO.findById(idProduct);
     }

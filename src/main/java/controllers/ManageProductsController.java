@@ -10,9 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.dao.ProductDAO;
 import model.entities.Product;
 import model.entities.User;
+import model.service.ProductService;
 
 @WebServlet("/ManageProductsController")
 public class ManageProductsController extends HttpServlet {
@@ -73,8 +73,8 @@ public class ManageProductsController extends HttpServlet {
 
     private void accept(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
-        ProductDAO productDAO = new ProductDAO();
-        if (productDAO.remove(idProduct)) {
+        ProductService productService = new ProductService();
+        if (productService.removeProduct(idProduct)) {
             req.setAttribute("messageType", "info");
             req.setAttribute("message", "Product deleted successfully.");
             req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
@@ -88,7 +88,7 @@ public class ManageProductsController extends HttpServlet {
     private void addProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        List<Product> products = new ProductDAO().findProductsByIdUser(user.getIdUser());
+        List<Product> products = new ProductService().findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.setAttribute("route", "add");
         req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
@@ -98,9 +98,9 @@ public class ManageProductsController extends HttpServlet {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        ProductDAO productDAO = new ProductDAO();
-        Product product = productDAO.findById(idProduct);
-        List<Product> products = productDAO.findProductsByIdUser(user.getIdUser());
+        ProductService productService = new ProductService();
+        Product product = productService.findProductById(idProduct);
+        List<Product> products = productService.findProductsByUserId(user.getIdUser());
 
         if (product != null) {
             req.setAttribute("product", product);
@@ -116,10 +116,10 @@ public class ManageProductsController extends HttpServlet {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
-        ProductDAO productDAO = new ProductDAO();
-        Product product = productDAO.findById(idProduct);
+        ProductService productService = new ProductService();
+        Product product = productService.findProductById(idProduct);
 
-        List<Product> products = productDAO.findProductsByIdUser(user.getIdUser());
+        List<Product> products = productService.findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
 
         if (product != null) {
@@ -132,14 +132,14 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        ProductDAO productDAO = new ProductDAO();
+        ProductService productService = new ProductService();
         Product product = parseProductFromRequest(req);
         // Solo actualizamos lo que viene del formulario
         product.setTitle(req.getParameter("txtTitle"));
         product.setDescription(req.getParameter("txtDescription"));
         product.setState(req.getParameter("txtState"));
 
-        if (productDAO.update(product)) {
+        if (productService.updateProduct(product)) {
             req.setAttribute("messageType", "info");
             req.setAttribute("message", "Product updated successfully.");
         } else {
@@ -153,8 +153,8 @@ public class ManageProductsController extends HttpServlet {
 
     private void saveNewProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
-        ProductDAO productDAO = new ProductDAO();
-        if (productDAO.create(product)) {
+        ProductService productService = new ProductService();
+        if (productService.createProduct(product)) {
             req.setAttribute("messageType", "info");
             req.setAttribute("message", "Product created successfully.");
             req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
@@ -166,10 +166,10 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductDAO productDAO = new ProductDAO();
+        ProductService productService = new ProductService();
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        List<Product> products = productDAO.findProductsToShow(user.getIdUser());
+        List<Product> products = productService.findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
@@ -178,8 +178,8 @@ public class ManageProductsController extends HttpServlet {
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        ProductDAO productDAO = new ProductDAO();
-        List<Product> products = productDAO.findProductsByIdUser(user.getIdUser());
+        ProductService productService = new ProductService();
+        List<Product> products = productService.findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
     }

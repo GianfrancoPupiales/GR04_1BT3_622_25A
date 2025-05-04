@@ -86,8 +86,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void addProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         List<Product> products = new ProductService().findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.setAttribute("route", "add");
@@ -97,7 +96,7 @@ public class ManageProductsController extends HttpServlet {
     private void deleteProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         ProductService productService = new ProductService();
         Product product = productService.findProductById(idProduct);
         List<Product> products = productService.findProductsByUserId(user.getIdUser());
@@ -114,7 +113,7 @@ public class ManageProductsController extends HttpServlet {
 
     private void editProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         ProductService productService = new ProductService();
         Product product = productService.findProductById(idProduct);
@@ -167,8 +166,7 @@ public class ManageProductsController extends HttpServlet {
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductService productService = new ProductService();
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         List<Product> products = productService.findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
@@ -176,8 +174,7 @@ public class ManageProductsController extends HttpServlet {
 
 
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         ProductService productService = new ProductService();
         List<Product> products = productService.findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
@@ -185,23 +182,28 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private Product parseProductFromRequest(HttpServletRequest req) {
-        int idProduct = 0;
         String txtId = req.getParameter("txtIdProduct");
+        int idProduct = parseProductId(txtId);
+        User user = getUser(req);
+        String title = req.getParameter("txtTitle");
+        String description = req.getParameter("txtDescription");
+        String state = req.getParameter("txtState");
+        return new Product(idProduct, title, description, state, user);
+    }
 
-        if (txtId != null && !txtId.trim().isEmpty()) {
+    private static User getUser(HttpServletRequest req) {
+        HttpSession session = req.getSession();
+        return (User) session.getAttribute("user");
+    }
+
+    private int parseProductId(String idParam) {
+        if (idParam != null && !idParam.trim().isEmpty()) {
             try {
-                idProduct = Integer.parseInt(txtId);
+                return Integer.parseInt(idParam);
             } catch (NumberFormatException e) {
                 System.out.println("Error al convertir el ID: " + e.getMessage());
             }
         }
-
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
-        String title = req.getParameter("txtTitle");
-        String description = req.getParameter("txtDescription");
-        String state = req.getParameter("txtState");
-
-        return new Product(idProduct, title, description, state, user);
+        return 0;
     }
 }

@@ -87,13 +87,9 @@ public class ManageProductsController extends HttpServlet {
     private void confirmRemove(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         if (getProductService().removeProduct(idProduct)) {
-            req.setAttribute("messageType", "info");
-            req.setAttribute("message", "Product deleted successfully.");
-            req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
+            forwardWithMessage(req, resp, "info", "Product deleted successfully.");
         } else {
-            req.setAttribute("messageType", "error");
-            req.setAttribute("message", "Failed to delete Product.");
-            req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
+            forwardWithMessage(req, resp, "error", "Failed to delete Product.");
         }
     }
 
@@ -152,10 +148,10 @@ public class ManageProductsController extends HttpServlet {
                 ? (isUpdate ? "Product updated successfully." : "Product created successfully.")
                 : (isUpdate ? "Failed to update product." : "Failed to create product.");
 
-        setMessageAndForward(req, resp, messageType, message);
+        forwardWithMessage(req, resp, messageType, message);
     }
 
-    private void setMessageAndForward(HttpServletRequest req, HttpServletResponse resp, String messageType, String message) throws ServletException, IOException {
+    private void forwardWithMessage(HttpServletRequest req, HttpServletResponse resp, String messageType, String message) throws ServletException, IOException {
         req.setAttribute("messageType", messageType);
         req.setAttribute("message", message);
         req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);

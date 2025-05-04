@@ -1,8 +1,10 @@
 package model.service;
 
 import model.dao.ProductDAO;
+import model.entities.Offer;
 import model.entities.Product;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ProductService {
@@ -42,5 +44,9 @@ public class ProductService {
     }
     public List<Product> findAllProducts() {
         return productDAO.findAll();
+    }
+    public void disableProductsInOffer(Offer offer) {
+        productDAO.updateProductAvailability(offer.getOfferedProducts(), false);
+        productDAO.updateProductAvailability(Collections.singletonList(offer.getProductToOffer()), false);
     }
 }

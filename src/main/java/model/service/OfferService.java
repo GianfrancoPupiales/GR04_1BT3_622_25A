@@ -32,6 +32,20 @@ public class OfferService {
         return pendingDeliveries;
     }
 
+    public boolean rateOfferAndMarkDelivered(Offer offer, int score) {
+        User offeredByUser = offer.getOfferedByUser();
+
+        if (offeredByUser != null) {
+            ReputationService reputationService = new ReputationService();
+            reputationService.saveRating(offeredByUser, score);
+            offer.markAsDelivered(offeredByUser);
+            offerDAO.updateOffer(offer);
+            return true;
+        }
+        return false;
+    }
+
+
     public Offer findById(int offerId) {
         return offerDAO.findById(offerId);
     }

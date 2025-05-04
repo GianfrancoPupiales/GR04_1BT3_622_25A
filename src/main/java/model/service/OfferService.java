@@ -1,6 +1,7 @@
 package model.service;
 
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import model.dao.OfferDAO;
 import model.entities.Offer;
 import model.entities.User;
@@ -42,6 +43,11 @@ public class OfferService {
         return false;
     }
 
+    // Cargar ofertas pendientes por usuario
+    public void loadPendingOffers(int userId, HttpServletRequest req) {
+        List<Offer> offers = offerDAO.findPendingOffersByUserId(userId);
+        req.setAttribute("offers", offers);
+    }
 
     public Offer findById(int offerId) {
         return offerDAO.findById(offerId);

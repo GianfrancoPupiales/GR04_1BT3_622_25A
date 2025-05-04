@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.io.Serial;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -42,16 +43,11 @@ public class ManageProductsController extends HttpServlet {
 
         switch (route) {
             case "list":
-                String viewType = req.getParameter("view");
-                if (viewType == null || viewType.isEmpty()) {
-                    viewType = "user"; // Valor por defecto si no viene el parámetro "view"
-                }
-                if ("home".equals(viewType)) {
-                    this.viewProducts(req, resp);
-                } else if ("user".equals(viewType)) {
-                    this.viewMyProducts(req, resp);
+                String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
+                if ("home".equals(view)) {
+                    viewProducts(req, resp);
                 } else {
-                    throw new IllegalArgumentException("Unknown view type: " + viewType);
+                    viewMyProducts(req, resp);
                 }
                 break;
             case "add":
@@ -126,6 +122,17 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
+    private void forwardWithMessage(HttpServletRequest req, HttpServletResponse resp, String messageType, String message) throws ServletException, IOException {
+        req.setAttribute("messageType", messageType);
+        req.setAttribute("message", message);
+        req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
+    }
+
+    private void forwardProductsView(HttpServletRequest req, HttpServletResponse resp, List<Product> products, String jspPath) throws ServletException, IOException {
+        req.setAttribute("products", products);
+        req.getRequestDispatcher(jspPath).forward(req, resp);
+    }
+
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
         product.setTitle(req.getParameter("txtTitle"));
@@ -151,22 +158,14 @@ public class ManageProductsController extends HttpServlet {
         forwardWithMessage(req, resp, messageType, message);
     }
 
-    private void forwardWithMessage(HttpServletRequest req, HttpServletResponse resp, String messageType, String message) throws ServletException, IOException {
-        req.setAttribute("messageType", messageType);
-        req.setAttribute("message", message);
-        req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
-    }
-
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Product> products = getProductService().findAvailableProductsExceptUser(getUser(req).getIdUser());
-        req.setAttribute("products", products);
-        req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
+        forwardProductsView(req, resp, products, "jsp/HOME.jsp");
     }
 
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
-        req.setAttribute("products", products);
-        req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
+        forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
     }
 
     private Product parseProductFromRequest(HttpServletRequest req) {

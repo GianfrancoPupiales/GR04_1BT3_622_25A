@@ -131,37 +131,35 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        ProductService productService = new ProductService();
         Product product = parseProductFromRequest(req);
-        // Solo actualizamos lo que viene del formulario
         product.setTitle(req.getParameter("txtTitle"));
         product.setDescription(req.getParameter("txtDescription"));
         product.setState(req.getParameter("txtState"));
 
-        if (productService.updateProduct(product)) {
-            req.setAttribute("messageType", "info");
-            req.setAttribute("message", "Product updated successfully.");
-        } else {
-            req.setAttribute("messageType", "error");
-            req.setAttribute("message", "Failed to update product.");
-        }
-
-        req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
+        processProductSave(req, resp, product, true);
     }
-
 
     private void saveNewProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
+        processProductSave(req, resp, product, false);
+    }
+
+    private void processProductSave(HttpServletRequest req, HttpServletResponse resp, Product product, boolean isUpdate) throws IOException, ServletException {
         ProductService productService = new ProductService();
-        if (productService.createProduct(product)) {
-            req.setAttribute("messageType", "info");
-            req.setAttribute("message", "Product created successfully.");
-            req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
-        } else {
-            req.setAttribute("messageType", "error");
-            req.setAttribute("message", "Failed to create product.");
-            req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
-        }
+        boolean success = isUpdate ? productService.updateProduct(product) : productService.createProduct(product);
+
+        String messageType = success ? "info" : "error";
+        String message = success
+                ? (isUpdate ? "Product updated successfully." : "Product created successfully.")
+                : (isUpdate ? "Failed to update product." : "Failed to create product.");
+
+        setMessageAndForward(req, resp, messageType, message);
+    }
+
+    private void setMessageAndForward(HttpServletRequest req, HttpServletResponse resp, String messageType, String message) throws ServletException, IOException {
+        req.setAttribute("messageType", messageType);
+        req.setAttribute("message", message);
+        req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
     }
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

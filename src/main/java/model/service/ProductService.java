@@ -23,9 +23,6 @@ public class ProductService {
     public boolean updateProductAvailability(List<Product> products, boolean available) {
         return productDAO.updateProductAvailability(products, available);
     }
-    public List<Product> getProductById(int idProduct) {
-        return productDAO.findProductById(idProduct);
-    }
     public boolean createProduct(Product product) {
         return productDAO.create(product);
     }
@@ -42,5 +39,10 @@ public class ProductService {
     }
     public List<Product> findAllProducts() {
         return productDAO.findAll();
+    }
+
+    // I want you to create a method that gets all available products except those of the current user.
+    public List<Product> findAvailableProductsExceptUser(int userId) {
+        return productDAO.findAvailableProductsExceptUser(userId);
     }
 }

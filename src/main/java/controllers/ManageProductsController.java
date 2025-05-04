@@ -163,8 +163,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = getUser(req);
-        List<Product> products = getProductService().findProductsByUserId(user.getIdUser());
+        List<Product> products = getProductService().findAvailableProductsExceptUser(getUser(req).getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }

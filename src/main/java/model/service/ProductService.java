@@ -41,7 +41,6 @@ public class ProductService {
         return productDAO.findAll();
     }
 
-    // I want you to create a method that gets all available products except those of the current user.
     public List<Product> findAvailableProductsExceptUser(int userId) {
         return productDAO.findAvailableProductsExceptUser(userId);
     }

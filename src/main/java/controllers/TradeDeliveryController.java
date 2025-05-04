@@ -32,8 +32,20 @@ public class TradeDeliveryController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String route = req.getParameter("route");
+        this.route(req, resp);
+    }
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.route(req, resp);
+    }
+
+    private void route(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String route = req.getParameter("route");
+        if (route==null){
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing route parameter");
+            return;
+        }
         switch (route) {
             case "confirmDelivery":
                 this.confirmDelivery(req, resp);
@@ -44,18 +56,11 @@ public class TradeDeliveryController extends HttpServlet {
             case "rejectOffer":
                 this.rejectOffer(req, resp);
                 break;
+            case "listDeliveries":
+                this.listDeliveries(req, resp);
+                break;
             default:
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-        }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String route = req.getParameter("route");
-        if (route.equals("listDeliveries")) {
-            this.listDeliveries(req, resp);
-        } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 

@@ -74,7 +74,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void addProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
+        List<Product> products = getProductsByUserId(req);
         req.setAttribute("products", products);
         req.setAttribute("route", "add");
         req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
@@ -93,7 +93,7 @@ public class ManageProductsController extends HttpServlet {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         HttpSession session = req.getSession();
         Product product = getProductService().findProductById(idProduct);
-        List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
+        List<Product> products = getProductsByUserId(req);
 
         if (product != null) {
             req.setAttribute("product", product);
@@ -110,7 +110,7 @@ public class ManageProductsController extends HttpServlet {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         Product product = getProductService().findProductById(idProduct);
 
-        List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
+        List<Product> products = getProductsByUserId(req);
         req.setAttribute("products", products);
 
         if (product != null) {
@@ -133,6 +133,15 @@ public class ManageProductsController extends HttpServlet {
         req.getRequestDispatcher(jspPath).forward(req, resp);
     }
 
+    private static User getUser(HttpServletRequest req) {
+        HttpSession session = req.getSession();
+        return (User) session.getAttribute("user");
+    }
+
+    private List<Product> getProductsByUserId(HttpServletRequest req) {
+        return getProductService().findProductsByUserId(getUser(req).getIdUser());
+    }
+
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
         product.setTitle(req.getParameter("txtTitle"));
@@ -145,6 +154,26 @@ public class ManageProductsController extends HttpServlet {
     private void saveNewProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
         processProductSave(req, resp, product, false);
+    }
+
+    private Product parseProductFromRequest(HttpServletRequest req) {
+        String txtId = req.getParameter("txtIdProduct");
+        int idProduct = parseProductId(txtId);
+        String title = req.getParameter("txtTitle");
+        String description = req.getParameter("txtDescription");
+        String state = req.getParameter("txtState");
+        return new Product(idProduct, title, description, state, getUser(req));
+    }
+
+    private int parseProductId(String idParam) {
+        if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+                return Integer.parseInt(idParam);
+            } catch (NumberFormatException e) {
+                System.out.println("Error al convertir el ID: " + e.getMessage());
+            }
+        }
+        return 0;
     }
 
     private void processProductSave(HttpServletRequest req, HttpServletResponse resp, Product product, boolean isUpdate) throws IOException, ServletException {
@@ -164,32 +193,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
+        List<Product> products = getProductsByUserId(req);
         forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
-    }
-
-    private Product parseProductFromRequest(HttpServletRequest req) {
-        String txtId = req.getParameter("txtIdProduct");
-        int idProduct = parseProductId(txtId);
-        String title = req.getParameter("txtTitle");
-        String description = req.getParameter("txtDescription");
-        String state = req.getParameter("txtState");
-        return new Product(idProduct, title, description, state, getUser(req));
-    }
-
-    private static User getUser(HttpServletRequest req) {
-        HttpSession session = req.getSession();
-        return (User) session.getAttribute("user");
-    }
-
-    private int parseProductId(String idParam) {
-        if (idParam != null && !idParam.trim().isEmpty()) {
-            try {
-                return Integer.parseInt(idParam);
-            } catch (NumberFormatException e) {
-                System.out.println("Error al convertir el ID: " + e.getMessage());
-            }
-        }
-        return 0;
     }
 }

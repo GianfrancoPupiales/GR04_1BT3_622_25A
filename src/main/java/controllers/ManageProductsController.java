@@ -70,14 +70,21 @@ public class ManageProductsController extends HttpServlet {
                 this.deleteProduct(req, resp);
                 break;
             case "accept":
-                this.accept(req, resp);
+                this.confirmRemove(req, resp);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
         }
     }
 
-    private void accept(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    private void addProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
+        req.setAttribute("products", products);
+        req.setAttribute("route", "add");
+        req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
+    }
+
+    private void confirmRemove(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         if (getProductService().removeProduct(idProduct)) {
             req.setAttribute("messageType", "info");
@@ -88,13 +95,6 @@ public class ManageProductsController extends HttpServlet {
             req.setAttribute("message", "Failed to delete Product.");
             req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
         }
-    }
-
-    private void addProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Product> products = getProductService().findProductsByUserId(getUser(req).getIdUser());
-        req.setAttribute("products", products);
-        req.setAttribute("route", "add");
-        req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
     }
 
     private void deleteProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {

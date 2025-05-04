@@ -1,12 +1,8 @@
 package model.service;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import model.dao.OfferDAO;
-import model.dao.ProductDAO;
 import model.entities.Offer;
-import model.entities.Product;
-import model.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;

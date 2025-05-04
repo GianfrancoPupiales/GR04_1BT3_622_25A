@@ -1,12 +1,8 @@
 package model.service;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import model.dao.OfferDAO;
-import model.dao.ProductDAO;
 import model.entities.Offer;
-import model.entities.Product;
-import model.entities.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,5 +37,26 @@ public class OfferService {
 
     public boolean confirmDeliveryAndUpdateOffer(Offer offer) {
         return  offerDAO.confirmDeliveryAndUpdateOffer(offer);
+    }
+
+    /**
+     * Refactor: Move Method + Encapsulate Conditional
+     */
+    public ResponseMessage processOfferStatus(Offer offer, String status) {
+        if (offer == null) {
+            return new ResponseMessage("error", "Offer not found.");
+        }
+
+        offer.setStatus(status);
+        offerDAO.update(offer);
+
+        return switch (status) {
+            case "accepted" -> new ResponseMessage("success", "¡Felicidades por tu intercambio!");
+            case "rejected" -> new ResponseMessage("warning", "Lo siento, tu oferta ha sido rechazada.");
+            default -> new ResponseMessage("error", "Invalid status.");
+        };
+    }
+
+    public record ResponseMessage(String type, String message) {
     }
 }

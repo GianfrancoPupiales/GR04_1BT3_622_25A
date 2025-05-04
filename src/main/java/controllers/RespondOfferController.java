@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpSession;
 import model.dao.OfferDAO;
 import model.entities.Offer;
 import model.entities.User;
+import model.service.OfferService;
+import model.service.OfferService.ResponseMessage;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class RespondOfferController extends HttpServlet {
 
     private final OfferDAO offerDAO = new OfferDAO();
+    private final OfferService offerService = new OfferService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -30,42 +33,35 @@ public class RespondOfferController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String status = req.getParameter("status");
-        int offerId = Integer.parseInt(req.getParameter("offerId"));
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
-        Offer offer = offerDAO.findById(offerId);
-        if (offer == null) {
-            req.setAttribute("messageType", "error");
-            req.setAttribute("message", "Offer not found.");
-        } else {
-            // Actualizar el estado de la oferta
-            offer.setStatus(status);
-            offerDAO.update(offer);
-
-            // Configurar el mensaje basado en el estado
-            if ("accepted".equals(status)) {
-                req.setAttribute("messageType", "success");
-                req.setAttribute("message", "¡Felicidades por tu intercambio!");
-            } else if ("rejected".equals(status)) {
-                req.setAttribute("messageType", "warning");
-                req.setAttribute("message", "Lo siento, tu oferta ha sido rechazada.");
-            } else {
-                req.setAttribute("messageType", "error");
-                req.setAttribute("message", "Invalid status.");
-            }
+        if (user == null) {
+            resp.sendRedirect("LoginController?route=enter");
+            return;
         }
 
-        // Actualizar la lista de ofertas pendientes
-        List<Offer> offers = offerDAO.findPendingOffersByUserId(user.getIdUser());
-        req.setAttribute("offers", offers);
+        try {
+            String status = req.getParameter("status");
+            int offerId = Integer.parseInt(req.getParameter("offerId"));
 
-        // Regresar a la misma página con las ofertas actualizadas
-        req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
+            Offer offer = offerDAO.findById(offerId);
+            ResponseMessage message = offerService.processOfferStatus(offer, status);
+
+            req.setAttribute("messageType", message.type());
+            req.setAttribute("message", message.message());
+
+            // Actualizar la lista de ofertas pendientes
+            List<Offer> offers = offerDAO.findPendingOffersByUserId(user.getIdUser());
+            req.setAttribute("offers", offers);
+
+            req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
+        } catch (NumberFormatException e) {
+            req.setAttribute("messageType", "error");
+            req.setAttribute("message", "ID de oferta inválido.");
+            req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
+        }
     }
-
-
 
     private void listOffers(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

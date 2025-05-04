@@ -33,7 +33,6 @@ public class ProductDAO extends GenericDAO<Product> {
         }
     }
 
-    /*Prueba de función para obtener el producto por ID*/
     public List<Product> findProductById(int idProduct) {
         try (EntityManager em = getEntityManager()) {
             String jpql = "SELECT p FROM Product p WHERE p.idProduct = :idProduct";
@@ -60,6 +59,17 @@ public class ProductDAO extends GenericDAO<Product> {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public List<Product> findAvailableProductsExceptUser(int userId) {
+        try (EntityManager em = getEntityManager()) {
+            String jpql = "SELECT p FROM Product p WHERE p.user.idUser != :userId AND p.isAvailable = true";
+            return em.createQuery(jpql, Product.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+        } catch (Exception e) {
+            return List.of();
         }
     }
 }

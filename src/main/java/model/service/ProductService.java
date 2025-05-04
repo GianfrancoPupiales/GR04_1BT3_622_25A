@@ -25,9 +25,6 @@ public class ProductService {
     public boolean updateProductAvailability(List<Product> products, boolean available) {
         return productDAO.updateProductAvailability(products, available);
     }
-    public List<Product> getProductById(int idProduct) {
-        return productDAO.findProductById(idProduct);
-    }
     public boolean createProduct(Product product) {
         return productDAO.create(product);
     }
@@ -45,8 +42,14 @@ public class ProductService {
     public List<Product> findAllProducts() {
         return productDAO.findAll();
     }
+<<<<<<< HEAD
     public void disableProductsInOffer(Offer offer) {
         productDAO.updateProductAvailability(offer.getOfferedProducts(), false);
         productDAO.updateProductAvailability(Collections.singletonList(offer.getProductToOffer()), false);
+=======
+
+    public List<Product> findAvailableProductsExceptUser(int userId) {
+        return productDAO.findAvailableProductsExceptUser(userId);
+>>>>>>> 9e06c4e0c6a3febb09e71d4644616a765bcd6140
     }
 }

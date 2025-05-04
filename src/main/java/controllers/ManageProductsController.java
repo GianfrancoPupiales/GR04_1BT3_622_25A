@@ -20,6 +20,12 @@ public class ManageProductsController extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private final ProductService productService = new ProductService();
+
+    private ProductService getProductService() {
+        return productService;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         this.router(req, resp);
@@ -69,10 +75,6 @@ public class ManageProductsController extends HttpServlet {
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
         }
-    }
-
-    private ProductService getProductService() {
-        return new ProductService();
     }
 
     private void accept(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {

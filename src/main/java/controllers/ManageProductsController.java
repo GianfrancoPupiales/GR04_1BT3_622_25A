@@ -71,10 +71,13 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
+    private ProductService getProductService() {
+        return new ProductService();
+    }
+
     private void accept(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
-        ProductService productService = new ProductService();
-        if (productService.removeProduct(idProduct)) {
+        if (getProductService().removeProduct(idProduct)) {
             req.setAttribute("messageType", "info");
             req.setAttribute("message", "Product deleted successfully.");
             req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
@@ -87,7 +90,7 @@ public class ManageProductsController extends HttpServlet {
 
     private void addProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = getUser(req);
-        List<Product> products = new ProductService().findProductsByUserId(user.getIdUser());
+        List<Product> products = getProductService().findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.setAttribute("route", "add");
         req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
@@ -97,9 +100,8 @@ public class ManageProductsController extends HttpServlet {
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
         HttpSession session = req.getSession();
         User user = getUser(req);
-        ProductService productService = new ProductService();
-        Product product = productService.findProductById(idProduct);
-        List<Product> products = productService.findProductsByUserId(user.getIdUser());
+        Product product = getProductService().findProductById(idProduct);
+        List<Product> products = getProductService().findProductsByUserId(user.getIdUser());
 
         if (product != null) {
             req.setAttribute("product", product);
@@ -115,10 +117,9 @@ public class ManageProductsController extends HttpServlet {
         HttpSession session = req.getSession();
         User user = getUser(req);
         int idProduct = Integer.parseInt(req.getParameter("idProduct"));
-        ProductService productService = new ProductService();
-        Product product = productService.findProductById(idProduct);
+        Product product = getProductService().findProductById(idProduct);
 
-        List<Product> products = productService.findProductsByUserId(user.getIdUser());
+        List<Product> products = getProductService().findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
 
         if (product != null) {
@@ -145,8 +146,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void processProductSave(HttpServletRequest req, HttpServletResponse resp, Product product, boolean isUpdate) throws IOException, ServletException {
-        ProductService productService = new ProductService();
-        boolean success = isUpdate ? productService.updateProduct(product) : productService.createProduct(product);
+        boolean success = isUpdate ? getProductService().updateProduct(product) : getProductService().createProduct(product);
 
         String messageType = success ? "info" : "error";
         String message = success
@@ -163,18 +163,15 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductService productService = new ProductService();
         User user = getUser(req);
-        List<Product> products = productService.findProductsByUserId(user.getIdUser());
+        List<Product> products = getProductService().findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
 
-
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = getUser(req);
-        ProductService productService = new ProductService();
-        List<Product> products = productService.findProductsByUserId(user.getIdUser());
+        List<Product> products = getProductService().findProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/MY_PRODUCT.jsp").forward(req, resp);
     }

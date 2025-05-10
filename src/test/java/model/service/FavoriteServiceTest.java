@@ -6,11 +6,12 @@ import model.entities.Favorite;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FavoriteServiceTest {
     private FavoriteService favoriteService;
@@ -49,4 +50,32 @@ class FavoriteServiceTest {
 
         assertTrue(found, "El producto debería estar en la lista de favoritos.");
     }
+
+    /**
+     * Test Parametrizado: No se deben permitir títulos con símbolos inválidos.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "Smartphone@2025",
+            "Oferta#1",
+            "Precio$Bajo",
+            "Descuento%Extra",
+            "Combo&Pack",
+            "Nueva*Serie",
+            "¡Imperdible!"
+    })
+    void testAddProductWithInvalidSymbols(String invalidTitle) {
+        Product invalidProduct = new Product();
+        invalidProduct.setIdProduct(102); // ID arbitrario
+        invalidProduct.setTitle(invalidTitle);
+
+        IllegalArgumentException thrown = assertThrows(
+                IllegalArgumentException.class,
+                () -> favoriteService.addFavorite(testUser, invalidProduct),
+                "IllegalArgumentException expected due to invalid symbols in title."
+        );
+
+        assertEquals("The title of the product contains invalid characters.", thrown.getMessage());
+    }
+
 }

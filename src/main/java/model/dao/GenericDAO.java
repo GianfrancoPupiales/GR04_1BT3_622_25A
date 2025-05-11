@@ -16,7 +16,7 @@ public abstract class GenericDAO<T> {
         this.entityClass = entityClass;
     }
 
-    protected EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 

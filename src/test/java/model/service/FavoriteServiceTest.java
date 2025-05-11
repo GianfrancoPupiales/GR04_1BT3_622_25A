@@ -29,6 +29,19 @@ class FavoriteServiceTest {
     }
 
     /**
+     * Test unitario: Agregar un favorito para un usuario y comprobar que se ha creado correctamente.
+     */
+    @Test
+    public void given_user_when_add_to_favorites_then_is_created(){
+        favoriteService.addFavorite(testUser, testProduct);
+        List<Favorite> favorites = favoriteService.getFavoritesByUser(testUser);
+        assertEquals(1, favorites.size());
+    }
+
+
+
+
+    /**
      * Test con Timeout: Agregar un favorito no debe tardar más de 500ms
      */
     @Test

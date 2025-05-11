@@ -21,17 +21,19 @@ public class FavoriteService {
     }
 
     public void addFavorite(User user, Product product) {
-        /*
+
         if (user == null) {
             throw new IllegalArgumentException("El usuario no está autenticado.");
         }
-
+        if (product == null) {
+            throw new IllegalArgumentException("El producto no existe.");
+        }
         Favorite existing = favoriteDAO.findByUserAndProduct(user, product);
         if (existing != null) {
             System.out.println("Advertencia: El producto ya está en favoritos.");
             return;
         }
-*/
+
         Favorite favorite = new Favorite(user, product);
         favoriteDAO.create(favorite);
     }
@@ -43,9 +45,11 @@ public class FavoriteService {
     }
 
     public boolean removeFavorite(User user, Product product) {
+
         if (user == null || product == null) {
             throw new IllegalArgumentException("Usuario o producto inválido");
         }
+
         return favoriteDAO.deleteByUserAndProduct(user, product);
     }
 

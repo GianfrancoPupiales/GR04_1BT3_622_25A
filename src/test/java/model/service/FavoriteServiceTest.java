@@ -1,7 +1,7 @@
 package model.service;
 
 import model.dao.FavoriteDAO;
-import model.dao.InMemoryDAO;
+import model.dao.InMemoryFavoriteDAO;
 import model.entities.Product;
 import model.entities.User;
 import model.entities.Favorite;
@@ -11,13 +11,12 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import static org.mockito.Mockito.when;
 
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class FavoriteServiceTest {
     private FavoriteService favoriteService;
@@ -29,23 +28,47 @@ class FavoriteServiceTest {
     void setUp() {
         mockDAO = mock(FavoriteDAO.class);
         favoriteService = new FavoriteService(mockDAO);
-
         testUser = new User();
-        testUser.setIdUser(1);
         testProduct = new Product();
-        testProduct.setIdProduct(100);
+        testUser.setIdUser(1);
+        testProduct.setIdProduct(1);
         testProduct.setTitle("Sample Product");
-
     }
 
     /**
      * Test unitario: Agregar un favorito para un usuario y comprobar que se ha creado correctamente.
      */
     @Test
-    public void given_user_when_add_to_favorites_then_is_created(){
-        favoriteService.addFavorite(testUser, testProduct);
-        List<Favorite> favorites = favoriteService.getFavoritesByUser(testUser);
+    public void given_user_when_add_to_favorites_then_is_created() {
+        FavoriteService service = new FavoriteService(new InMemoryFavoriteDAO());
+        service.addFavorite(testUser, testProduct);
+        List<Favorite> favorites = service.getFavoritesByUser(testUser);
         assertEquals(1, favorites.size());
+    }
+
+    /*
+    Test Unitario: Elminar producto inexistente
+    */
+    @Test
+    public void when_removeFavorite_is_called_with_non_existent_favorite_then_return_false() {
+        FavoriteService service = new FavoriteService(new InMemoryFavoriteDAO());
+        boolean result = service.removeFavorite(testUser, testProduct);
+        assertFalse(result, "Se esperaba que el resultado fuera 'false' al intentar eliminar un favorito inexistente");
+    }
+
+    /*
+    Test Unitario: Agregar producto duplicado
+    */
+
+    @Test
+    public void when_same_product_is_added_twice_then_it_should_not_be_duplicated() {
+        FavoriteService service = new FavoriteService(new InMemoryFavoriteDAO());
+
+        service.addFavorite(testUser, testProduct);
+        service.addFavorite(testUser, testProduct);
+
+        List<Favorite> favorites = service.getFavoritesByUser(testUser);
+        assertEquals(1, favorites.size(), "Se esperaba que el producto no se duplicara en favoritos");
     }
 
 
@@ -54,37 +77,25 @@ class FavoriteServiceTest {
      Test Unitario: Quitar los productos de favoritos
      */
     @Test
-    void testRemoveFavorite_Success() {
-        // Arrange
-        User user = new User();
-        user.setIdUser(1);
+    public void testRemoveFavorite_Success() {
+        FavoriteService service = new FavoriteService(new InMemoryFavoriteDAO());
 
-        Product product = new Product();
-        product.setIdProduct(101);
+        service.addFavorite(testUser, testProduct);
+        service.removeFavorite(testUser, testProduct);
 
-        // Crear mock del DAO
-        FavoriteDAO mockDAO = mock(FavoriteDAO.class);
-
-        // Crear servicio con el mockDAO
-        FavoriteService service = new FavoriteService(mockDAO);
-        when(mockDAO.deleteByUserAndProduct(user, product)).thenReturn(true);
-
-        // Act
-        boolean result = service.removeFavorite(user, product);
-
-        // Assert
-        assertTrue(result, "Se esperaba que el favorito se eliminara correctamente");
+        assertEquals(0, service.getFavoritesByUser(testUser).size(),
+                "Se esperaba que el favorito fuera eliminado del repositorio");
     }
 
 
     /*
-    Prueba unitaria de excepciones - Agregar producto que ya está en favoritos
+    Prueba con condición - Si el usuario no está autenticado, lanzar excepción
      */
     @Test
     void testAddFavoriteAlreadyExistsThrowsException() {
         // Arrange
         FavoriteDAO mockDAO = mock(FavoriteDAO.class);
-     //   FavoriteService service = new FavoriteService(mockDAO);
+        //   FavoriteService service = new FavoriteService(mockDAO);
 
         User user = new User();
         user.setIdUser(1);
@@ -102,30 +113,18 @@ class FavoriteServiceTest {
     }
 
     /*
-    Prueba con condición - Si el usuario no está autenticado, lanzar excepción
+    Prueba con condición - Lanzar excepción cuando el producto sea nulo al agregar a favoritos
      */
 
+
     @Test
-    void testAddFavoriteUnauthenticatedUser() {
-        Product product = new Product();
-        product.setIdProduct(999);
-        product.setTitle("Producto válido");
+    void when_addFavorite_is_called_with_null_product_then_throw_exception() {
+        FavoriteService service = new FavoriteService(new InMemoryFavoriteDAO());
 
-        User unauthenticatedUser = null;
-
-        FavoriteDAO mockDAO = mock(FavoriteDAO.class);
-        FavoriteService favoriteService = new FavoriteService(mockDAO);
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> favoriteService.addFavorite(unauthenticatedUser, product),
-                "Debería lanzar excepción si el usuario no está autenticado"
-        );
-
-        assertEquals("El usuario no está autenticado.", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.addFavorite(testUser, null);
+        }, "Se esperaba que se lanzara una excepción si el producto es nulo.");
     }
-
-
 
 
 

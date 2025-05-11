@@ -24,20 +24,16 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
     }
 
     public List<Favorite> findByUser(User user) {
-        EntityManager em = getEntityManager();
-        try {
+        try (EntityManager em = getEntityManager()) {
             return em.createQuery(
                             "SELECT f FROM Favorite f WHERE f.user.idUser = :idUser", Favorite.class)
                     .setParameter("idUser", user.getIdUser())
                     .getResultList();
-        } finally {
-            em.close();
         }
     }
 
     public boolean deleteByUserAndProduct(User user, Product product) {
-        EntityManager em = getEntityManager();
-        try {
+        try (EntityManager em = getEntityManager()) {
             em.getTransaction().begin();
             Favorite favorite = em.createQuery(
                             "SELECT f FROM Favorite f WHERE f.user = :user AND f.product = :product", Favorite.class)
@@ -49,8 +45,6 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
             return true;
         } catch (NoResultException e) {
             return false;
-        } finally {
-            em.close();
         }
     }
 }

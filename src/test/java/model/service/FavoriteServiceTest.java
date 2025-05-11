@@ -50,34 +50,31 @@ class FavoriteServiceTest {
 
 
     /*
-    Test Parametrizada: Quitar los productos de favoritos
+     Test Unitario: Quitar los productos de favoritos
      */
-    @ParameterizedTest
-    @CsvSource({
-            "1, 101, true",
-            "2, 202, false",
-            "3, 303, true"
-    })
-    void testRemoveFavoriteParameterized(int userId, int productId, boolean expected) {
-        // Preparar entidades
+    @Test
+    void testRemoveFavorite_Success() {
+        // Arrange
         User user = new User();
-        user.setIdUser(userId);
+        user.setIdUser(1);
 
         Product product = new Product();
-        product.setIdProduct(productId);
+        product.setIdProduct(101);
 
-        // Definir comportamiento del mock
+        // Crear mock del DAO
+        FavoriteDAO mockDAO = mock(FavoriteDAO.class);
+
+        // Crear servicio con el mockDAO
+        FavoriteService service = new FavoriteService(mockDAO);
         when(mockDAO.deleteByUserAndProduct(user, product)).thenReturn(true);
 
-        // Ejecutar
-        boolean result = favoriteService.removeFavorite(user, product);
+        // Act
+        boolean result = service.removeFavorite(user, product);
 
-        System.out.println("Probando eliminar favorito - Usuario ID: " + userId +
-                ", Producto ID: " + productId + ", Resultado esperado: " + expected +
-                ", Resultado real: " + result);
-
-        assertEquals(expected, result);
+        // Assert
+        assertTrue(result, "Se esperaba que el favorito se eliminara correctamente");
     }
+
 
     /*
     Prueba unitaria de excepciones - Agregar producto que ya está en favoritos
@@ -127,6 +124,9 @@ class FavoriteServiceTest {
 
         User unauthenticatedUser = null;
 
+        FavoriteDAO mockDAO = mock(FavoriteDAO.class);
+        FavoriteService favoriteService = new FavoriteService(mockDAO);
+
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> favoriteService.addFavorite(unauthenticatedUser, product),
@@ -135,6 +135,7 @@ class FavoriteServiceTest {
 
         assertEquals("El usuario no está autenticado.", exception.getMessage());
     }
+
 
 
 

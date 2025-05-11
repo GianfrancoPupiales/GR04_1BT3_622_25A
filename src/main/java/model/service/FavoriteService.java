@@ -10,17 +10,30 @@ import java.util.List;
 
 public class FavoriteService {
     private FavoriteDAO favoriteDAO = new FavoriteDAO();
-    public void addFavorite(User user, Product product) {
-/*
-        Favorite existing = favoriteDAO.findByUserAndProduct(user,product);
 
-        if (existing != null) {
-            throw new RuntimeException("Este producto ya está en favoritos");
+    public FavoriteService() {
+        this.favoriteDAO = new FavoriteDAO();
+    }
+
+    // Este constructor se usa para pruebas
+    public FavoriteService(FavoriteDAO favoriteDAO) {
+        this.favoriteDAO = favoriteDAO;
+    }
+
+    public void addFavorite(User user, Product product) {
+        if (user == null) {
+            throw new IllegalArgumentException("El usuario no está autenticado.");
         }
-*/
+
+        Favorite existing = favoriteDAO.findByUserAndProduct(user, product);
+        if (existing != null) {
+            throw new IllegalStateException("El producto ya está en favoritos.");
+        }
+
         Favorite favorite = new Favorite(user, product);
         favoriteDAO.create(favorite);
     }
+
 
 
     public List<Favorite> getFavoritesByUser(User user) {
@@ -30,6 +43,9 @@ public class FavoriteService {
     }
 
     public boolean removeFavorite(User user, Product product) {
-    return false;
+        if (user == null || product == null) {
+            throw new IllegalArgumentException("Usuario o producto inválido");
+        }
+        return favoriteDAO.deleteByUserAndProduct(user, product);
     }
 }

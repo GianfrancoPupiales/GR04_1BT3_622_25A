@@ -1,6 +1,7 @@
 package model.service;
 
 import model.dao.FavoriteDAO;
+import model.dao.InMemoryDAO;
 import model.entities.Product;
 import model.entities.User;
 import model.entities.Favorite;
@@ -27,7 +28,7 @@ class FavoriteServiceTest {
     @BeforeEach
     void setUp() {
         mockDAO = mock(FavoriteDAO.class);
-      //  favoriteService = new FavoriteService(mockDAO);
+        favoriteService = new FavoriteService(mockDAO);
 
         testUser = new User();
         testUser.setIdUser(1);

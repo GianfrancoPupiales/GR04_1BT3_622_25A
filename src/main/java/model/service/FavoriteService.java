@@ -9,7 +9,7 @@ import model.entities.User;
 import java.util.List;
 
 public class FavoriteService {
-    private FavoriteDAO favoriteDAO = new FavoriteDAO();
+    private final FavoriteDAO favoriteDAO;
 
     public FavoriteService() {
         this.favoriteDAO = new FavoriteDAO();
@@ -21,6 +21,7 @@ public class FavoriteService {
     }
 
     public void addFavorite(User user, Product product) {
+        /*
         if (user == null) {
             throw new IllegalArgumentException("El usuario no está autenticado.");
         }
@@ -29,7 +30,7 @@ public class FavoriteService {
         if (existing != null) {
             throw new IllegalStateException("El producto ya está en favoritos.");
         }
-
+*/
         Favorite favorite = new Favorite(user, product);
         favoriteDAO.create(favorite);
     }

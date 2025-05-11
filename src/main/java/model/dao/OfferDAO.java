@@ -69,17 +69,17 @@ public class OfferDAO extends GenericDAO<Offer> {
     }
 
 
-    public void updateOffer(Offer offer) {
+    public boolean updateOffer(Offer offer) {
         EntityManager em = getEntityManager();
-        em.getTransaction().begin();
-
         try {
+            em.getTransaction().begin();
             em.merge(offer);
             em.getTransaction().commit();
+            return true;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -89,9 +89,7 @@ public class OfferDAO extends GenericDAO<Offer> {
 
         try {
             em.getTransaction().begin();
-
             productService.disableProductsInOffer(offer);
-
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -115,6 +113,7 @@ public class OfferDAO extends GenericDAO<Offer> {
             return true;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
             return false;
         }
     }

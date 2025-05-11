@@ -20,14 +20,9 @@ public class OfferService {
     public List<Offer> findAcceptedOffersPendingDeliveryByUserId(int idUser) {
         List<Offer> acceptedOffers = offerDAO.findAcceptedOffersByUserId(idUser);
 
-        List<Offer> pendingDeliveries = new ArrayList<>();
-        for (Offer offer : acceptedOffers) {
-            if (!offer.isDelivered()) {
-                pendingDeliveries.add(offer);
-            }
-        }
-
-        return pendingDeliveries;
+        return acceptedOffers.stream()
+                .filter(offer -> !offer.isDelivered())
+                .toList();
     }
 
     public boolean rateOfferAndMarkDelivered(Offer offer, int score) {
@@ -37,17 +32,17 @@ public class OfferService {
             ReputationService reputationService = new ReputationService();
             reputationService.saveRating(offeredByUser, score);
             offer.markAsDelivered(offeredByUser);
-            offerDAO.updateOffer(offer);
-            return true;
+            return offerDAO.updateOffer(offer);  // Asegurarse de que el DAO actualice la oferta correctamente
         }
         return false;
     }
 
     // Cargar ofertas pendientes por usuario
     public void loadPendingOffers(int userId, HttpServletRequest req) {
-        List<Offer> offers = offerDAO.findPendingOffersByUserId(userId);
-        req.setAttribute("offers", offers);
+        List<Offer> pendingOffers = offerDAO.findPendingOffersByUserId(userId);
+        req.setAttribute("offers", pendingOffers);
     }
+
 
     public Offer findById(int offerId) {
         return offerDAO.findById(offerId);
@@ -60,9 +55,7 @@ public class OfferService {
         return  offerDAO.confirmDeliveryAndUpdateOffer(offer);
     }
 
-    /**
-     * Refactor: Move Method + Encapsulate Conditional
-     */
+
     public ResponseMessage processOfferStatus(Offer offer, String status) {
         if (offer == null) {
             return new ResponseMessage("error", "Offer not found.");
@@ -80,4 +73,6 @@ public class OfferService {
 
     public record ResponseMessage(String type, String message) {
     }
+
+
 }

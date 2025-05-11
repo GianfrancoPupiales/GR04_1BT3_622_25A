@@ -85,9 +85,13 @@
                                     </c:forEach>
                                 </h5>
                                 <p class="card-text">Requested Product: ${offer.productToOffer.title}</p>
+                                <p class="card-text">User: ${offer.offeredByUser.dni}</p>
+
+                                <!-- Form to respond to the offer -->
                                 <form action="RespondOfferController" method="post">
                                     <input type="hidden" name="route" value="respond">
                                     <input type="hidden" name="offerId" value="${offer.idOffer}">
+
                                     <button type="submit" name="status" value="accepted" class="btn btn-success">Accept</button>
                                     <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject</button>
                                 </form>

@@ -30,6 +30,10 @@ public class ReputationService {
     }
 
 
+    public Reputation findByUserId(int userId) {
+        return reputationDAO.findByUserId(userId);
+    }
+
 
     public Reputation getReputation(User user) {
         return reputationDAO.findByUserId(user.getIdUser());

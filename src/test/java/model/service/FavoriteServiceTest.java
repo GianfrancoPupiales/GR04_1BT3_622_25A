@@ -1,5 +1,6 @@
 package model.service;
 
+import model.dao.FavoriteDAO;
 import model.entities.Product;
 import model.entities.User;
 import model.entities.Favorite;
@@ -7,25 +8,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import static org.mockito.Mockito.when;
+
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class FavoriteServiceTest {
     private FavoriteService favoriteService;
+    private FavoriteDAO mockDAO;
     private User testUser;
     private Product testProduct;
 
     @BeforeEach
     void setUp() {
-        favoriteService = new FavoriteService();
+        mockDAO = mock(FavoriteDAO.class);
+        favoriteService = new FavoriteService(mockDAO);
+
         testUser = new User();
         testUser.setIdUser(1);
         testProduct = new Product();
         testProduct.setIdProduct(100);
         testProduct.setTitle("Sample Product");
+
     }
 
     /**
@@ -36,6 +45,92 @@ class FavoriteServiceTest {
         favoriteService.addFavorite(testUser, testProduct);
         List<Favorite> favorites = favoriteService.getFavoritesByUser(testUser);
         assertEquals(1, favorites.size());
+    }
+
+
+
+    /*
+    Test Parametrizada: Quitar los productos de favoritos
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "1, 101, true",
+            "2, 202, false",
+            "3, 303, true"
+    })
+    void testRemoveFavoriteParameterized(int userId, int productId, boolean expected) {
+        // Preparar entidades
+        User user = new User();
+        user.setIdUser(userId);
+
+        Product product = new Product();
+        product.setIdProduct(productId);
+
+        // Definir comportamiento del mock
+        when(mockDAO.deleteByUserAndProduct(user, product)).thenReturn(true);
+
+        // Ejecutar
+        boolean result = favoriteService.removeFavorite(user, product);
+
+        System.out.println("Probando eliminar favorito - Usuario ID: " + userId +
+                ", Producto ID: " + productId + ", Resultado esperado: " + expected +
+                ", Resultado real: " + result);
+
+        assertEquals(expected, result);
+    }
+
+    /*
+    Prueba unitaria de excepciones - Agregar producto que ya está en favoritos
+     */
+    @Test
+    void testAddFavoriteAlreadyExistsThrowsException() {
+        // Arrange
+        FavoriteDAO mockDAO = mock(FavoriteDAO.class);
+        FavoriteService service = new FavoriteService(mockDAO);
+
+        User user = new User();
+        user.setIdUser(1);
+
+        Product product = new Product();
+        product.setIdProduct(101);
+
+        // Simular que el producto ya está en la lista de favoritos
+        Favorite existingFavorite = new Favorite();
+        existingFavorite.setUser(user);
+        existingFavorite.setProduct(product);
+
+        when(mockDAO.findAll()).thenReturn(List.of(existingFavorite));
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> service.addFavorite(user, product),
+                "Se esperaba IllegalStateException porque el producto ya está en favoritos"
+        );
+
+        assertEquals("El producto ya está en favoritos.", exception.getMessage());
+    }
+
+
+    /*
+    Prueba con condición - Si el usuario no está autenticado, lanzar excepción
+     */
+
+    @Test
+    void testAddFavoriteUnauthenticatedUser() {
+        Product product = new Product();
+        product.setIdProduct(999);
+        product.setTitle("Producto válido");
+
+        User unauthenticatedUser = null;
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> favoriteService.addFavorite(unauthenticatedUser, product),
+                "Debería lanzar excepción si el usuario no está autenticado"
+        );
+
+        assertEquals("El usuario no está autenticado.", exception.getMessage());
     }
 
 

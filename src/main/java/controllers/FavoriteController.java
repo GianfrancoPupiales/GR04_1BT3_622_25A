@@ -21,7 +21,6 @@ import java.util.List;
 
 @WebServlet("/FavoriteController")
 public class FavoriteController extends HttpServlet {
-    private static EntityManagerFactory entityManagerFactory;
     @Serial
     private static final long serialVersionUID = 1L;
 

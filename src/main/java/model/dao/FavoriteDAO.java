@@ -8,14 +8,8 @@ import model.entities.User;
 import java.util.List;
 
 public class FavoriteDAO extends GenericDAO<Favorite>{
-    private EntityManagerFactory emf;
-
     public FavoriteDAO() {
         super(Favorite.class);
-    }
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
     }
 
     public Favorite findByUserAndProduct(User user, Product product) {
@@ -32,15 +26,14 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
     public List<Favorite> findByUser(User user) {
         EntityManager em = getEntityManager();
         try {
-            return em.createQuery("SELECT f FROM Favorite f WHERE f.user.idUser = :userId", Favorite.class)
-                    .setParameter("userId", user.getIdUser())
+            return em.createQuery(
+                            "SELECT f FROM Favorite f WHERE f.user.idUser = :idUser", Favorite.class)
+                    .setParameter("idUser", user.getIdUser())
                     .getResultList();
         } finally {
             em.close();
         }
     }
-
-
 
     public Object deleteByUserAndProduct(User user, Product product) {
     return null;

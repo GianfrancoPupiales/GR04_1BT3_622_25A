@@ -28,12 +28,14 @@
         <div class="d-flex">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
                         <i class="fas fa-box"></i> My Products
                     </a>
                 </li>
@@ -61,7 +63,8 @@
         <div class="d-flex">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="${pageContext.request.contextPath}/LoginController?route=logOut">
+                    <a class="nav-link text-danger"
+                       href="${pageContext.request.contextPath}/LoginController?route=logOut">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </li>
@@ -76,43 +79,39 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="mb-0"> Favorite Products </h1>
             </div>
-            <p>Total favoritos encontrados: ${fn:length(favorites)}</p>
-            <c:forEach var="favorite" items="${favorites}">
-                <div class="col-md-6 mb-3">
-                    <div class="card border-0 rounded-3">
-                        <div class="card-body p-4">
-                            <a class="card-title text-dark fw-bold"
-                               href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">
-                                    ${favorite.product.title}
-                            </a>
-                            <p class="card-text text-secondary small mb-4">
-                                <i class="fa-solid fa-align-left me-2"></i>${favorite.product.description}
-                            </p>
-                            <p class="card-text text-secondary small mb-4">
-                                <i class="fa-solid fa-layer-group me-2"></i>${favorite.product.state}
-                            </p>
-                            <p class="card-text text-secondary small mb-4">
-                                <i class="fa-solid fa-calendar me-2"></i>${favorite.product.datePublication}
-                            </p>
-                            <p class="card-text text-secondary small mb-4">
-                                <c:choose>
-                                    <c:when test="${favorite.product.isAvailable}">
-                                        <i class="fa-solid fa-check me-2"></i>Available
-                                    </c:when>
-                                    <c:otherwise>
-                                        <i class="fa-solid fa-x me-2"></i> Not available
-                                    </c:otherwise>
-                                </c:choose>
-                            </p>
+            <div class="row">
+                <c:forEach var="favorite" items="${favorites}">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 rounded-3">
+                            <div class="card-body p-4">
+                                <a class="card-title text-dark fw-bold"
+                                   href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">
+                                        ${favorite.product.title}
+                                </a>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-align-left me-2"></i>${favorite.product.description}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-layer-group me-2"></i>${favorite.product.state}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-calendar me-2"></i>${favorite.product.datePublication}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
+                                    <c:choose>
+                                        <c:when test="${favorite.product.isAvailable}">
+                                            <i class="fa-solid fa-check me-2"></i>Available
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i class="fa-solid fa-x me-2"></i> Not available
+                                        </c:otherwise>
+                                    </c:choose>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </c:forEach>
-
-
-            <c:if test="${empty favorite}">
-                <div class="alert alert-warning text-center">There are currently no favorite products to display.</div>
-            </c:if>
+                </c:forEach>
+            </div>
         </div>
     </div>
 </main>

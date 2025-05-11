@@ -22,25 +22,35 @@ public class FavoriteService {
     }
 
     public void addFavorite(User user, Product product) {
-        if (user == null) {
-            throw new IllegalArgumentException("El usuario no está autenticado.");
-        }
-        if (product == null) {
-            throw new IllegalArgumentException("El producto no existe.");
-        }
+        validateUserAndProduct(user, product);
+        validateProductTitle(product);
 
-        if (product.getTitle() == null || !product.getTitle().matches(VALID_TITLE_REGEX)) {
-            throw new IllegalArgumentException("The title of the product contains invalid characters.");
-        }
-
-        Favorite existing = favoriteDAO.findByUserAndProduct(user, product);
-        if (existing != null) {
+        if (isFavorite(user, product)) {
             System.out.println("Advertencia: El producto ya está en favoritos.");
             return;
         }
 
-        Favorite favorite = new Favorite(user, product);
-        favoriteDAO.create(favorite);
+        createFavorite(user, product);
+    }
+
+    private void validateUserAndProduct(User user, Product product) {
+        if (user == null) throw new IllegalArgumentException("El usuario no está autenticado.");
+        if (product == null) throw new IllegalArgumentException("El producto no existe.");
+    }
+
+    private void validateProductTitle(Product product) {
+        String title = product.getTitle();
+        if (title == null || !title.matches(VALID_TITLE_REGEX)) {
+            throw new IllegalArgumentException("The title of the product contains invalid characters.");
+        }
+    }
+
+    private boolean isFavorite(User user, Product product) {
+        return favoriteDAO.findByUserAndProduct(user, product) != null;
+    }
+
+    private void createFavorite(User user, Product product) {
+        favoriteDAO.create(new Favorite(user, product));
     }
 
     public List<Favorite> getFavoritesByUser(User user) {

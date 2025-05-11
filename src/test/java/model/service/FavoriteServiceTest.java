@@ -1,5 +1,6 @@
 package model.service;
 
+import model.dao.FavoriteDAO;
 import model.entities.Product;
 import model.entities.User;
 import model.entities.Favorite;
@@ -7,25 +8,33 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import static org.mockito.Mockito.when;
+
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class FavoriteServiceTest {
     private FavoriteService favoriteService;
+    private FavoriteDAO mockDAO;
     private User testUser;
     private Product testProduct;
 
     @BeforeEach
     void setUp() {
-        favoriteService = new FavoriteService();
+        mockDAO = mock(FavoriteDAO.class);
+      //  favoriteService = new FavoriteService(mockDAO);
+
         testUser = new User();
         testUser.setIdUser(1);
         testProduct = new Product();
         testProduct.setIdProduct(100);
         testProduct.setTitle("Sample Product");
+
     }
 
     /**

@@ -7,6 +7,8 @@ import model.entities.Offer;
 import model.entities.Product;
 import model.entities.User;
 
+import java.util.List;
+
 public class FavoriteDAO extends GenericDAO<Favorite>{
     public FavoriteDAO() {
         super(Favorite.class);
@@ -22,4 +24,17 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
             return null;
         }
     }
+
+    public List<Favorite> findByUser(User user) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT f FROM Favorite f WHERE f.user.idUser = :idUser", Favorite.class)
+                    .setParameter("idUser", user.getIdUser())
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }

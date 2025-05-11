@@ -1,5 +1,6 @@
 package model.service;
 
+import model.entities.Offer;
 import model.entities.User;
 import model.dao.UserDAO;
 
@@ -22,4 +23,7 @@ public class UserService {
         return userDAO.create(user);
     }
 
+    public User findById(int idUser) {
+        return userDAO.findById(idUser);
+    }
 }

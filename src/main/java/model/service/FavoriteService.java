@@ -23,11 +23,13 @@ public class FavoriteService {
     }
 
 
-
     public List<Favorite> getFavoritesByUser(User user) {
         List<Favorite> list = favoriteDAO.findByUser(user);
         System.out.println("Favoritos encontrados: " + list.size());
         return list;
     }
 
+    public boolean removeFavorite(User user, Product product) {
+    return false;
+    }
 }

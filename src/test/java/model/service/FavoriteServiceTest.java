@@ -99,19 +99,7 @@ class FavoriteServiceTest {
 
         when(mockDAO.findAll()).thenReturn(List.of(existingFavorite));
 
-        // Act & Assert
-        /*
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> service.addFavorite(user, product),
-                "Se esperaba IllegalStateException porque el producto ya está en favoritos"
-        );
-
-        assertEquals("El producto ya está en favoritos.", exception.getMessage());
-
-         */
     }
-
 
     /*
     Prueba con condición - Si el usuario no está autenticado, lanzar excepción

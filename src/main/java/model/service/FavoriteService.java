@@ -28,14 +28,13 @@ public class FavoriteService {
 
         Favorite existing = favoriteDAO.findByUserAndProduct(user, product);
         if (existing != null) {
-            throw new IllegalStateException("El producto ya está en favoritos.");
+            System.out.println("Advertencia: El producto ya está en favoritos.");
+            return;
         }
 */
         Favorite favorite = new Favorite(user, product);
         favoriteDAO.create(favorite);
     }
-
-
 
     public List<Favorite> getFavoritesByUser(User user) {
         List<Favorite> list = favoriteDAO.findByUser(user);
@@ -48,5 +47,9 @@ public class FavoriteService {
             throw new IllegalArgumentException("Usuario o producto inválido");
         }
         return favoriteDAO.deleteByUserAndProduct(user, product);
+    }
+
+    public boolean isProductAlreadyFavorite(User user, Product product) {
+        return favoriteDAO.findByUserAndProduct(user, product) != null;
     }
 }

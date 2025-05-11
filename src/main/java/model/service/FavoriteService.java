@@ -1,6 +1,5 @@
 package model.service;
 
-import jakarta.persistence.EntityManager;
 import model.dao.FavoriteDAO;
 import model.entities.Favorite;
 import model.entities.Product;
@@ -10,6 +9,8 @@ import java.util.List;
 
 public class FavoriteService {
     private final FavoriteDAO favoriteDAO;
+    private static final String VALID_TITLE_REGEX = "^[a-zA-Z0-9 ]+$";
+
 
     public FavoriteService() {
         this.favoriteDAO = new FavoriteDAO();
@@ -21,13 +22,17 @@ public class FavoriteService {
     }
 
     public void addFavorite(User user, Product product) {
-
         if (user == null) {
             throw new IllegalArgumentException("El usuario no está autenticado.");
         }
         if (product == null) {
             throw new IllegalArgumentException("El producto no existe.");
         }
+
+        if (product.getTitle() == null || !product.getTitle().matches(VALID_TITLE_REGEX)) {
+            throw new IllegalArgumentException("The title of the product contains invalid characters.");
+        }
+
         Favorite existing = favoriteDAO.findByUserAndProduct(user, product);
         if (existing != null) {
             System.out.println("Advertencia: El producto ya está en favoritos.");

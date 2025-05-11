@@ -79,6 +79,14 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="mb-0"> Favorite Products </h1>
             </div>
+            
+            <%-- Mostrar el mensaje de advertencia si está presente --%>
+            <c:if test="${not empty warningMessage}">
+                <div class="alert alert-warning" role="alert">
+                        ${warningMessage}
+                </div>
+            </c:if>
+
             <div class="row">
                 <c:forEach var="favorite" items="${favorites}">
                     <div class="col-md-4 mb-3">
@@ -107,6 +115,13 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
+                                <!-- Botón para eliminar de favoritos -->
+                                <form action="${pageContext.request.contextPath}/FavoriteController?route=removeFavorite" method="post">
+                                    <input type="hidden" name="productId" value="${favorite.product.idProduct}">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fa-solid fa-trash-alt me-2"></i> Remove from Favorites
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

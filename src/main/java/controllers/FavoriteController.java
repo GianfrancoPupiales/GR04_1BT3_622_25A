@@ -46,6 +46,10 @@ public class FavoriteController extends HttpServlet {
                 this.listFavorites(req, resp);
                 break;
 
+            case "removeFavorite":
+                this.removeFavorite(req, resp);
+                break;
+
             default:
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
                 break;
@@ -58,14 +62,45 @@ public class FavoriteController extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         FavoriteService favoriteService = new FavoriteService();
-
         ProductService productService = new ProductService();
         Product product = productService.findById(idProduct);
 
         favoriteService.addFavorite(user, product);
-        resp.sendRedirect(req.getContextPath() + "/FavoriteController?route=listFavorites");
 
+        // Verificamos si el producto ya estaba en favoritos para mostrar la advertencia
+        if (favoriteService.isProductAlreadyFavorite(user, product)) {
+            req.setAttribute("warningMessage", "Este producto ya está en tus favoritos.");
+        }
+
+        resp.sendRedirect(req.getContextPath() + "/FavoriteController?route=listFavorites");
     }
+
+    private void removeFavorite(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int productId = Integer.parseInt(req.getParameter("productId"));
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user != null) {
+            FavoriteService favoriteService = new FavoriteService();
+            ProductService productService = new ProductService();
+
+            // Encontrar el producto a eliminar
+            Product product = productService.findById(productId);
+
+            // Llamar al servicio para eliminar el favorito
+            boolean success = favoriteService.removeFavorite(user, product);
+
+            if (success) {
+                resp.sendRedirect(req.getContextPath() + "/FavoriteController?route=listFavorites");
+            } else {
+                // Si la eliminación falla, redirigir o mostrar un mensaje de error
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo eliminar el producto de favoritos.");
+            }
+        } else {
+            resp.sendRedirect(req.getContextPath() + "/LoginController?route=login");
+        }
+    }
+
 
     private void listFavorites(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();

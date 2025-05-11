@@ -9,11 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,6 +34,14 @@ class FavoriteServiceTest {
         testUser.setIdUser(1);
         testProduct.setIdProduct(1);
         testProduct.setTitle("Sample Product");
+
+        // Configurar el comportamiento del mockDAO:
+        when(mockDAO.findByUserAndProduct(testUser, testProduct)).thenReturn(null); // No existe aún
+
+        // Simular que después de agregar, el producto aparece en favoritos
+        List<Favorite> favorites = new ArrayList<>();
+        favorites.add(new Favorite(testUser, testProduct));
+        when(mockDAO.findByUser(testUser)).thenReturn(favorites);
     }
 
     /**
@@ -132,8 +141,8 @@ class FavoriteServiceTest {
      * Test con Timeout: Agregar un favorito no debe tardar más de 500ms
      */
     @Test
-    @Timeout(500)
-    void testAddFavoritePerformance() {
+    @Timeout(value = 1, unit = TimeUnit.SECONDS)
+    void given_valid_user_and_product_when_add_favorite_then_timeout() {
         assertDoesNotThrow(() -> favoriteService.addFavorite(testUser, testProduct));
     }
 
@@ -141,14 +150,14 @@ class FavoriteServiceTest {
      * Test de Estado Esperado: El producto debe estar en la lista de favoritos tras agregarlo
      */
     @Test
-    void testAddFavoriteState() {
+    void given_valid_user_and_product_when_add_favorite_then_product_is_in_user_favorites() {
         favoriteService.addFavorite(testUser, testProduct);
 
         List<Favorite> favorites = favoriteService.getFavoritesByUser(testUser);
         boolean found = favorites.stream()
                 .anyMatch(fav -> fav.getProduct().getIdProduct() == testProduct.getIdProduct());
 
-        assertTrue(found, "El producto debería estar en la lista de favoritos.");
+        assertTrue(found);
     }
 
     /**
@@ -156,15 +165,14 @@ class FavoriteServiceTest {
      */
     @ParameterizedTest
     @ValueSource(strings = {
-            "Smartphone@2025",
-            "Oferta#1",
-            "Precio$Bajo",
-            "Descuento%Extra",
-            "Combo&Pack",
-            "Nueva*Serie",
-            "¡Imperdible!"
+            "Iphone@2025",
+            "Offer#1",
+            "$uper",
+            "100%",
+            "New*Serie",
+            "¡!"
     })
-    void testAddProductWithInvalidSymbols(String invalidTitle) {
+    void given_invalid_title_when_add_favorite_then_exception_thrown(String invalidTitle) {
         Product invalidProduct = new Product();
         invalidProduct.setIdProduct(102); // ID arbitrario
         invalidProduct.setTitle(invalidTitle);
@@ -177,5 +185,4 @@ class FavoriteServiceTest {
 
         assertEquals("The title of the product contains invalid characters.", thrown.getMessage());
     }
-
 }

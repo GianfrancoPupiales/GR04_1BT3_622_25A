@@ -1,12 +1,7 @@
 package model.dao;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import model.entities.Favorite;
-import model.entities.Offer;
 import model.entities.Product;
 import model.entities.User;
 
@@ -18,10 +13,7 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
     public FavoriteDAO() {
         super(Favorite.class);
     }
-    public FavoriteDAO(EntityManagerFactory emf) {
-        super(Favorite.class);
-        this.emf = emf;
-    }
+
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
@@ -56,22 +48,30 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
                 em.remove(em.contains(favorite) ? favorite : em.merge(favorite));
             }
             tx.commit();
-
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
             if (tx.isActive()) tx.rollback();
             return false;
         } finally {
             em.close();
         }
-
     }
 
     public List<Favorite> findAll() {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery("SELECT f FROM Favorite f", Favorite.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Favorite> findAllByUser(User user) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT f FROM Favorite f WHERE f.user.idUser = :userId", Favorite.class)
+                    .setParameter("userId", user.getIdUser())
+                    .getResultList();
         } finally {
             em.close();
         }
@@ -93,5 +93,11 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
         }
     }
 
+
+    public void close() {
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+    }
 
 }

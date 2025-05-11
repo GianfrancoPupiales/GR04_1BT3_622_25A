@@ -1,6 +1,7 @@
 package controllers;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,42 +18,53 @@ import java.io.IOException;
 public class FavoriteController extends HttpServlet {
 
     private FavoriteService favoriteService;
-    private EntityManagerFactory emf;
 
     @Override
-    public void init() {
-        emf = Persistence.createEntityManagerFactory("TuUnidadDePersistencia");
-        FavoriteDAO favoriteDAO = new FavoriteDAO(emf);  // DAO ahora usa emf
-        favoriteService = new FavoriteService(favoriteDAO);
+    public void init() throws ServletException {
+        favoriteService = new FavoriteService(new FavoriteDAO());
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String action = request.getParameter("action");
+        String productIdStr = request.getParameter("productId");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Debes iniciar sesión");
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+
+        if (user == null) {
+            request.setAttribute("error", "El usuario no está autenticado.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
             return;
         }
 
-        User user = (User) session.getAttribute("user");
-        int productId = Integer.parseInt(request.getParameter("productId"));
-
+        int productId = Integer.parseInt(productIdStr);
         Product product = new Product();
         product.setIdProduct(productId);
 
-        boolean removed = favoriteService.removeFavorite(user, product);
-
-        System.out.println("Favorito eliminado: " + removed);
-
-        response.sendRedirect("favorites.jsp?removed=" + removed);
+        try {
+            if ("add".equals(action)) {
+                favoriteService.addFavorite(user, product);
+            } else if ("remove".equals(action)) {
+                boolean removed = favoriteService.removeFavorite(user, product);
+                if (!removed) {
+                    request.setAttribute("error", "El producto no estaba en favoritos.");
+                    request.getRequestDispatcher("error.jsp").forward(request, response);
+                    return;
+                }
+            }
+            response.sendRedirect("favorites.jsp");
+        } catch (Exception e) {
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
     }
 
     @Override
     public void destroy() {
-        if (emf != null && emf.isOpen()) {
-            emf.close();
+        // Cierra recursos si es necesario, si el EntityManagerFactory está abierto
+        if (favoriteService != null) {
+            favoriteService.close();
         }
     }
 

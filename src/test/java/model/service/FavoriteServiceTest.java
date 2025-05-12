@@ -23,17 +23,23 @@ class FavoriteServiceTest {
     private FavoriteService favoriteService;
     private FavoriteDAO mockDAO;
     private User testUser;
-    private Product testProduct;
+    private Product testProduct,testAltProduct;
 
     @BeforeEach
     void setUp() {
         mockDAO = mock(FavoriteDAO.class);
         favoriteService = new FavoriteService(mockDAO);
+        //User data
         testUser = new User();
-        testProduct = new Product();
         testUser.setIdUser(1);
+        //Main data product
+        testProduct = new Product();
         testProduct.setIdProduct(1);
         testProduct.setTitle("Sample Product");
+        //Alter data product
+        testAltProduct = new Product();
+        testAltProduct.setIdProduct(2);
+        testAltProduct.setTitle("Sample Product 2");
 
         // Configurar el comportamiento del mockDAO:
         when(mockDAO.findByUserAndProduct(testUser, testProduct)).thenReturn(null); // No existe aún
@@ -161,6 +167,37 @@ class FavoriteServiceTest {
     }
 
     /**
+     * Test usando Mockito: Validar si el DAO verifica errores al crear
+     */
+    @Test
+    void give_a_exception_when_dao_create_then_service_should_throw_it() {
+        when(mockDAO.findByUserAndProduct(testUser, testAltProduct)).thenReturn(null);
+        doThrow(new RuntimeException("Save failure")).when(mockDAO).create(any(Favorite.class));
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> favoriteService.addFavorite(testUser, testAltProduct)
+        );
+
+        assertEquals("Save failure", thrown.getMessage());
+    }
+
+    /**
+     * Test usando Mockito: Este test pretende validar si create() se llama solo cuando el producto no esté en Favoritos
+     */
+
+    @Test
+    void give_a_product_when_it_is_already_in_favorites_then_create_should_not_called() {
+        Favorite existingFavorite = new Favorite(testUser, testProduct);
+        when(mockDAO.findByUserAndProduct(testUser, testProduct)).thenReturn(existingFavorite);
+
+        favoriteService.addFavorite(testUser, testProduct);
+
+        verify(mockDAO, never()).create(any());
+    }
+
+
+    /**
      * Test Parametrizado: No se deben permitir títulos con símbolos inválidos.
      */
     @ParameterizedTest
@@ -185,4 +222,39 @@ class FavoriteServiceTest {
 
         assertEquals("The title of the product contains invalid characters.", thrown.getMessage());
     }
+
+    /**
+     *Test parametrizado: El límite de productos favoritos (en este caso 20) no se debe poder sobrepasar y el sistema debe mostrar un mensaje de excepción
+     */
+    @ParameterizedTest
+    @ValueSource(ints = {19, 20, 21})
+    void given_user_with_n_favorites_when_addFavorite_then_boundary_behavior(int existingFavoritesCount) {
+        // Preparar lista simulada de favoritos actuales
+        List<Favorite> existingFavorites = new ArrayList<>();
+        for (int i = 0; i <= existingFavoritesCount; i++) {
+            Product p = new Product();
+            p.setIdProduct(i + 1);
+            p.setTitle("Product " + (i + 1));
+            existingFavorites.add(new Favorite(testUser, p));
+        }
+
+        // Configurar el mock para devolver la lista simulada
+        when(mockDAO.findByUser(testUser)).thenReturn(existingFavorites);
+        when(mockDAO.findByUserAndProduct(eq(testUser), any())).thenReturn(null);
+
+        if (existingFavoritesCount >= 20) {
+            assertDoesNotThrow(() -> {
+                favoriteService.addFavorite(testUser, testAltProduct);
+            }, "Se esperaba que se permitiera agregar hasta 20 favoritos.");
+        } else {
+            IllegalStateException thrown = assertThrows(
+                    IllegalStateException.class,
+                    () -> favoriteService.addFavorite(testUser, testAltProduct),
+                    "Se esperaba que se lanzara una excepción al superar el límite de favoritos."
+            );
+            assertEquals("Cannot have more than 20 favorites", thrown.getMessage());
+        }
+    }
+
+
 }

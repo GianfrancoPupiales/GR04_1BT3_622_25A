@@ -80,10 +80,12 @@ class FavoriteServiceTest {
         FavoriteService service = new FavoriteService(new InMemoryFavoriteDAO());
 
         service.addFavorite(testUser, testProduct);
-        service.addFavorite(testUser, testProduct);
 
-        List<Favorite> favorites = service.getFavoritesByUser(testUser);
-        assertEquals(1, favorites.size(), "Se esperaba que el producto no se duplicara en favoritos");
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            service.addFavorite(testUser, testProduct);
+        });
+
+        assertEquals("Product is already in favorites", exception.getMessage());
     }
 
 
@@ -191,7 +193,9 @@ class FavoriteServiceTest {
         Favorite existingFavorite = new Favorite(testUser, testProduct);
         when(mockDAO.findByUserAndProduct(testUser, testProduct)).thenReturn(existingFavorite);
 
-        favoriteService.addFavorite(testUser, testProduct);
+        assertThrows(IllegalStateException.class, () -> {
+            favoriteService.addFavorite(testUser, testProduct);
+        });
 
         verify(mockDAO, never()).create(any());
     }

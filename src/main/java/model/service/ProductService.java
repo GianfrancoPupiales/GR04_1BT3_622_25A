@@ -51,4 +51,8 @@ public class ProductService {
     public List<Product> findAvailableProductsExceptUser(int userId) {
         return productDAO.findAvailableProductsExceptUser(userId);
     }
+
+    public Product findById(int idProduct) {
+    return productDAO.findById(idProduct);
+    }
 }

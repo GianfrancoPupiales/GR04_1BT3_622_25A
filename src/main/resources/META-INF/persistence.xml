@@ -8,6 +8,7 @@
 		<class>model.entities.Product</class>
 		<class>model.entities.Offer</class>
 		<class>model.entities.Reputation</class>
+		<class>model.entities.Favorite</class>
 
 		<properties>
 			<!-- Driver de H2 -->

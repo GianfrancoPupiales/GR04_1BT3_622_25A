@@ -34,6 +34,12 @@
                         <i class="fas fa-truck"></i> My Deliveries
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/FavoriteController?route=listFavorites">
+                        <i class="fas fa-heart"></i> Mis Favoritos
+                    </a>
+                </li>
             </ul>
         </div>
 

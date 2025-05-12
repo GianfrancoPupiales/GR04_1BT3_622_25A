@@ -44,6 +44,12 @@
                         <i class="fas fa-truck"></i> My Deliveries
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/FavoriteController?route=listFavorites">
+                        <i class="fas fa-heart"></i> Mis Favoritos
+                    </a>
+                </li>
             </ul>
         </div>
 
@@ -100,6 +106,12 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
+                                <form action="${pageContext.request.contextPath}/FavoriteController?route=add" method="post">
+                                    <input type="hidden" name="idProduct" value="${product.idProduct}">
+                                    <button type="submit" class="btn btn-outline-warning">
+                                        <i class="fa-solid fa-star"></i> Add to Favorites
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

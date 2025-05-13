@@ -88,7 +88,7 @@
 
                 <a href="ManageProductsController?route=add"
                    class="btn btn-primary"> <i class="fas fa-plus-circle"></i>
-                    Add PRODUCT
+                    Publish product
                 </a>
 
             </div>
@@ -139,7 +139,7 @@
                 </c:forEach>
             </div>
             <c:if test="${empty products}">
-                <div class="alert alert-warning text-center">You have not created any product.</div>
+                <div class="alert alert-warning text-center">You have not published any products yet</div>
             </c:if>
         </div>
     </div>
@@ -211,13 +211,13 @@
                         </label>
                         <input id="DescriptionEdit" type="text"
                                class="form-control" name="txtDescription"
-                               value="${product.description}" placeholder="Enter description">
+                               value="${product.description}" placeholder="Enter description" required>
                     </div>
                     <div class="mb-3">
                         <label for="StateEdit" class="form-label fw-bold">State
                         </label> <input id="StateEdit" type="text"
                                         class="form-control" name="txtState"
-                                        value="${product.state}" placeholder="Enter state">
+                                        value="${product.state}" placeholder="Enter state" required>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">

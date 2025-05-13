@@ -85,7 +85,7 @@
                             <!-- Confirmar entrega -->
                             <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal"
                                     data-bs-target="#RATE_MODAL_${offer.idOffer}">
-                                <i class="fas fa-check"></i> Confirm
+                                <i class="fas fa-check"></i> Confirm delivery
                             </button>
 
                             <!-- Rechazar oferta -->
@@ -93,7 +93,7 @@
                                 <input type="hidden" name="route" value="rejectOffer">
                                 <input type="hidden" name="offerId" value="${offer.idOffer}">
                                 <button type="submit" class="btn btn-danger btn-sm px-3">
-                                    <i class="fas fa-times"></i> Reject
+                                    <i class="fas fa-times"></i> No product received
                                 </button>
                             </form>
                         </div>

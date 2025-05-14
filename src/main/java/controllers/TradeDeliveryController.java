@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import model.entities.Offer;
 import model.entities.User;
 import model.service.OfferService;
+import model.service.ProductService;
 
 import java.io.IOException;
 import java.io.Serial;
@@ -18,6 +19,9 @@ import java.util.List;
 @WebServlet("/TradeDeliveryController")
 public class TradeDeliveryController extends HttpServlet {
     private static EntityManagerFactory entityManagerFactory;
+    private final ProductService productService = new ProductService();
+    private final OfferService offerService = new OfferService();
+
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +63,6 @@ public class TradeDeliveryController extends HttpServlet {
         int offerId = Integer.parseInt(req.getParameter("offerId"));
         int score = Integer.parseInt(req.getParameter("score"));
 
-        OfferService offerService = new OfferService();
         Offer offer = offerService.findById(offerId);
 
         if (offer != null) {
@@ -87,7 +90,6 @@ public class TradeDeliveryController extends HttpServlet {
             return;
         }
 
-        OfferService offerService = new OfferService();
         List<Offer> pendingDeliveries = offerService.findAcceptedOffersPendingDeliveryByUserId(loggedUser.getUserId());
 
         req.setAttribute("pendingDeliveries", pendingDeliveries);
@@ -99,11 +101,11 @@ public class TradeDeliveryController extends HttpServlet {
         int offerId = Integer.parseInt(req.getParameter("offerId"));
         int toUserId = Integer.parseInt(req.getParameter("toUserId"));
 
-        OfferService offerService = new OfferService();
+
         Offer offer = offerService.findById(offerId);
 
         if (offer != null && offer.getStatus().equals("accepted")) {
-            boolean success = offerService.confirmDeliveryAndUpdateOffer(offer);
+            boolean success = confirmDelivery(offerService, offer);
 
             if (success) {
                 resp.sendRedirect(req.getContextPath() + "/TradeDeliveryController?route=showRatingForm&offerId=" + offerId + "&toUserId=" + toUserId);
@@ -117,10 +119,14 @@ public class TradeDeliveryController extends HttpServlet {
         }
     }
 
+    private static boolean confirmDelivery(OfferService offerService, Offer offer) {
+        offerService.confirmDelivery(offer);
+        return offerService.updateOffer(offer);
+    }
+
     private void rejectOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int offerId = Integer.parseInt(req.getParameter("offerId"));
 
-        OfferService offerService = new OfferService();
         Offer offer = offerService.findById(offerId);
 
         if (offer != null && offer.getStatus().equals("accepted")) {

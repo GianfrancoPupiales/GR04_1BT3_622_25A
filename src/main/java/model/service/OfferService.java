@@ -13,6 +13,8 @@ public class OfferService {
 
     private final OfferDAO offerDAO;
     private static EntityManagerFactory entityManagerFactory;
+    private ProductService productService;
+
     public OfferService() {
         this.offerDAO = new OfferDAO();
     }
@@ -37,7 +39,7 @@ public class OfferService {
             productService.updateProductAvailability(offer.getOfferedProducts(), false);
             productService.updateProductAvailability(List.of(offer.getProductToOffer()), false);
 
-            return offerDAO.updateOffer(offer);
+            return offerDAO.update(offer);
         }
         return false;
     }
@@ -55,11 +57,6 @@ public class OfferService {
     public boolean changeOfferStatusToPending(Offer offer) {
         return offerDAO.changeOfferStatusToPending(offer);
     }
-
-    public boolean confirmDeliveryAndUpdateOffer(Offer offer) {
-        return  offerDAO.confirmDeliveryAndUpdateOffer(offer);
-    }
-
 
     public ResponseMessage processOfferStatus(Offer offer, String status) {
         if (offer == null) {
@@ -95,6 +92,15 @@ public class OfferService {
             case "rejected" -> new ResponseMessage("warning", "Lo siento, tu oferta ha sido rechazada.");
             default -> new ResponseMessage("error", "Estado de oferta inválido.");
         };
+    }
+
+    public void confirmDelivery(Offer offer) {
+        productService.disableProductsInOffer(offer);
+        offer.markAsDelivered(offer.getOfferedByUser( ));
+    }
+
+    public boolean updateOffer(Offer offer) {
+        return offerDAO.update(offer);
     }
 
 

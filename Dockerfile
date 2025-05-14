@@ -16,9 +16,9 @@ WORKDIR /app
 RUN mvn clean package
 
 
-FROM tomcat:10.1.28-jdk21-slim
+FROM tomcat:jdk21-openjdk-slim
 
-# Cambiar puerto de Tomcat de 8080 a 9090
+# Cambiar el puerto de Tomcat de 8080 a 9090
 RUN sed -i 's/port="8080"/port="9090"/' /usr/local/tomcat/conf/server.xml
 
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/

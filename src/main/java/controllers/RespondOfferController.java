@@ -10,12 +10,11 @@ import model.entities.User;
 import model.service.OfferService;
 import model.service.ProductService;
 import model.service.ReputationService;
-import java.util.Map;
-import java.util.HashMap;
-
 
 import java.io.IOException;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet(name = "RespondOfferController", urlPatterns = {"/RespondOfferController"})
 public class RespondOfferController extends HttpServlet {
@@ -68,6 +67,7 @@ public class RespondOfferController extends HttpServlet {
         User user = getLoggedUser(req, resp);
         if (user == null) return;
 
+
         offerService.loadPendingOffers(user.getUserId(), req);
         req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
     }
@@ -88,7 +88,6 @@ public class RespondOfferController extends HttpServlet {
             List<Product> offeredProducts = offer.getOfferedProducts();
             User offeringUser = offer.getOfferedByUser();
 
-            // Reputación del usuario
             Reputation reputation = reputationService.findByUserId(offeringUser.getUserId());
             req.setAttribute("yourProduct", yourProduct);
             req.setAttribute("offeredProducts", offeredProducts);
@@ -108,10 +107,8 @@ public class RespondOfferController extends HttpServlet {
         }
     }
 
-
-
-
     // Responder una oferta: aceptar o rechazar
+
     private void handleRespondOffer(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         User user = getLoggedUser(req, resp);
@@ -147,7 +144,6 @@ public class RespondOfferController extends HttpServlet {
         req.setAttribute("messageType", responseMessage.get("type"));
         req.setAttribute("message", responseMessage.get("message"));
 
-        // Recargar la lista de ofertas pendientes
         offerService.loadPendingOffers(user.getUserId(), req);
         req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
     }

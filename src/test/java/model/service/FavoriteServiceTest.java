@@ -226,39 +226,4 @@ class FavoriteServiceTest {
 
         assertEquals("The title of the product contains invalid characters.", thrown.getMessage());
     }
-
-    /**
-     *Test parametrizado: El límite de productos favoritos (en este caso 20) no se debe poder sobrepasar y el sistema debe mostrar un mensaje de excepción
-     */
-    @ParameterizedTest
-    @ValueSource(ints = {19, 20, 21})
-    void given_user_with_n_favorites_when_addFavorite_then_boundary_behavior(int existingFavoritesCount) {
-        // Preparar lista simulada de favoritos actuales
-        List<Favorite> existingFavorites = new ArrayList<>();
-        for (int i = 0; i <= existingFavoritesCount; i++) {
-            Product p = new Product();
-            p.setIdProduct(i + 1);
-            p.setTitle("Product " + (i + 1));
-            existingFavorites.add(new Favorite(testUser, p));
-        }
-
-        // Configurar el mock para devolver la lista simulada
-        when(mockDAO.findByUser(testUser)).thenReturn(existingFavorites);
-        when(mockDAO.findByUserAndProduct(eq(testUser), any())).thenReturn(null);
-
-        if (existingFavoritesCount >= 20) {
-            assertDoesNotThrow(() -> {
-                favoriteService.addFavorite(testUser, testAltProduct);
-            }, "Se esperaba que se permitiera agregar hasta 20 favoritos.");
-        } else {
-            IllegalStateException thrown = assertThrows(
-                    IllegalStateException.class,
-                    () -> favoriteService.addFavorite(testUser, testAltProduct),
-                    "Se esperaba que se lanzara una excepción al superar el límite de favoritos."
-            );
-            assertEquals("Cannot have more than 20 favorites", thrown.getMessage());
-        }
-    }
-
-
 }

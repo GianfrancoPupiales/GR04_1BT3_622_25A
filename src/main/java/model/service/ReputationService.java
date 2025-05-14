@@ -13,7 +13,7 @@ public class ReputationService {
     }
 
     public void saveRating(User ratedUser, int score) {
-        Reputation reputation = reputationDAO.findByUserId(ratedUser.getIdUser());
+        Reputation reputation = reputationDAO.findByUserId(ratedUser.getId());
         if (reputation == null) {
             reputation = createReputationForUser(ratedUser, score);
             reputationDAO.create(reputation);
@@ -36,7 +36,7 @@ public class ReputationService {
 
 
     public Reputation getReputation(User user) {
-        return reputationDAO.findByUserId(user.getIdUser());
+        return reputationDAO.findByUserId(user.getId());
     }
 
 }

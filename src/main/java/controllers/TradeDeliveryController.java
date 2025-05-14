@@ -1,28 +1,19 @@
 package controllers;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.dao.OfferDAO;
 import model.entities.Offer;
-import model.entities.Product;
 import model.entities.User;
 import model.service.OfferService;
-import model.service.ReputationService;
-import model.service.UserService;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/TradeDeliveryController")
 public class TradeDeliveryController extends HttpServlet {
@@ -97,7 +88,7 @@ public class TradeDeliveryController extends HttpServlet {
         }
 
         OfferService offerService = new OfferService();
-        List<Offer> pendingDeliveries = offerService.findAcceptedOffersPendingDeliveryByUserId(loggedUser.getIdUser());
+        List<Offer> pendingDeliveries = offerService.findAcceptedOffersPendingDeliveryByUserId(loggedUser.getId());
 
         req.setAttribute("pendingDeliveries", pendingDeliveries);
         req.getRequestDispatcher("/jsp/DELIVERY.jsp").forward(req, resp);

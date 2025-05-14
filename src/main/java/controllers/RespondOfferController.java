@@ -56,7 +56,7 @@ public class RespondOfferController extends HttpServlet {
             User offeringUser = offer.getOfferedByUser();
 
             // Reputación del usuario
-            Reputation reputation = reputationService.findByUserId(offeringUser.getIdUser());
+            Reputation reputation = reputationService.findByUserId(offeringUser.getId());
 
             // Enviar los datos a la vista
             req.setAttribute("yourProduct", yourProduct);
@@ -123,7 +123,7 @@ public class RespondOfferController extends HttpServlet {
         if (user == null) return;
 
         // Cargar las ofertas pendientes para el usuario logueado
-        offerService.loadPendingOffers(user.getIdUser(), req);
+        offerService.loadPendingOffers(user.getId(), req);
 
         // Redirigir a la vista de ofertas
         req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
@@ -150,7 +150,7 @@ public class RespondOfferController extends HttpServlet {
                 int offerId = Integer.parseInt(offerIdStr);
                 Offer offer = offerService.findById(offerId);
 
-                if (offer == null || offer.getOfferedByUser() == null || offer.getOfferedByUser().getIdUser() != user.getIdUser()) {
+                if (offer == null || offer.getOfferedByUser() == null || offer.getOfferedByUser().getId() != user.getId()) {
                     responseMessage.put("type", "error");
                     responseMessage.put("message", "Oferta no encontrada o no autorizada.");
                 } else {
@@ -170,7 +170,7 @@ public class RespondOfferController extends HttpServlet {
         req.setAttribute("message", responseMessage.get("message"));
 
         // Recargar la lista de ofertas pendientes
-        offerService.loadPendingOffers(user.getIdUser(), req);
+        offerService.loadPendingOffers(user.getId(), req);
         req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
     }
 

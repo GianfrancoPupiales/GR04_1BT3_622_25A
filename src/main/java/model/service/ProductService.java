@@ -4,6 +4,7 @@ import model.dao.ProductDAO;
 import model.entities.Offer;
 import model.entities.Product;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,15 +45,26 @@ public class ProductService {
     }
 
     public void disableProductsInOffer(Offer offer) {
-        productDAO.updateProductAvailability(offer.getOfferedProducts(), false);
-        productDAO.updateProductAvailability(Collections.singletonList(offer.getProductToOffer()), false);
+        List<Product> offeredProducts = new ArrayList<>(offer.getOfferedProducts());
+        Product targetProduct = offer.getProductToOffer();
 
+        if (targetProduct != null) {
+            offeredProducts.add(targetProduct);
+        }
+
+        for (Product p : offeredProducts) {
+            p.setAvailable(false);
+            p.setState("intercambiado");
+            productDAO.update(p);
+        }
     }
+
+
     public List<Product> findAvailableProductsExceptUser(int userId) {
         return productDAO.findAvailableProductsExceptUser(userId);
     }
 
     public Product findById(int idProduct) {
-    return productDAO.findById(idProduct);
+        return productDAO.findById(idProduct);
     }
 }

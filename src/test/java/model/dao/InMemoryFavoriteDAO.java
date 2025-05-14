@@ -20,7 +20,7 @@ public class InMemoryFavoriteDAO extends FavoriteDAO {
     @Override
     public Favorite findByUserAndProduct(User user, Product product) {
         return favorites.stream()
-                .filter(f -> f.getUser().getIdUser() == user.getIdUser() &&
+                .filter(f -> f.getUser().getUserId() == user.getUserId() &&
                         f.getProduct().getIdProduct() == product.getIdProduct())
                 .findFirst()
                 .orElse(null);
@@ -29,7 +29,7 @@ public class InMemoryFavoriteDAO extends FavoriteDAO {
     @Override
     public List<Favorite> findByUser(User user) {
         return favorites.stream()
-                .filter(f -> f.getUser().getIdUser() == user.getIdUser())
+                .filter(f -> f.getUser().getUserId() == user.getUserId())
                 .collect(Collectors.toList());
     }
 

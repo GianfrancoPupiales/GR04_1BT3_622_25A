@@ -77,7 +77,7 @@ public class MakeOfferController extends HttpServlet {
     private void makeOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        List<Product> products = new ProductDAO().findProductsByUserId(user.getIdUser());
+        List<Product> products = new ProductDAO().findProductsByUserId(user.getUserId());
         req.setAttribute("products", products);
         req.setAttribute("route", "list");
         req.getRequestDispatcher("jsp/OFFER.jsp").forward(req, resp);
@@ -115,7 +115,7 @@ public class MakeOfferController extends HttpServlet {
         // Mostrar productos del usuario (MY_PRODUCT.jsp)
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        products = productService.findAvailableProductsByUserId(user.getIdUser());
+        products = productService.findAvailableProductsByUserId(user.getUserId());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/OFFER.jsp").forward(req, resp);
     }

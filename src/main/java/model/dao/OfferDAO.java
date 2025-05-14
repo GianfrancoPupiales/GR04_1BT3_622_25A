@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import model.entities.Offer;
+import model.entities.Product;
 import model.service.ProductService;
 
 import java.util.Collections;
@@ -51,22 +52,21 @@ public class OfferDAO extends GenericDAO<Offer> {
         }
     }
 
-    public boolean update(Offer offer) {
-        EntityManager em = getEntityManager();
+    public void update(Product product) {
+        EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            em.merge(offer);
+            em.merge(product);
             tx.commit();
-            return true;
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
-            e.printStackTrace();
-            return false;
+            throw e;
         } finally {
             em.close();
         }
     }
+
 
 
     public boolean updateOffer(Offer offer) {

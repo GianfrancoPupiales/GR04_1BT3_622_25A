@@ -9,7 +9,7 @@ import java.util.List;
 import jakarta.persistence.*;
 
 public abstract class GenericDAO<T> {
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("GR04_1BT3_622_25A");
+    protected static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("GR04_1BT3_622_25A");
     private final Class<T> entityClass;
 
     protected GenericDAO(Class<T> entityClass) {

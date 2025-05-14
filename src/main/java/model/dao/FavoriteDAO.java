@@ -27,7 +27,7 @@ public class FavoriteDAO extends GenericDAO<Favorite>{
         try (EntityManager em = getEntityManager()) {
             return em.createQuery(
                             "SELECT f FROM Favorite f WHERE f.user.idUser = :idUser", Favorite.class)
-                    .setParameter("idUser", user.getId())
+                    .setParameter("idUser", user.getUserId())
                     .getResultList();
         }
     }

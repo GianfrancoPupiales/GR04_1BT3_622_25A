@@ -90,7 +90,7 @@ public class RespondOfferController extends HttpServlet {
 <<<<<<< HEAD
 
             // Reputación del usuario
-            Reputation reputation = reputationService.findByUserId(offeringUser.getId());
+            Reputation reputation = reputationService.findByUserId(offeringUser.getUserId());
 =======
             Reputation reputation = reputationService.findByUserId(offeringUser.getIdUser());
 >>>>>>> ac1dfaae6e6054d48133a6a2ac68b484331bf1f4
@@ -164,7 +164,7 @@ public class RespondOfferController extends HttpServlet {
         if (user == null) return;
 
         // Cargar las ofertas pendientes para el usuario logueado
-        offerService.loadPendingOffers(user.getId(), req);
+        offerService.loadPendingOffers(user.getUserId(), req);
 
         // Redirigir a la vista de ofertas
         req.getRequestDispatcher("jsp/OFFERS.jsp").forward(req, resp);
@@ -193,7 +193,7 @@ public class RespondOfferController extends HttpServlet {
                 Offer offer = offerService.findById(offerId);
 
 <<<<<<< HEAD
-                if (offer == null || offer.getOfferedByUser() == null || offer.getOfferedByUser().getId() != user.getId()) {
+                if (offer == null || offer.getOfferedByUser() == null || offer.getOfferedByUser().getUserId() != user.getUserId()) {
 =======
                 if (offer == null) {
 >>>>>>> ac1dfaae6e6054d48133a6a2ac68b484331bf1f4
@@ -215,7 +215,7 @@ public class RespondOfferController extends HttpServlet {
 <<<<<<< HEAD
 
         // Recargar la lista de ofertas pendientes
-        offerService.loadPendingOffers(user.getId(), req);
+        offerService.loadPendingOffers(user.getUserId(), req);
 =======
         offerService.loadPendingOffers(user.getIdUser(), req);
 >>>>>>> ac1dfaae6e6054d48133a6a2ac68b484331bf1f4

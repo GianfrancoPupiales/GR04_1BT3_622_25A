@@ -139,7 +139,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private List<Product> getProductsByUserId(HttpServletRequest req) {
-        return getProductService().findProductsByUserId(getUser(req).getId());
+        return getProductService().findProductsByUserId(getUser(req).getUserId());
     }
 
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
@@ -188,7 +188,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private void viewProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Product> products = getProductService().findAvailableProductsExceptUser(getUser(req).getId());
+        List<Product> products = getProductService().findAvailableProductsExceptUser(getUser(req).getUserId());
         forwardProductsView(req, resp, products, "jsp/HOME.jsp");
     }
 

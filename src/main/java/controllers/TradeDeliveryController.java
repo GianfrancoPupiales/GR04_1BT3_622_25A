@@ -88,7 +88,7 @@ public class TradeDeliveryController extends HttpServlet {
         }
 
         OfferService offerService = new OfferService();
-        List<Offer> pendingDeliveries = offerService.findAcceptedOffersPendingDeliveryByUserId(loggedUser.getId());
+        List<Offer> pendingDeliveries = offerService.findAcceptedOffersPendingDeliveryByUserId(loggedUser.getUserId());
 
         req.setAttribute("pendingDeliveries", pendingDeliveries);
         req.getRequestDispatcher("/jsp/DELIVERY.jsp").forward(req, resp);

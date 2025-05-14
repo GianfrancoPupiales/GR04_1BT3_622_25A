@@ -1,8 +1,9 @@
 FROM openjdk:21-slim AS build
-# Instala Maven
+
 RUN apt-get update && \
     apt-get install -y maven git && \
-    apt-get clean &&
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 ARG URL_REPO=https://github.com/GianfrancoPupiales/GR04_1BT3_622_25A.git
 ARG BRANCH=docker
@@ -14,12 +15,14 @@ WORKDIR /app
 
 RUN mvn clean package
 
+
 FROM tomcat:10.1.28-jdk21-slim
+
+# Cambiar puerto de Tomcat de 8080 a 9090
+RUN sed -i 's/port="8080"/port="9090"/' /usr/local/tomcat/conf/server.xml
 
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/
 
 EXPOSE 9090
 
 CMD ["catalina.sh", "run"]
-
-

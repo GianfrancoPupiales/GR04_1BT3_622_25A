@@ -32,7 +32,12 @@ public class OfferService {
             ReputationService reputationService = new ReputationService();
             reputationService.saveRating(offeredByUser, score);
             offer.markAsDelivered(offeredByUser);
-            return offerDAO.updateOffer(offer);  // Asegurarse de que el DAO actualice la oferta correctamente
+
+            ProductService productService = new ProductService();
+            productService.updateProductAvailability(offer.getOfferedProducts(), false);
+            productService.updateProductAvailability(List.of(offer.getProductToOffer()), false);
+
+            return offerDAO.updateOffer(offer);
         }
         return false;
     }
@@ -58,18 +63,40 @@ public class OfferService {
 
     public ResponseMessage processOfferStatus(Offer offer, String status) {
         if (offer == null) {
-            return new ResponseMessage("error", "Offer not found.");
+            return new ResponseMessage("error", "La oferta no existe.");
+        }
+
+        // Evitar que se procese más de una vez
+        if (!"pending".equalsIgnoreCase(offer.getStatus())) {
+            return new ResponseMessage("warning", "La oferta ya fue procesada anteriormente.");
         }
 
         offer.setStatus(status);
-        offerDAO.update(offer);
+        boolean updated = offerDAO.update(offer);
 
-        return switch (status) {
+        if (!updated) {
+            return new ResponseMessage("error", "No se pudo actualizar el estado de la oferta.");
+        }
+
+        if ("accepted".equalsIgnoreCase(status)) {
+            ProductService productService = new ProductService();
+
+            // Desactivar productos ofrecidos por el otro usuario
+            productService.disableProductsInOffer(offer);
+
+            // Desactivar tu producto (el que fue ofrecido a cambio)
+            productService.updateProductAvailability(
+                    List.of(offer.getProductToOffer()), false
+            );
+        }
+
+        return switch (status.toLowerCase()) {
             case "accepted" -> new ResponseMessage("success", "¡Felicidades por tu intercambio!");
             case "rejected" -> new ResponseMessage("warning", "Lo siento, tu oferta ha sido rechazada.");
-            default -> new ResponseMessage("error", "Invalid status.");
+            default -> new ResponseMessage("error", "Estado de oferta inválido.");
         };
     }
+
 
     public record ResponseMessage(String type, String message) {
     }

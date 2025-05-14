@@ -84,22 +84,35 @@ public class OfferDAO extends GenericDAO<Offer> {
     }
 
     public boolean confirmDeliveryAndUpdateOffer(Offer offer) {
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager(); // Usamos el mismo EntityManager
         ProductService productService = new ProductService();
 
         try {
-            em.getTransaction().begin();
+            em.getTransaction().begin(); // Comenzamos la transacción
+
+            // Actualizamos los productos en la misma transacción
             productService.disableProductsInOffer(offer);
-            em.getTransaction().commit();
+
+            // Marcamos la oferta como entregada
+            offer.markAsDelivered(offer.getOfferedByUser());
+
+            // Ahora actualizamos la oferta en la base de datos
+            em.merge(offer);
+
+            em.getTransaction().commit(); // Confirmamos la transacción
             return true;
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             e.printStackTrace();
             return false;
         } finally {
             em.close();
         }
     }
+
+
 
 
     // Método para cambiar el estado de la oferta a "pending"

@@ -49,13 +49,18 @@ public class OfferDAO extends GenericDAO<Offer> {
 
     public Offer findById(int id) {
         try (EntityManager em = getEntityManager()) {
-            return em.createQuery("SELECT o FROM Offer o LEFT JOIN FETCH o.offeredProducts WHERE o.idOffer = :id", Offer.class)
+            return em.createQuery(
+                            "SELECT o FROM Offer o " +
+                                    "LEFT JOIN FETCH o.offeredProducts " +
+                                    "LEFT JOIN FETCH o.productToOffer " +
+                                    "WHERE o.idOffer = :id", Offer.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
     }
+
 
 
     // Método para cambiar el estado de la oferta a "pending"

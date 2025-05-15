@@ -77,7 +77,6 @@ public class RespondOfferController extends HttpServlet {
         try {
             int offerId = Integer.parseInt(req.getParameter("offerId"));
             Offer offer = offerService.findById(offerId);
-
             if (offer == null) {
                 req.setAttribute("error", "La oferta no existe.");
                 req.getRequestDispatcher("jsp/error.jsp").forward(req, resp);
@@ -126,7 +125,6 @@ public class RespondOfferController extends HttpServlet {
             try {
                 int offerId = Integer.parseInt(offerIdStr);
                 Offer offer = offerService.findById(offerId);
-
                 if (offer == null) {
                     responseMessage.put("type", "error");
                     responseMessage.put("message", "La oferta no existe.");

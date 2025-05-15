@@ -4,8 +4,10 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import model.dao.OfferDAO;
 import model.entities.Offer;
+import model.entities.Product;
 import model.entities.User;
 
+import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,15 +79,29 @@ public class OfferService {
 
         if ("accepted".equalsIgnoreCase(status)) {
             ProductService productService = new ProductService();
+            System.out.println("Productos que me ofrecieron :");
+            for (Product product : offer.getOfferedProducts()) {
+                System.out.println(product);
+            }
 
-            // Desactivar productos ofrecidos por el otro usuario
-            productService.disableProductsInOffer(offer);
+            System.out.println("My producto:" + offer.getProductToOffer());
 
             // Desactivar tu producto (el que fue ofrecido a cambio)
-            productService.updateProductAvailability(
-                    List.of(offer.getProductToOffer()), false
-            );
+            productService.updateProductAvailability(List.of(offer.getProductToOffer()), false);
+            System.out.println("Desactivando productToOffer: " + offer.getProductToOffer().getIdProduct());
+
+            // Desactivar los productos ofrecidos por el ofertante
+            if (offer.getOfferedProducts() != null && !offer.getOfferedProducts().isEmpty()) {
+                System.out.println("Desactivando offeredProducts: " + offer.getOfferedProducts().size());
+                for (Product p : offer.getOfferedProducts()) {
+                    System.out.println(" - OfferedProduct: " + p.getIdProduct());
+                }
+                productService.updateProductAvailability(offer.getOfferedProducts(), false);
+            } else {
+                System.out.println("OfferedProducts está vacío o es null");
+            }
         }
+
 
         return switch (status.toLowerCase()) {
             case "accepted" -> new ResponseMessage("success", "¡Felicidades por tu intercambio!");
@@ -95,7 +111,6 @@ public class OfferService {
     }
 
     public void confirmDelivery(Offer offer) {
-        productService.disableProductsInOffer(offer);
         offer.markAsDelivered(offer.getOfferedByUser( ));
     }
 

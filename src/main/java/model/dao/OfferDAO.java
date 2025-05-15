@@ -49,17 +49,22 @@ public class OfferDAO extends GenericDAO<Offer> {
 
     public Offer findById(int id) {
         try (EntityManager em = getEntityManager()) {
-            return em.createQuery(
+            Offer offer = em.createQuery(
                             "SELECT o FROM Offer o " +
                                     "LEFT JOIN FETCH o.offeredProducts " +
                                     "LEFT JOIN FETCH o.productToOffer " +
                                     "WHERE o.idOffer = :id", Offer.class)
                     .setParameter("id", id)
                     .getSingleResult();
+
+            offer.getOfferedProducts().size();
+
+            return offer;
         } catch (NoResultException e) {
             return null;
         }
     }
+
 
 
 

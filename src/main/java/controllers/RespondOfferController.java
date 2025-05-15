@@ -125,6 +125,8 @@ public class RespondOfferController extends HttpServlet {
             try {
                 int offerId = Integer.parseInt(offerIdStr);
                 Offer offer = offerService.findById(offerId);
+                System.out.println("Ofrecidos: " + offer.getOfferedProducts());
+                System.out.println("Producto a ofrecer: " + offer.getProductToOffer());
                 if (offer == null) {
                     responseMessage.put("type", "error");
                     responseMessage.put("message", "La oferta no existe.");

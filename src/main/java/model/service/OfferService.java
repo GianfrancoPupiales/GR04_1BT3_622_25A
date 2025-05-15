@@ -15,10 +15,11 @@ public class OfferService {
 
     private final OfferDAO offerDAO;
     private static EntityManagerFactory entityManagerFactory;
-    private ProductService productService;
+    private final ProductService productService;
 
-    public OfferService() {
+    public OfferService(ProductService productService) {
         this.offerDAO = new OfferDAO();
+        this.productService = new ProductService();
     }
 
     public List<Offer> findAcceptedOffersPendingDeliveryByUserId(int idUser) {
@@ -56,11 +57,13 @@ public class OfferService {
     public Offer findById(int offerId) {
         return offerDAO.findById(offerId);
     }
+
     public boolean changeOfferStatusToPending(Offer offer) {
         return offerDAO.changeOfferStatusToPending(offer);
     }
 
-    public ResponseMessage processOfferStatus(Offer offer, String status) {
+    public ResponseMessage processOfferStatus(int offerId, String status) {
+        Offer offer = offerDAO.findById(offerId);
         if (offer == null) {
             return new ResponseMessage("error", "La oferta no existe.");
         }
@@ -78,13 +81,12 @@ public class OfferService {
         }
 
         if ("accepted".equalsIgnoreCase(status)) {
-            ProductService productService = new ProductService();
             System.out.println("Productos que me ofrecieron :");
             for (Product product : offer.getOfferedProducts()) {
-                System.out.println(product);
+                System.out.println("Productos: " + product.getIdProduct() + "Nombre:" + product.getTitle());
             }
 
-            System.out.println("My producto:" + offer.getProductToOffer());
+            System.out.println("My productos:" + offer.getProductToOffer());
 
             // Desactivar tu producto (el que fue ofrecido a cambio)
             productService.updateProductAvailability(List.of(offer.getProductToOffer()), false);

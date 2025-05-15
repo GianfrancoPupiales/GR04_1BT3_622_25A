@@ -20,7 +20,7 @@ import java.util.List;
 public class TradeDeliveryController extends HttpServlet {
     private static EntityManagerFactory entityManagerFactory;
     private final ProductService productService = new ProductService();
-    private final OfferService offerService = new OfferService();
+    private final OfferService offerService = new OfferService(productService);
 
     @Serial
     private static final long serialVersionUID = 1L;

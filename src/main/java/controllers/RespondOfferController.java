@@ -19,8 +19,9 @@ import java.util.Map;
 @WebServlet(name = "RespondOfferController", urlPatterns = {"/RespondOfferController"})
 public class RespondOfferController extends HttpServlet {
 
-    private final OfferService offerService = new OfferService();
+
     private final ProductService productService = new ProductService();
+    private final OfferService offerService = new OfferService(productService);
     private final ReputationService reputationService = new ReputationService();
 
     @Override
@@ -77,7 +78,6 @@ public class RespondOfferController extends HttpServlet {
         try {
             int offerId = Integer.parseInt(req.getParameter("offerId"));
             Offer offer = offerService.findById(offerId);
-
             if (offer == null) {
                 req.setAttribute("error", "La oferta no existe.");
                 req.getRequestDispatcher("jsp/error.jsp").forward(req, resp);
@@ -126,12 +126,17 @@ public class RespondOfferController extends HttpServlet {
             try {
                 int offerId = Integer.parseInt(offerIdStr);
                 Offer offer = offerService.findById(offerId);
-
+                System.out.println(">>> ID offer: " + offer.getIdOffer());
+                System.out.println(">>> Productos ofrecidos:");
+                for (Product p : offer.getOfferedProducts()) {
+                    System.out.println(" - " + p.getTitle());
+                }
+                req.setAttribute("offer", offer);
                 if (offer == null) {
                     responseMessage.put("type", "error");
                     responseMessage.put("message", "La oferta no existe.");
                 } else {
-                    OfferService.ResponseMessage serviceMessage = offerService.processOfferStatus(offer, status);
+                    OfferService.ResponseMessage serviceMessage = offerService.processOfferStatus(offerId, status);
                     responseMessage.put("type", serviceMessage.type());
                     responseMessage.put("message", serviceMessage.message());
                 }

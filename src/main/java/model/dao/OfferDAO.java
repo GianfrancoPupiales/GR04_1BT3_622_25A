@@ -3,6 +3,7 @@ package model.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 import model.entities.Offer;
 import model.entities.Product;
 import model.service.ProductService;
@@ -48,67 +49,19 @@ public class OfferDAO extends GenericDAO<Offer> {
 
     public Offer findById(int id) {
         try (EntityManager em = getEntityManager()) {
-            return em.find(Offer.class, id);
-        }
-    }
+            Offer offer = em.createQuery(
+                            "SELECT o FROM Offer o " +
+                                    "LEFT JOIN FETCH o.offeredProducts " +
+                                    "LEFT JOIN FETCH o.productToOffer " +
+                                    "WHERE o.idOffer = :id", Offer.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
 
-    public void update(Product product) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            em.merge(product);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) tx.rollback();
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
+            offer.getOfferedProducts().size();
 
-
-
-    public boolean updateOffer(Offer offer) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(offer);
-            em.getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean confirmDeliveryAndUpdateOffer(Offer offer) {
-        EntityManager em = getEntityManager(); // Usamos el mismo EntityManager
-        ProductService productService = new ProductService();
-
-        try {
-            em.getTransaction().begin(); // Comenzamos la transacción
-
-            // Actualizamos los productos en la misma transacción
-            productService.disableProductsInOffer(offer);
-
-            // Marcamos la oferta como entregada
-            offer.markAsDelivered(offer.getOfferedByUser());
-
-            // Ahora actualizamos la oferta en la base de datos
-            em.merge(offer);
-
-            em.getTransaction().commit(); // Confirmamos la transacción
-            return true;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-            return false;
-        } finally {
-            em.close();
+            return offer;
+        } catch (NoResultException e) {
+            return null;
         }
     }
 

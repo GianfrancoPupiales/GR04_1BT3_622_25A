@@ -44,23 +44,6 @@ public class ProductService {
         return productDAO.findAll();
     }
 
-    public void disableProductsInOffer(Offer offer) {
-        List<Product> offeredProducts = new ArrayList<>(offer.getOfferedProducts());
-        Product targetProduct = offer.getProductToOffer();
-
-        if (targetProduct != null) {
-            offeredProducts.add(targetProduct);
-        }
-
-        for (Product p : offeredProducts) {
-            p.setAvailable(false);
-            p.setState("intercambiado");
-            productDAO.update(p);
-        }
-    }
-
-
-
     public List<Product> findAvailableProductsExceptUser(int userId) {
         return productDAO.findAvailableProductsExceptUser(userId);
     }

@@ -158,7 +158,7 @@ public class MakeOfferController extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         // Validación de "listOfferedProducts" para asegurarse de que no esté vacío
-        String[] offeredProductIds = req.getParameterValues("listOfferedProducts");
+        String[] offeredProductIds = req.getParameterValues("selectedProducts");
         List<Product> offeredProducts = new ArrayList<>();
         if (offeredProductIds != null && offeredProductIds.length > 0) {
             for (String id : offeredProductIds) {

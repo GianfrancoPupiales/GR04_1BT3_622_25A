@@ -17,7 +17,7 @@ public class Offer implements Serializable {
     @Column(name = "idOffer")
     private int idOffer;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "offer_products",
             joinColumns = @JoinColumn(name = "offer_id"),

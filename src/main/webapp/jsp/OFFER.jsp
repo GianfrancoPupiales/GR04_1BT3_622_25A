@@ -197,23 +197,27 @@
         }
     });
 </script>
+
 <script>
-    document.getElementById("confirmOfferBtn").addEventListener("click", function () {
-        // Obtener todos los checkboxes marcados
-        const selected = document.querySelectorAll('input[name="selectedProducts"]:checked');
-        if (selected.length === 0) {
-            alert("No has seleccionado ningún producto.");
-            return;
-        }
-
-        // Construir array con los IDs
-        const ids = Array.from(selected).map(cb => cb.value);
-        const selectedIds = ids.join(",");
-
-        // Redirigir a la ruta deseada con los IDs (como query string)
-        window.location.href = `MakeOfferController?route=confirm&listOfferedProducts=${selectedIds}`;
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("confirmOfferBtn").addEventListener("click", function () {
+            const selected = document.querySelectorAll('input[name="selectedProducts"]:checked');
+            if (selected.length === 0) {
+                alert("No has seleccionado ningún producto.");
+                return;
+            }
+                console.log("Select: " + selected.length)
+                const ids = (Array.from(selected).map(cb => cb.value));
+                console.log("captured id: " + ids)
+                const selectedIds = ids.join(",");
+                console.log(`MakeOfferController?route=confirm&listOfferedProducts=` +selectedIds);
+                //console.log("final selected ids: " + selectedIds)
+                // Redirige solo si hay productos
+                window.location.href = `MakeOfferController?route=confirm&listOfferedProducts=` + selectedIds;
+        });
     });
 </script>
+
 
 </body>
 </html>

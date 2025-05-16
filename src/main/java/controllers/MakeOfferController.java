@@ -109,6 +109,7 @@ public class MakeOfferController extends HttpServlet {
                     Product offeredProduct = productDAO.findById(id);
                     if (offeredProduct != null) {
                         offeredProducts.add(offeredProduct);
+                        System.out.println("Added one product: " + offeredProduct);
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("ID inválido: " + idStr); // Logging para depuración
@@ -117,6 +118,7 @@ public class MakeOfferController extends HttpServlet {
 
             //Asignar a la lista de productos de la oferta
             offer.setOfferedProducts(offeredProducts);
+            System.out.println("Final list: " + offeredProducts);
         }
 
         OfferDAO offerDAO = new OfferDAO();

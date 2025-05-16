@@ -87,15 +87,37 @@ public class MakeOfferController extends HttpServlet {
         String productToOfferId = (String) req.getSession().getAttribute("idProductToOffer");
         Offer offer = parseOfferFromRequest(req);
 
+        //Agregar el producto principal
         ProductDAO productDAO = new ProductDAO();
         Product productToOffer = productDAO.findById(Integer.parseInt(productToOfferId));
-
         offer.setProductToOffer(productToOffer);
 
+        //Agregar al Usuario
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-
         offer.setOfferedByUser(user);
+
+        //Agregar los productos ofrecidos (+1-n)
+        String listOfferedProductsParam = req.getParameter("listOfferedProducts");
+        if (listOfferedProductsParam != null && !listOfferedProductsParam.trim().isEmpty()) {
+            String[] idStrings = listOfferedProductsParam.split(",");
+            List<Product> offeredProducts = new ArrayList<>();
+
+            for (String idStr : idStrings) {
+                try {
+                    int id = Integer.parseInt(idStr.trim());
+                    Product offeredProduct = productDAO.findById(id);
+                    if (offeredProduct != null) {
+                        offeredProducts.add(offeredProduct);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("ID inválido: " + idStr); // Logging para depuración
+                }
+            }
+
+            //Asignar a la lista de productos de la oferta
+            offer.setOfferedProducts(offeredProducts);
+        }
 
         OfferDAO offerDAO = new OfferDAO();
         if (offerDAO.create(offer)) {
@@ -145,12 +167,15 @@ public class MakeOfferController extends HttpServlet {
                         Product product = new ProductDAO().findById(Integer.parseInt(id));
                         if (product != null) {
                             offeredProducts.add(product);  // Añadir el producto si es válido
+                            System.out.println(product);
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Error al convertir el ID del producto: " + e.getMessage());
                     }
                 }
             }
+        } else{
+            System.out.println("Empty list of products");
         }
 
         // Validación para el producto principal a ofrecer

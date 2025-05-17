@@ -6,7 +6,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ARG URL_REPO=https://github.com/GianfrancoPupiales/GR04_1BT3_622_25A.git
-ARG BRANCH=docker
+ARG BRANCH=master
 
 RUN git clone -b ${BRANCH} ${URL_REPO} /app && \
     ls -la /app

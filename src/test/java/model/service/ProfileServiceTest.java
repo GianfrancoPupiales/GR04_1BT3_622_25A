@@ -117,5 +117,54 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
         assertTrue(service.validateProfile(profile));
     }
 
+    /*
+Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se pueda recuperar correctamente.
+ */
+    @Test
+    void given_profile_saved_in_memory_when_getProfile_then_return_profile() {
+        InMemoryProfileDAO dao = new InMemoryProfileDAO();
+        ProfileService service = new ProfileService(dao);
+
+        Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante");
+        dao.save(profile);
+
+        Profile result = service.getProfileByUserId(1);
+        assertNotNull(result);
+        assertEquals("Carlos", result.getFirstName());
+    }
+
+    /*
+    Prueba unitaria: comprueba que al actualizar un perfil, los cambios se reflejan correctamente.
+     */
+    @Test
+    void given_profile_saved_in_memory_when_updateProfile_then_profile_is_updated() {
+        InMemoryProfileDAO dao = new InMemoryProfileDAO();
+        ProfileService service = new ProfileService(dao);
+
+        Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante");
+        dao.save(profile);
+
+        profile.setFirstName("Carla");
+        boolean updated = service.updateProfile(profile);
+
+        assertTrue(updated);
+        Profile updatedProfile = service.getProfileByUserId(1);
+        assertEquals("Carla", updatedProfile.getFirstName());
+    }
+
+
+    // ============== HISTORIA DE USUARIO 10: CONSULTAR OTRO PERFIL ==============
+     /*
+     Prueba unitaria: DADO que tengo un producto publicado por otro estudiante,
+     CUANDO selecciono su nombre, ENTONCES el sistema debe mostrar el perfil del dueño del producto.
+      */
+
+    @Test
+    void given_product_when_select_owner_then_display_owner_profile() {
+        Product product = new Product(1,"Book", "Electronics", "Used", new User());
+
+        assertEquals(2, product.getOwner().getId());
+    }
+
 
 }

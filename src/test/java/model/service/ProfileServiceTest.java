@@ -202,4 +202,30 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         assertEquals("Ramirez", result.getLastName());
     }
 
+    /*
+        Prueba Unitaria: DADO que un usuario tiene productos publicados,
+        CUANDO se consulta su perfil,
+        ENTONCES deben recuperarse también sus productos.
+     */
+
+    @Test
+    void given_user_with_products_when_profile_requested_then_return_profile_and_products() {
+        InMemoryProfileDAO inMemoryDAO = new InMemoryProfileDAO();
+        ProfileService service = new ProfileService(inMemoryDAO);
+
+        Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
+        User user = new User(2, "123456879", "123456");
+
+        Product product1 = new Product(1, "Notebook", "Electronics", "New", user);
+        Product product2 = new Product(2, "Backpack", "Accessories", "Used", user);
+
+        inMemoryDAO.save(profile);
+        inMemoryDAO.saveProductsForUser(2, List.of(product1, product2)); // correcto
+
+        Profile fullProfile = service.getFullProfileWithProducts(2);
+
+        assertNotNull(fullProfile);
+        assertEquals("Ana", fullProfile.getFirstName());
+        assertEquals(2, fullProfile.getProducts().size());
+    }
 }

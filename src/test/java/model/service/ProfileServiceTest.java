@@ -59,6 +59,21 @@ class ProfileServiceTest {
         assertEquals("Gomez", result.getLastName());
     }
 
+    // ========= HISTORIA DE USUARIO 09: EDITAR PERFIL ==================
+
+    /*
+    Test con mockito: Verifica que si el perfil es válido, se llama al método de actualización del DAO.
+     */
+    @Test
+    void given_valid_profile_update_when_saveProfile_then_persists_data() {
+        Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción");
+
+        when(mockDAO.update(profileToUpdate)).thenReturn(true);
+
+        boolean result = service.updateProfile(profileToUpdate);
+
+        assertTrue(result);
+    }
 
 
 

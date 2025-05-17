@@ -154,16 +154,31 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
 
 
     // ============== HISTORIA DE USUARIO 10: CONSULTAR OTRO PERFIL ==============
-     /*
-     Prueba unitaria: DADO que tengo un producto publicado por otro estudiante,
-     CUANDO selecciono su nombre, ENTONCES el sistema debe mostrar el perfil del dueño del producto.
+    /*
+    Prueba unitaria: DADO que tengo un producto publicado por otro estudiante,
+    CUANDO selecciono su nombre, ENTONCES el sistema debe mostrar el perfil del dueño del producto.
       */
 
     @Test
     void given_product_when_select_owner_then_display_owner_profile() {
-        Product product = new Product(1,"Book", "Electronics", "Used", new User());
+        Product product = new Product(1, "Book", "Electronics", "Used", new User());
 
         assertEquals(2, product.getOwner().getId());
+    }
+
+    /*
+        Prueba unitaria: DADO que accedí al perfil de otro usuario,
+        CUANDO se carga la vista del perfil,
+        ENTONCES deben estar disponibles su nombre, apellido, foto, descripción y reputación.
+    */
+
+    @Test
+    void given_other_user_profile_when_loaded_then_display_all_profile_data() {
+        Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
+        assertEquals("Ana", profile.getFirstName());
+        assertEquals("Ramirez", profile.getLastName());
+        assertEquals("ana.jpg", profile.getPhoto());
+        assertEquals("User of platform", profile.getDescription());
     }
 
 

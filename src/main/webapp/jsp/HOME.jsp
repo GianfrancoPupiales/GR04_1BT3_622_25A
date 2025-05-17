@@ -47,7 +47,7 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        href="${pageContext.request.contextPath}/FavoriteController?route=listFavorites">
-                        <i class="fas fa-heart"></i> Mis Favoritos
+                        <i class="fas fa-heart"></i> My Favorites
                     </a>
                 </li>
             </ul>
@@ -55,6 +55,14 @@
 
         <!-- Fin: Sección derecha -->
         <div class="d-flex">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ProfileController?route=show">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                </li>
+            </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link text-danger" href="${pageContext.request.contextPath}/LoginController?route=logOut">

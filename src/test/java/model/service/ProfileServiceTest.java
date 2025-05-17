@@ -75,7 +75,47 @@ class ProfileServiceTest {
         assertTrue(result);
     }
 
+    /*
+Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('never')
+ */
+    @Test
+    void given_invalid_profile_update_when_saveProfile_then_fails() {
+        Profile invalidProfile = new Profile(1, "", "Torres", "foto.jpg", "desc");
 
+        boolean result = service.updateProfile(invalidProfile);
+
+        assertFalse(result);
+        verify(mockDAO, never()).update(invalidProfile);
+    }
+
+    /*
+    Prueba parametrizada: valida distintos casos de perfil incompleto, esperando que la validación falle.
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "'', 'Torres', 'foto.jpg'",
+            "'Ana', '', 'foto.jpg'",
+            "'Ana', 'Torres', ''",
+            "' ', 'Apellido', 'foto.jpg'",
+            "'Nombre', ' ', 'foto.jpg'"
+    })
+    void given_incomplete_profile_when_validateProfile_then_return_false(String firstName, String lastName, String photo) {
+        Profile profile = new Profile(1, firstName, lastName, photo, "desc");
+        assertFalse(service.validateProfile(profile));
+    }
+
+    /*
+    Prueba parametrizada: valida perfiles con datos correctos, esperandoque la validación pase.
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "'Ana', 'Torres', 'foto.jpg'",
+            "'Juan', 'Perez', 'img.png'"
+    })
+    void given_valid_profile_when_validateProfile_then_return_true(String firstName, String lastName, String photo) {
+        Profile profile = new Profile(1, firstName, lastName, photo, "desc");
+        assertTrue(service.validateProfile(profile));
+    }
 
 
 }

@@ -181,5 +181,25 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         assertEquals("User of platform", profile.getDescription());
     }
 
+    /*
+        Prueba Unitaria: DADO que estoy en un producto,
+        CUANDO se selecciona el nombre del usuario,
+        ENTONCES el controlador debe llamar al servicio con el ID del dueño del producto.
+    */
+
+    @Test
+    void given_product_owner_when_profile_requested_then_service_returns_expected_profile() {
+        InMemoryProfileDAO inMemoryDAO = new InMemoryProfileDAO();
+        ProfileService service = new ProfileService(inMemoryDAO);
+
+        Profile expectedProfile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
+        inMemoryDAO.save(expectedProfile);
+
+        Profile result = service.getProfileByUserId(2);
+
+        assertNotNull(result);
+        assertEquals("Ana", result.getFirstName());
+        assertEquals("Ramirez", result.getLastName());
+    }
 
 }

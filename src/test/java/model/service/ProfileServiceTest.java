@@ -42,6 +42,25 @@ class ProfileServiceTest {
     }
 
 
+    /*
+     Prueba unitaria: DADO que se creó un perfil, CUANDO se accede a “Mi Perfil”, ENTONCES debe retornar la información del usuario.
+     */
+    @Test
+    void given_created_profile_when_accessing_my_profile_then_return_profile_info() {
+        Profile profile = new Profile(1, "Luis", "Gomez", "photo.jpg", "Engineering student");
+        InMemoryProfileDAO dao = new InMemoryProfileDAO();
+        dao.save(profile);
+        ProfileService service = new ProfileService(dao);
+
+        Profile result = service.getProfileByUserId(1);
+
+        assertNotNull(result);
+        assertEquals("Luis", result.getFirstName());
+        assertEquals("Gomez", result.getLastName());
+    }
+
+
+
 
 
 }

@@ -23,12 +23,14 @@
         <div class="d-flex">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
                         <i class="fas fa-box"></i> My Products
                     </a>
                 </li>
@@ -46,7 +48,7 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        href="${pageContext.request.contextPath}/FavoriteController?route=listFavorites">
-                        <i class="fas fa-heart"></i> Mis Favoritos
+                        <i class="fas fa-heart"></i> My Favorites
                     </a>
                 </li>
             </ul>
@@ -56,7 +58,16 @@
         <div class="d-flex">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="${pageContext.request.contextPath}/LoginController?route=logOut">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ProfileController?route=show">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-danger"
+                       href="${pageContext.request.contextPath}/LoginController?route=logOut">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </li>

@@ -21,13 +21,8 @@ public class ProfileDAO extends GenericDAO<Profile> {
             return em.createQuery(jpql, Profile.class)
                     .setParameter("idUser", idUser)
                     .getSingleResult();
-        } catch (NoResultException e) {
-            System.out.println(e.getMessage());
-            return null;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("An error occurred while trying to find the user by DNI");
-            return null;
+            return handleException(e, "Error fetching profile by user ID", null);
         }
     }
 
@@ -38,8 +33,7 @@ public class ProfileDAO extends GenericDAO<Profile> {
                     .setParameter("userId", userId)
                     .getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
+            return handleException(e, "Error fetching products by user ID", Collections.emptyList());
         }
     }
 
@@ -53,9 +47,19 @@ public class ProfileDAO extends GenericDAO<Profile> {
             System.out.println(e.getMessage());
             return null;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("An error occurred while trying to find the user by ID");
-            return null;
+            return handleException(e, "Error fetching user by ID", null);
         }
     }
+
+    private <T> T handleException(Exception e, String contextMessage, T defaultValue) {
+        if (e instanceof NoResultException) {
+            System.out.println("NoResultException: " + e.getMessage());
+            System.out.println(contextMessage + " (no result found)");
+        } else {
+            System.out.println("Exception: " + e.getMessage());
+            System.out.println(contextMessage);
+        }
+        return defaultValue;
+    }
+
 }

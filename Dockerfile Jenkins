@@ -1,0 +1,25 @@
+# Imagen base de Jenkins con JDK 17
+FROM jenkins/jenkins:alpine3.21-jdk21
+
+# Cambiar a usuario root para hacer instalaciones
+USER root
+
+# Copiar configuración ligera
+COPY --chown=jenkins:jenkins backup_jenkins_home/ /var/jenkins_home/
+
+# Volver al usuario jenkins para ejecutar Jenkins
+USER jenkins
+
+
+
+
+
+
+
+
+
+
+
+
+
+

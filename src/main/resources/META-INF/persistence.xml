@@ -9,6 +9,7 @@
 		<class>model.entities.Offer</class>
 		<class>model.entities.Reputation</class>
 		<class>model.entities.Favorite</class>
+		<class>model.entities.Profile</class>
 
 		<properties>
 			<!-- Driver de H2 -->

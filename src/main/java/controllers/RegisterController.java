@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.entities.User;
 import model.service.UserService;
 
@@ -54,9 +55,12 @@ public class RegisterController extends HttpServlet {
             UserService userService = new UserService();
 
             if (userService.createUser(user)) {
+                User storedUser = userService.findById(user.getUserId()); // recuperarlo ya con ID asignado
+                HttpSession session = req.getSession();
+                session.setAttribute("user", storedUser);
                 req.setAttribute("messageType", "info");
                 req.setAttribute("message", "User registered successfully! You can now log in.");
-                req.getRequestDispatcher("jsp/LOGIN.jsp").forward(req, resp);
+                req.getRequestDispatcher("jsp/PROFILE_REGISTER.jsp").forward(req, resp);
             } else {
                 req.setAttribute("messageType", "error");
                 req.setAttribute("message", "Failed to register the user. Please try again.");

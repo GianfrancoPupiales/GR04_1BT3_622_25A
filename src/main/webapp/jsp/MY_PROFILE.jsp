@@ -151,7 +151,7 @@
 
             <form action="ProfileController?route=edit" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <input type="hidden" name="id" value="${profile.id}"/>
+                    <input type="hidden" name="id" value="${profile.idProfile}"/>
                     <div class="mb-3">
                         <label for="firstName" class="form-label fw-bold">Nombre</label>
                         <input type="text" class="form-control" id="firstName" name="firstName"

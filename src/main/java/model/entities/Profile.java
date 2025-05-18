@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 public class Profile implements Serializable {
@@ -14,8 +12,8 @@ public class Profile implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "idProfile")
+    private int idProfile;
 
     @Column(name = "firstName")
     private String firstName;
@@ -37,8 +35,8 @@ public class Profile implements Serializable {
 
     }
 
-    public Profile(int id, String firstName, String lastName, String photo, String description, User user) {
-        this.id = id;
+    public Profile(int idProfile, String firstName, String lastName, String photo, String description, User user) {
+        this.idProfile = idProfile;
         this.firstName = firstName;
         this.lastName = lastName;
         this.photo = photo;
@@ -46,40 +44,44 @@ public class Profile implements Serializable {
         this.user = user;
     }
 
-
-    public Profile(int id, String firstName, String lastName, String photo, String description) {
-        this.id = id;
+    public Profile(int idProfile, String firstName, String lastName, String photo, String description) {
+        this.idProfile = idProfile;
         this.firstName = firstName;
         this.lastName = lastName;
         this.photo = photo;
         this.description = description;
     }
 
-    public int getId() {return id;}
+    public int getIdProfile() {
+        return idProfile;
+    }
 
-    public String getFirstName() {return firstName;}
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public String getLastName() {return lastName;}
+    public String getLastName() {
+        return lastName;
+    }
 
-    public String getPhoto() {return photo;}
+    public String getPhoto() {
+        return photo;
+    }
 
-    public String getDescription() {return description;}
+    public String getDescription() {
+        return description;
+    }
 
-    public User getUser() {return user;}
+    public User getUser() {
+        return user;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public void setProducts(List<Product> userProducts) {
-    }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Collection<Object> getProducts() {
-        return null;
     }
 
     public void setUser(User user) {
@@ -94,7 +96,7 @@ public class Profile implements Serializable {
         this.description = description;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdProfile(int id) {
+        this.idProfile = id;
     }
 }

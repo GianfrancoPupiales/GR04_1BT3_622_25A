@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,9 +66,11 @@ class ProfileServiceTest {
 
     @Test
     void given_valid_profile_update_when_saveProfile_then_persists_data() {
-        Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción");
         User user = new User();
         user.setIdUser(1);
+        Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción");
+
+
         profileToUpdate.setUser(user);
 
         when(mockDAO.update(profileToUpdate)).thenReturn(true);
@@ -166,29 +167,33 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         assertEquals("Carla", updatedProfile.getFirstName());
     }
 
-     /*
-
     // ============== HISTORIA DE USUARIO 10: CONSULTAR OTRO PERFIL ==============
-    *//*
+    /*
     Prueba unitaria: DADO que tengo un producto publicado por otro estudiante,
-    CUANDO selecciono su nombre, ENTONCES el sistema debe mostrar el perfil del dueño del producto.
-      *//*
-
-
-    *//*
+    CUANDO selecciono su nombre,
+    ENTONCES el sistema debe mostrar el perfil del dueño del producto.
+    */
     @Test
-    void given_product_when_select_owner_then_display_owner_profile() {
-        Product product = new Product(1, "Book", "Electronics", "Used", new User());
+    void givenProduct_whenSelectingOwner_thenSystemDisplaysOwnerProfile() {
+        // Arrange: crear usuario y producto
+        User owner = new User(1, "123456789", "password");
+        Product product = new Product(1, "Book", "Books", "Used", owner);
 
-        assertEquals(2, product.getOwner().getId());
+        // Act: simular que el usuario selecciona el nombre del dueño del producto
+        User selectedProfile = product.getUser();  // o una llamada a un método que simule la acción en la UI
+
+        // Assert: verificar que el perfil mostrado corresponde al dueño del producto
+        assertNotNull(selectedProfile);
+        assertEquals(1, selectedProfile.getUserId());
     }
+
 
     /*
         Prueba unitaria: DADO que accedí al perfil de otro usuario,
         CUANDO se carga la vista del perfil,
         ENTONCES deben estar disponibles su nombre, apellido, foto, descripción y reputación.
-    *//*
-*//*
+     */
+
     @Test
     void given_other_user_profile_when_loaded_then_display_all_profile_data() {
         Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
@@ -198,14 +203,12 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         assertEquals("User of platform", profile.getDescription());
     }
 
-
- *//*
-    *//*
+    /*
         Prueba Unitaria: DADO que estoy en un producto,
         CUANDO se selecciona el nombre del usuario,
         ENTONCES el controlador debe llamar al servicio con el ID del dueño del producto.
-    *//*
-*//*
+     */
+
     @Test
     void given_product_owner_when_profile_requested_then_service_returns_expected_profile() {
         InMemoryProfileDAO inMemoryDAO = new InMemoryProfileDAO();
@@ -220,13 +223,12 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         assertEquals("Ana", result.getFirstName());
         assertEquals("Ramirez", result.getLastName());
     }
-*//*
-    *//*
+
+    /*
         Prueba Unitaria: DADO que un usuario tiene productos publicados,
         CUANDO se consulta su perfil,
         ENTONCES deben recuperarse también sus productos.
-     *//*
-
+     */
     @Test
     void given_user_with_products_when_profile_requested_then_return_profile_and_products() {
         InMemoryProfileDAO inMemoryDAO = new InMemoryProfileDAO();
@@ -238,14 +240,15 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         Product product1 = new Product(1, "Notebook", "Electronics", "New", user);
         Product product2 = new Product(2, "Backpack", "Accessories", "Used", user);
 
+        inMemoryDAO.saveUser(user);
         inMemoryDAO.save(profile);
         inMemoryDAO.saveProductsForUser(2, List.of(product1, product2));
 
         Profile fullProfile = service.getFullProfileWithProducts(2);
 
         assertNotNull(fullProfile);
+        assertNotNull(fullProfile.getUser());
         assertEquals("Ana", fullProfile.getFirstName());
-        assertEquals(2, fullProfile.getProducts().size());
-    }*/
-
+        assertEquals(2, fullProfile.getUser().getProducts().size());
+    }
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.entities.Reputation;
 import model.entities.User;
 import model.service.UserService;
 
@@ -52,10 +53,13 @@ public class RegisterController extends HttpServlet {
     private void save(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             User user = parseUserFromRequest(req);
+            Reputation reputation = new Reputation(user);
+            user.setReputation(reputation);
+
             UserService userService = new UserService();
 
             if (userService.createUser(user)) {
-                User storedUser = userService.findById(user.getUserId()); // recuperarlo ya con ID asignado
+                User storedUser = userService.findUserByDni(user.getDni());
                 HttpSession session = req.getSession();
                 session.setAttribute("user", storedUser);
                 req.setAttribute("messageType", "info");

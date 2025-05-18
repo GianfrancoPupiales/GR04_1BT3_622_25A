@@ -15,7 +15,7 @@ import model.service.ProfileService;
 import java.io.IOException;
 
 @WebServlet("/ProfileController")
-@MultipartConfig //AGREGAR JONATHAN
+@MultipartConfig
 public class ProfileController extends HttpServlet {
 
     @Serial
@@ -56,8 +56,40 @@ public class ProfileController extends HttpServlet {
             case "edit":
                 this.edit(req, resp);
                 break;
+            case "public":
+                this.showPublicProfile(req, resp);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
+        }
+    }
+
+    private void showPublicProfile(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            String idParam = req.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                throw new IllegalArgumentException("El parámetro 'id' es obligatorio.");
+            }
+
+            int userId = Integer.parseInt(idParam);
+            ProfileService profileService = new ProfileService();
+            Profile profile = profileService.getFullProfileWithProducts(userId);
+
+            if (profile == null) {
+                req.setAttribute("messageType", "error");
+                req.setAttribute("message", "El perfil no existe.");
+                req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
+                return;
+            }
+
+            req.setAttribute("profile", profile);
+            req.setAttribute("from", req.getParameter("from"));
+            req.getRequestDispatcher("jsp/PROFILE.jsp").forward(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("messageType", "error");
+            req.setAttribute("message", "Ocurrió un error al cargar el perfil.");
+            req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
         }
     }
 
@@ -113,7 +145,7 @@ public class ProfileController extends HttpServlet {
         ProfileService profileService = new ProfileService();
         Profile profile = profileService.getProfileByUserId(user.getUserId());
 
-        if (profile == null || profile.getId() == 0) {
+        if (profile == null || profile.getIdProfile() == 0) {
             throw new IllegalArgumentException("The profile does not exist or has an invalid ID.");
         }
 

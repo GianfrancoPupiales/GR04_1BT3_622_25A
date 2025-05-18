@@ -4,26 +4,30 @@ import jakarta.servlet.ServletException;
 
 import java.io.Serial;
 
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import model.entities.Product;
+import jakarta.servlet.http.*;
 import model.entities.Profile;
 import model.entities.User;
-import model.service.ProductService;
+import model.service.FileStorageService;
 import model.service.ProfileService;
-import model.service.UserService;
 
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/ProfileController")
+@MultipartConfig //AGREGAR JONATHAN
 public class ProfileController extends HttpServlet {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    //AGREGAR
+    private static final String SUCCESS = "success";
+    private static final String ERROR = "error";
+    private static final String PROFILE_UPDATED = "Profile updated successfully.";
+    private static final String PROFILE_UPDATE_ERROR = "Error updating the profile.";
+    private static final String UNEXPECTED_ERROR = "An unexpected error occurred.";
+    private static final String REQUIRED_FIELDS_ERROR = "All required fields must be filled out.";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -45,6 +49,13 @@ public class ProfileController extends HttpServlet {
                 break;
             case "save":
                 this.save(req, resp);
+                break;
+            //AGREGAR JONATHAN
+            case "editForm":
+                this.showEditForm(req, resp);
+                break;
+            case "edit":
+                this.edit(req, resp);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
@@ -98,4 +109,89 @@ public class ProfileController extends HttpServlet {
     }
 
 
+    // AGREGAR JONATHAN
+    private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        User user = getUser(req);
+        ProfileService profileService = new ProfileService();
+        Profile profile = profileService.getProfileByUserId(user.getUserId());
+
+        if (profile == null || profile.getId() == 0) {
+            throw new IllegalArgumentException("The profile does not exist or has an invalid ID.");
+        }
+
+        req.setAttribute("profile", profile);
+        req.getRequestDispatcher("jsp/MY_PROFILE.jsp?route=editForm").forward(req, resp);
+    }
+
+
+    private void edit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ProfileService profileService = new ProfileService();
+        try {
+            String idParam = req.getParameter("id");
+            validateId(idParam);
+
+            int id = Integer.parseInt(req.getParameter("id"));
+            String firstName = req.getParameter("firstName");
+            String lastName = req.getParameter("lastName");
+            String description = req.getParameter("description");
+
+            User user = getUser(req);
+
+            if (isRequiredFieldEmpty(firstName, lastName)) {
+                handleValidationError(req, resp, profileService, user);
+                return;
+            }
+
+            Part photoPart = req.getPart("photoFile");
+            String photo = saveProfilePhoto(photoPart);
+
+            Profile profileUpdate = new Profile(id, firstName, lastName, photo, description, user);
+            boolean success = profileService.updateProfile(profileUpdate);
+
+            handleUpdateResult(req, profileService, user, success);
+            req.getRequestDispatcher("jsp/MY_PROFILE.jsp").forward(req, resp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("messageType", "error");
+            req.setAttribute("message", "An unexpected error occurred.");
+            req.getRequestDispatcher("jsp/MY_PROFILE.jsp").forward(req, resp);
+        }
+    }
+
+    private void handleValidationError(HttpServletRequest req, HttpServletResponse resp, ProfileService service, User user)
+            throws ServletException, IOException {
+        req.setAttribute("messageType", ERROR);
+        req.setAttribute("message", REQUIRED_FIELDS_ERROR);
+        req.setAttribute("profile", service.getProfileByUserId(user.getUserId()));
+        req.getRequestDispatcher("jsp/MY_PROFILE.jsp").forward(req, resp);
+    }
+
+    private void handleUpdateResult(HttpServletRequest req, ProfileService service, User user, boolean success) {
+        req.setAttribute("messageType", success ? SUCCESS : ERROR);
+        req.setAttribute("message", success ? PROFILE_UPDATED : PROFILE_UPDATE_ERROR);
+        req.setAttribute("profile", service.getProfileByUserId(user.getUserId()));
+    }
+
+    private static boolean isRequiredFieldEmpty(String firstName, String lastName) {
+        return firstName == null || firstName.trim().isEmpty() ||
+                lastName == null || lastName.trim().isEmpty();
+    }
+
+    private static void validateId(String idParam) {
+        if (idParam == null || idParam.isEmpty()) {
+            throw new IllegalArgumentException("The id parameter is required.");
+        }
+    }
+
+
+    private String saveProfilePhoto(Part photoPart) throws IOException {
+        String photo = null;
+        String uploadPath = getServletContext().getRealPath("/images");
+
+        FileStorageService photoStorageService = new FileStorageService(uploadPath);
+        photo = photoStorageService.savePhoto(photoPart);
+
+        return photo;
+    }
 }

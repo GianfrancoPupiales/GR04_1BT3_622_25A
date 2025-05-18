@@ -46,6 +46,15 @@ public class Profile implements Serializable {
         this.user = user;
     }
 
+
+    public Profile(int id, String firstName, String lastName, String photo, String description) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.photo = photo;
+        this.description = description;
+    }
+
     public int getId() {return id;}
 
     public String getFirstName() {return firstName;}
@@ -58,14 +67,30 @@ public class Profile implements Serializable {
 
     public User getUser() {return user;}
 
-    public String setFirstName(String carla) {
-        return "void";
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public void setProducts(List<Product> userProducts) {
     }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public Collection<Object> getProducts() {
         return null;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -61,11 +61,10 @@ class ProfileServiceTest {
 
 /*    // ========= HISTORIA DE USUARIO 09: EDITAR PERFIL ==================
 
-    *//*
+    /*
     Test con mockito: Verifica que si el perfil es válido, se llama al método de actualización del DAO.
-     *//*
+     */
 
-    *//*
     @Test
     void given_valid_profile_update_when_saveProfile_then_persists_data() {
         Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción");
@@ -76,12 +75,11 @@ class ProfileServiceTest {
 
         assertTrue(result);
     }
-    *//*
 
-    *//*
+
+    /*
 Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('never')
- *//*
-    *//*
+    */
     @Test
     void given_invalid_profile_update_when_saveProfile_then_fails() {
         Profile invalidProfile = new Profile(1, "", "Torres", "foto.jpg", "desc");
@@ -91,11 +89,11 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
         assertFalse(result);
         verify(mockDAO, never()).update(invalidProfile);
     }
-*//*
-    *//*
+
+    /*
     Prueba parametrizada: valida distintos casos de perfil incompleto, esperando que la validación falle.
-     *//*
-    *//*
+     */
+
     @ParameterizedTest
     @CsvSource({
             "'', 'Torres', 'foto.jpg'",
@@ -108,11 +106,10 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
         Profile profile = new Profile(1, firstName, lastName, photo, "desc");
         assertFalse(service.validateProfile(profile));
     }
-*//*
-    *//*
+
+    /*
     Prueba parametrizada: valida perfiles con datos correctos, esperandoque la validación pase.
-     *//*
-    *//*
+    */
     @ParameterizedTest
     @CsvSource({
             "'Ana', 'Torres', 'foto.jpg'",
@@ -122,12 +119,12 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
         Profile profile = new Profile(1, firstName, lastName, photo, "desc");
         assertTrue(service.validateProfile(profile));
     }
-*//*
 
-    *//*
+
+    /*
 Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se pueda recuperar correctamente.
- *//*
-    *//*
+ */
+
     @Test
     void given_profile_saved_in_memory_when_getProfile_then_return_profile() {
         InMemoryProfileDAO dao = new InMemoryProfileDAO();
@@ -141,18 +138,21 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         assertEquals("Carlos", result.getFirstName());
     }
 
-     *//*
 
-    *//*
+
+    /*
     Prueba unitaria: comprueba que al actualizar un perfil, los cambios se reflejan correctamente.
-     *//*
-    *//*
+     */
+
     @Test
     void given_profile_saved_in_memory_when_updateProfile_then_profile_is_updated() {
         InMemoryProfileDAO dao = new InMemoryProfileDAO();
         ProfileService service = new ProfileService(dao);
+        User user = new User();
 
         Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante");
+        user.setIdUser(1);
+        profile.setUser(user);
         dao.save(profile);
 
         profile.setFirstName("Carla");
@@ -160,10 +160,11 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
 
         assertTrue(updated);
         Profile updatedProfile = service.getProfileByUserId(1);
+
         assertEquals("Carla", updatedProfile.getFirstName());
     }
 
-     *//*
+     /*
 
     // ============== HISTORIA DE USUARIO 10: CONSULTAR OTRO PERFIL ==============
     *//*
@@ -236,7 +237,7 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         Product product2 = new Product(2, "Backpack", "Accessories", "Used", user);
 
         inMemoryDAO.save(profile);
-        inMemoryDAO.saveProductsForUser(2, List.of(product1, product2)); // correcto
+        inMemoryDAO.saveProductsForUser(2, List.of(product1, product2));
 
         Profile fullProfile = service.getFullProfileWithProducts(2);
 

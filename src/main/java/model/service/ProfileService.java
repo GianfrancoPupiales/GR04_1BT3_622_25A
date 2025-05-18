@@ -26,14 +26,18 @@ public class ProfileService {
         if (!validateProfile(profile)) {
             return false;
         }
+        Profile existing = profileDAO.findProfileByUserId(profile.getUser().getUserId());
+        if (existing != null && profile.getPhoto() == null) {
+            profile.setPhoto(existing.getPhoto());
+        }
+
         return profileDAO.update(profile);
     }
 
     public boolean validateProfile(Profile profile) {
         return profile != null
                 && profile.getFirstName() != null && !profile.getFirstName().isBlank()
-                && profile.getLastName() != null && !profile.getLastName().isBlank()
-                && profile.getPhoto() != null && !profile.getPhoto().isBlank();
+                && profile.getLastName() != null && !profile.getLastName().isBlank();
     }
 
     /*

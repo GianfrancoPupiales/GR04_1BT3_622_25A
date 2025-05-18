@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class InMemoryProfileDAO extends ProfileDAO {
 
-    private final Map<Integer, Profile> store = new HashMap<>();
+    public final Map<Integer, Profile> store = new HashMap<>();
     private final Map<Integer, List<Product>> productsStore = new HashMap<>();
 
     @Override
@@ -20,7 +20,7 @@ public class InMemoryProfileDAO extends ProfileDAO {
     public void save(Profile profile) {
         store.put(profile.getId(), profile);
     }
-/*
+
     @Override
     public boolean update(Profile profile) {
         if (!store.containsKey(profile.getId())) return false;
@@ -29,10 +29,7 @@ public class InMemoryProfileDAO extends ProfileDAO {
     }
 
 
-    @Override
-    public List<Product> findProductsByUserId(int userId) {
-        return productsStore.getOrDefault(userId, List.of());
-    }
+/*
 
     @Override
     public void saveProductForUser(int i, Product product1) {

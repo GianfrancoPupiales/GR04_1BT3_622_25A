@@ -3,6 +3,7 @@ package model.service;
 import model.dao.ProfileDAO;
 import model.entities.Product;
 import model.entities.Profile;
+import model.entities.User;
 
 import java.util.List;
 
@@ -40,22 +41,31 @@ public class ProfileService {
                 && profile.getLastName() != null && !profile.getLastName().isBlank();
     }
 
-    /*
-    public Profile getFullProfileWithProducts(int userId) {
-        Profile profile = profileDAO.findByUserId(userId);
-        if (profile != null) {
-            List<Product> userProducts = profileDAO.findProductsByUserId(userId);
-            profile.setProducts(userProducts);
-        }
-        return profile;
-    }
-    */
-
     public boolean createProfile(Profile profile) {
         return profileDAO.create(profile);
     }
 
-    public Profile getFullProfileWithProducts(int i) {
-        return null;
+    public Profile getFullProfileWithProducts(int userId) {
+        Profile profile = profileDAO.findProfileByUserId(userId);
+        if (profile == null) {
+            return null;
+        }
+
+        User user = profileDAO.findUserById(userId);
+        if (user == null) {
+            profile.setUser(null);
+            return profile;
+        }
+
+        List<Product> products = profileDAO.findProductsByUserId(userId);
+        if (products != null) {
+            for (Product product : products) {
+                product.setUser(user);
+            }
+            user.setProducts(products);
+        }
+
+        profile.setUser(user);
+        return profile;
     }
 }

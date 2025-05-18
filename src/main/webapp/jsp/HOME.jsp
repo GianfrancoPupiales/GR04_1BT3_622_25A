@@ -98,6 +98,20 @@
                         <div class="card border-0 rounded-3">
                             <div class="card-body p-4">
                                 <a class="card-title text-dark fw-bold" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">${product.title}</a>
+                                <c:choose>
+                                    <c:when test="${not empty product.user.profile}">
+                                        <p class="card-text text-secondary small mb-4">
+                                            <i class="fa-solid fa-user me-2"></i>
+                                            <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${product.user.idUser}&from=home" class="text-decoration-none">
+                                                    ${product.user.profile.firstName} ${product.user.profile.lastName}
+                                            </a>
+                                        </p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i> Unknown user</p>
+                                    </c:otherwise>
+                                </c:choose>
+
                                 <p class="card-text text-secondary small mb-4">
                                     <i class="fa-solid fa-align-left me-2"></i>${product.description}
                                 </p>

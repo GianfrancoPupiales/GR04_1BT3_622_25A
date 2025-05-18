@@ -50,7 +50,6 @@ public class ProfileController extends HttpServlet {
             case "save":
                 this.save(req, resp);
                 break;
-            //AGREGAR JONATHAN
             case "editForm":
                 this.showEditForm(req, resp);
                 break;
@@ -105,11 +104,10 @@ public class ProfileController extends HttpServlet {
         String firstName = req.getParameter("firstName");
         String lastName = req.getParameter("lastName");
         String description = req.getParameter("description");
-        return new Profile(0, firstName, lastName, "photo", description, getUser(req));
+        return new Profile(0, firstName, lastName, null, description, getUser(req));
     }
 
 
-    // AGREGAR JONATHAN
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = getUser(req);
         ProfileService profileService = new ProfileService();
@@ -146,6 +144,7 @@ public class ProfileController extends HttpServlet {
             String photo = saveProfilePhoto(photoPart);
 
             Profile profileUpdate = new Profile(id, firstName, lastName, photo, description, user);
+            System.out.println("Profile update: " + profileUpdate.getPhoto());
             boolean success = profileService.updateProfile(profileUpdate);
 
             handleUpdateResult(req, profileService, user, success);

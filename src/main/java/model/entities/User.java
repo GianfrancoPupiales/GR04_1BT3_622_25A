@@ -80,4 +80,5 @@ public class User implements Serializable {
     public Reputation getReputation() {return reputation;}
 
     public void setReputation(Reputation reputation) {this.reputation = reputation;}
+
 }

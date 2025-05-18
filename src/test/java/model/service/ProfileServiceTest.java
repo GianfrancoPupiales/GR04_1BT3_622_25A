@@ -68,6 +68,9 @@ class ProfileServiceTest {
     @Test
     void given_valid_profile_update_when_saveProfile_then_persists_data() {
         Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción");
+        User user = new User();
+        user.setIdUser(1);
+        profileToUpdate.setUser(user);
 
         when(mockDAO.update(profileToUpdate)).thenReturn(true);
 
@@ -98,7 +101,6 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
     @CsvSource({
             "'', 'Torres', 'foto.jpg'",
             "'Ana', '', 'foto.jpg'",
-            "'Ana', 'Torres', ''",
             "' ', 'Apellido', 'foto.jpg'",
             "'Nombre', ' ', 'foto.jpg'"
     })

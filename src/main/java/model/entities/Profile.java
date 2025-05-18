@@ -93,4 +93,8 @@ public class Profile implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

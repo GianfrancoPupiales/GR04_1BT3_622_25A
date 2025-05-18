@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -82,19 +83,20 @@
                     <div class="d-flex align-items-center mb-4">
                         <div class="me-4">
                             <c:choose>
-                                <c:when test="${not empty profile.photo}">
+                                <c:when test="${not empty profile.photo and profile.photo ne 'null' and fn:trim(profile.photo) ne ''}">
                                     <img src="${pageContext.request.contextPath}/images/${profile.photo}"
                                          alt="Foto de perfil"
                                          class="rounded-circle"
                                          style="width: 100px; height: 100px; object-fit: cover;">
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center"
-                                         style="width: 100px; height: 100px; font-size: 1.5rem; color: white;">
-                                        <i class="fas fa-user"></i>
-                                    </div>
+                                    <img src="${pageContext.request.contextPath}/images/default-user.png"
+                                         alt="Imagen por defecto"
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover;">
                                 </c:otherwise>
                             </c:choose>
+
                         </div>
 
                         <div>

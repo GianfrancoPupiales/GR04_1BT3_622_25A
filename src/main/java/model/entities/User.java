@@ -22,6 +22,9 @@ public class User implements Serializable {
     @Column(name = "password")
     private String password;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Reputation reputation;
+
     public User() {
     }
 
@@ -73,4 +76,8 @@ public class User implements Serializable {
     public int getIdUser() {
         return idUser;
     }
+
+    public Reputation getReputation() {return reputation;}
+
+    public void setReputation(Reputation reputation) {this.reputation = reputation;}
 }

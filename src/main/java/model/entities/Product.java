@@ -132,4 +132,8 @@ public class Product implements Serializable {
     public int hashCode() {
         return super.hashCode();
     }
+
+    public Profile getOwner() {
+        return null;
+    }
 }

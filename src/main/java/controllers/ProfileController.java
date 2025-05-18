@@ -157,29 +157,22 @@ public class ProfileController extends HttpServlet {
     private void edit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProfileService profileService = new ProfileService();
         try {
-            String idParam = req.getParameter("id");
-            validateId(idParam);
 
-            int id = Integer.parseInt(req.getParameter("id"));
-            String firstName = req.getParameter("firstName");
-            String lastName = req.getParameter("lastName");
-            String description = req.getParameter("description");
+            Profile validatedData = extractAndValidate(req, resp, profileService);
+            if(validatedData == null) return;
 
-            User user = getUser(req);
-
-            if (isRequiredFieldEmpty(firstName, lastName)) {
-                handleValidationError(req, resp, profileService, user);
-                return;
-            }
-
-            Part photoPart = req.getPart("photoFile");
-            String photo = saveProfilePhoto(photoPart);
-
-            Profile profileUpdate = new Profile(id, firstName, lastName, photo, description, user);
+            Profile profileUpdate = new Profile(
+                    validatedData.getIdProfile(),
+                    validatedData.getFirstName(),
+                    validatedData.getLastName(),
+                    validatedData.getPhoto(),
+                    validatedData.getDescription(),
+                    validatedData.getUser()
+            );
             System.out.println("Profile update: " + profileUpdate.getPhoto());
             boolean success = profileService.updateProfile(profileUpdate);
 
-            handleUpdateResult(req, profileService, user, success);
+            handleUpdateResult(req, profileService, validatedData.getUser(), success);
             req.getRequestDispatcher("jsp/MY_PROFILE.jsp").forward(req, resp);
 
         } catch (Exception e) {
@@ -188,6 +181,28 @@ public class ProfileController extends HttpServlet {
             req.setAttribute("message", "An unexpected error occurred.");
             req.getRequestDispatcher("jsp/MY_PROFILE.jsp").forward(req, resp);
         }
+    }
+
+    private Profile extractAndValidate(HttpServletRequest req, HttpServletResponse resp, ProfileService profileService) throws ServletException, IOException {
+        //Extraer parámetros
+        String idParam = req.getParameter("id");
+        String firstName = req.getParameter("firstName");
+        String lastName = req.getParameter("lastName");
+        String description = req.getParameter("description");
+        User user = getUser(req);
+        Part photoPart = req.getPart("photoFile");
+        String photo = saveProfilePhoto(photoPart);
+
+        //Validaciones
+        validateId(idParam);
+        int id = Integer.parseInt(req.getParameter("id"));
+
+        if (isRequiredFieldEmpty(firstName, lastName)) {
+            handleValidationError(req, resp, profileService, user);
+            return null;
+        }
+
+        return new Profile(id, firstName, lastName,photo,description, user);
     }
 
     private void handleValidationError(HttpServletRequest req, HttpServletResponse resp, ProfileService service, User user)

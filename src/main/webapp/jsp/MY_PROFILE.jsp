@@ -21,12 +21,14 @@
         <div class="d-flex">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
                         <i class="fas fa-box"></i> My Products
                     </a>
                 </li>
@@ -62,7 +64,8 @@
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="${pageContext.request.contextPath}/LoginController?route=logOut">
+                    <a class="nav-link text-danger"
+                       href="${pageContext.request.contextPath}/LoginController?route=logOut">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </li>
@@ -77,15 +80,26 @@
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body p-5">
                     <div class="d-flex align-items-center mb-4">
-                        <!-- Avatar simulado -->
                         <div class="me-4">
-                            <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center" style="width: 100px; height: 100px; font-size: 1.5rem; color: white;">
-                                <i class="fas fa-user"></i>
-                            </div>
+                            <c:choose>
+                                <c:when test="${not empty profile.photo}">
+                                    <img src="${pageContext.request.contextPath}/images/${profile.photo}"
+                                         alt="Foto de perfil"
+                                         class="rounded-circle"
+                                         style="width: 100px; height: 100px; object-fit: cover;">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center"
+                                         style="width: 100px; height: 100px; font-size: 1.5rem; color: white;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
+
                         <div>
                             <h4 class="mb-0">${profile.firstName} ${profile.lastName}</h4>
-                            <small class="text-muted">Profile photo: <em>${profile.photo}</em></small>
+                            <small class="text-muted">DNI: <em>${profile.user.dni}</em></small>
                         </div>
                     </div>
 
@@ -102,13 +116,111 @@
                         <p><strong>Reputation:</strong> Not available</p>
                     </c:if>
 
+                    <div class="text-end">
+                        <a href="ProfileController?route=editForm" class="btn btn-primary">
+                            Editar Perfil
+                        </a>
+                    </div>
 
                 </div>
             </div>
         </div>
     </div>
+    <c:if test="${not empty message}">
+        <div id="notification"
+             class="alert alert-info text-center position-fixed top-0 start-50 translate-middle-x mt-3"
+             style="z-index: 1055; width: 300px;">
+                ${message}
+        </div>
+    </c:if>
+
 </main>
 
+<!-- Modal de edición de perfil -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editProfileModalLabel">
+                    <i class="fas fa-edit"></i> Editar Perfil
+                </h5>
+                <a href="ProfileController?route=show" class="btn-close" aria-label="Close"></a>
+            </div>
+
+            <form action="ProfileController?route=edit" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="${profile.id}"/>
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label fw-bold">Nombre</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName"
+                               value="${profile.firstName}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label fw-bold">Apellido</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName"
+                               value="${profile.lastName}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Descripción</label>
+                        <textarea class="form-control" id="description" name="description"
+                                  rows="3">${profile.description}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="photoFile" class="form-label fw-bold">Foto de perfil</label>
+                        <input type="file" class="form-control" id="photoFile" name="photoFile" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="ProfileController?route=show" class="btn btn-danger">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Informativo -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center py-4">
+                <!-- Icono opcional -->
+                <i class="fas fa-info-circle fa-2x text-primary mb-2"></i>
+
+                <!-- Mensaje -->
+                <p class="mb-0 fw-bold">${message}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.onload = function () {
+        var route = "${param.route}";
+        if (route === "editForm") {
+            const modal = new bootstrap.Modal(document.getElementById('editProfileModal'), {
+                keyboard: false,
+                backdrop: 'static'
+            });
+            modal.show();
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const notification = document.getElementById("notification");
+        if (notification) {
+            setTimeout(() => {
+                notification.style.transition = "opacity 0.5s";
+                notification.style.opacity = "0";
+                setTimeout(() => notification.remove(), 1000);
+            }, 2000);
+        }
+    });
+</script>
+
 </body>
 </html>

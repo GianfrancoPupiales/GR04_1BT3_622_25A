@@ -29,4 +29,8 @@ public class UserService {
     public User findUserByDni(String dni) {
         return userDAO.findUserByDni(dni);
     }
+
+    public boolean updateUser(User user) {
+        return userDAO.update(user);
+    }
 }

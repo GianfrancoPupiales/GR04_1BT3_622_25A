@@ -11,6 +11,7 @@ import model.entities.Profile;
 import model.entities.User;
 import model.service.FileStorageService;
 import model.service.ProfileService;
+import model.service.UserService;
 
 import java.io.IOException;
 
@@ -112,6 +113,11 @@ public class ProfileController extends HttpServlet {
             ProfileService profileService = new ProfileService();
 
             if (profileService.createProfile(profile)) {
+                User user = getUser(req);
+                user.setProfile(profile);
+                UserService userService = new UserService();
+                userService.updateUser(user);
+
                 req.setAttribute("messageType", "info");
                 req.setAttribute("message", "User registered successfully! You can now log in.");
                 req.getRequestDispatcher("jsp/LOGIN.jsp").forward(req, resp);
@@ -159,7 +165,7 @@ public class ProfileController extends HttpServlet {
         try {
 
             Profile validatedData = extractAndValidate(req, resp, profileService);
-            if(validatedData == null) return;
+            if (validatedData == null) return;
 
             Profile profileUpdate = new Profile(
                     validatedData.getIdProfile(),
@@ -202,7 +208,7 @@ public class ProfileController extends HttpServlet {
             return null;
         }
 
-        return new Profile(id, firstName, lastName,photo,description, user);
+        return new Profile(id, firstName, lastName, photo, description, user);
     }
 
     private void handleValidationError(HttpServletRequest req, HttpServletResponse resp, ProfileService service, User user)

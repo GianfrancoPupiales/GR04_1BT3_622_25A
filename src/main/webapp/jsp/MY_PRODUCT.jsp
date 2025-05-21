@@ -177,7 +177,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="txtDescriptionAdd" class="form-label fw-semibold">Description</label>
-                        <textarea class="form-control" id="txtDescriptionAdd" name="txtDescription" rows="3"></textarea>
+                        <textarea class="form-control" id="txtDescriptionAdd" name="txtDescription" rows="6"
+                                  required></textarea>
+                        <span id="charCountAdd" class="form-text text-muted">0 / 200</span>
                     </div>
                     <div class="mb-3">
                         <label for="txtStateAdd" class="form-label fw-semibold">State</label>
@@ -220,9 +222,9 @@
                     <div class="mb-3">
                         <label for="DescriptionEdit" class="form-label fw-bold">Description
                         </label>
-                        <input id="DescriptionEdit" type="text"
-                               class="form-control" name="txtDescription"
-                               value="${product.description}" placeholder="Enter description" required>
+                        <textarea id="DescriptionEdit" class="form-control" name="txtDescription"
+                                  rows="6" placeholder="Enter description" maxlength="200" required>${product.description}</textarea>
+                        <span id="charCountEdit" class="form-text text-muted">0 / 200</span>
                     </div>
                     <div class="mb-3">
                         <label for="StateEdit" class="form-label fw-bold">State
@@ -357,6 +359,81 @@
         }
     };
 
+    function updateCharCount(idInput, idCounter) {
+        const input = document.getElementById(idInput);
+        const counter = document.getElementById(idCounter);
+        const max = 200;
+
+        input.addEventListener("input", () => {
+            const length = input.value.length;
+            counter.textContent = length + " / " + max;
+
+            if (length > max) {
+                counter.classList.add("text-danger");
+                input.classList.add("is-invalid"); // Bordes rojos opcionales
+            } else {
+                counter.classList.remove("text-danger");
+                input.classList.remove("is-invalid");
+            }
+        });
+
+        input.dispatchEvent(new Event("input"));
+    }
+
+
+    // Validar longitud al enviar formulario (ADD)
+    document.querySelector('form[action*="saveNew"]').addEventListener("submit", function (e) {
+        const description = document.getElementById("txtDescriptionAdd").value;
+        if (description.length > 200) {
+            e.preventDefault(); // Evita el envío
+            displayAlert("The description exceeds the 200 character limit.");
+        }
+    });
+
+    // Validar longitud al enviar formulario (EDIT)
+    document.querySelector('form[action*="saveExisting"]').addEventListener("submit", function (e) {
+        const description = document.getElementById("DescriptionEdit").value;
+        if (description.length > 200) {
+            e.preventDefault(); // Evita el envío
+            displayAlert("La descripción excede el límite de 200 caracteres.");
+        }
+    });
+
+    // Función para mostrar alerta como el mensaje de productos vacíos
+    function displayAlert(mensaje) {
+        // Determinar cuál campo de descripción está visible
+        const descriptionAdd = document.getElementById("txtDescriptionAdd");
+        const descriptionEdit = document.getElementById("DescriptionEdit");
+
+        let targetField = null;
+
+        if (descriptionAdd && descriptionAdd.offsetParent !== null) {
+            targetField = descriptionAdd;
+        } else if (descriptionEdit && descriptionEdit.offsetParent !== null) {
+            targetField = descriptionEdit;
+        }
+
+        if (!targetField) return;
+
+        // Verificar si ya existe un mensaje previo
+        let alertDiv = document.getElementById("charLimitAlert");
+        if (!alertDiv) {
+            alertDiv = document.createElement("div");
+            alertDiv.id = "charLimitAlert";
+            alertDiv.className = "alert alert-danger mt-2";
+            const descriptionGroup = targetField.closest(".mb-3");
+            descriptionGroup.appendChild(alertDiv);
+        }
+
+        alertDiv.textContent = mensaje;
+
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
+
+
     document.addEventListener("DOMContentLoaded", function () {
         const notification = document.getElementById("notification");
         if (notification) {
@@ -367,6 +444,9 @@
                 setTimeout(() => notification.remove(), 1000); // Remueve el elemento después de la transición
             }, 2000);
         }
+        // Contadores de descripción
+        updateCharCount("txtDescriptionAdd", "charCountAdd");
+        updateCharCount("DescriptionEdit", "charCountEdit");
     });
 </script>
 </body>

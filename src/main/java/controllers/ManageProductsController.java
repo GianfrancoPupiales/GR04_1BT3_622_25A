@@ -139,7 +139,7 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private List<Product> getProductsByUserId(HttpServletRequest req) {
-        return getProductService().findProductsByUserId(getUser(req).getUserId());
+        return getProductService().findAvailableProductsByUserId(getUser(req).getUserId());
     }
 
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {

@@ -94,40 +94,52 @@
             <div class="row">
                 <c:forEach var="product" items="${products}">
                     <div class="col-md-6 mb-3">
-                        <div class="card border-0 rounded-3">
-                            <div class="card-body p-4">
-                                <h2 class="card-title text-dark fw-bold">${product.title}</h2>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-align-left me-2"></i>${product.description}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-layer-group me-2"></i>${product.state}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <c:choose>
-                                        <c:when test="${product.isAvailable}">
-                                            <i class="fa-solid fa-check me-2"></i>Available
-                                        </c:when>
-                                        <c:otherwise>
-                                            <i class="fa-solid fa-x me-2"></i> Not available
-                                        </c:otherwise>
-                                    </c:choose>
-                                </p>
+                        <div class="card border-0 rounded-3" style="height: 100%;">
+                            <div class="card-body p-4 d-flex">
+                                <!-- Texto ocupa el espacio restante -->
+                                <div class="flex-grow-1 pe-3">
+                                    <h2 class="card-title text-dark fw-bold">${product.title}</h2>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-align-left me-2"></i>${product.description}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-layer-group me-2"></i>${product.state}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-tags me-2"></i>${product.category}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-3">
+                                        <c:choose>
+                                            <c:when test="${product.isAvailable}">
+                                                <i class="fa-solid fa-check me-2"></i>Available
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="fa-solid fa-x me-2"></i> Not available
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="selectedProducts" value="${product.idProduct}" id="productCheckbox${product.idProduct}">
+                                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${product.idProduct}">
+                                            Offer this one ...
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
+                                <div style="width: 50%; max-width: 250px;">
+                                    <c:if test="${not empty product.photo}">
+                                        <img src="${pageContext.request.contextPath}/images/products/${product.photo}"
+                                             alt="Product Photo"
+                                             class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
+                                    </c:if>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox"
-                               name="selectedProducts" value="${product.idProduct}" id="productCheckbox${product.idProduct}">
-                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${product.idProduct}">
-                            Offer this one ...
-                        </label>
-                    </div>
-
                 </c:forEach>
 
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
@@ -217,14 +229,14 @@
                 alert("No has seleccionado ningún producto.");
                 return;
             }
-                console.log("Select: " + selected.length)
-                const ids = (Array.from(selected).map(cb => cb.value));
-                console.log("captured id: " + ids)
-                const selectedIds = ids.join(",");
-                console.log(`MakeOfferController?route=confirm&listOfferedProducts=` +selectedIds);
-                //console.log("final selected ids: " + selectedIds)
-                // Redirige solo si hay productos
-                window.location.href = `MakeOfferController?route=confirm&listOfferedProducts=` + selectedIds;
+            console.log("Select: " + selected.length)
+            const ids = (Array.from(selected).map(cb => cb.value));
+            console.log("captured id: " + ids)
+            const selectedIds = ids.join(",");
+            console.log(`MakeOfferController?route=confirm&listOfferedProducts=` + selectedIds);
+            //console.log("final selected ids: " + selectedIds)
+            // Redirige solo si hay productos
+            window.location.href = `MakeOfferController?route=confirm&listOfferedProducts=` + selectedIds;
         });
     });
 </script>

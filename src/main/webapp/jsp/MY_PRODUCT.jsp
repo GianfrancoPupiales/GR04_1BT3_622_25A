@@ -116,6 +116,9 @@
                                     <i class="fa-solid fa-layer-group me-2"></i>${product.state}
                                 </p>
                                 <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-tags me-2"></i>${product.category}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
                                     <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
                                 </p>
                                 <p class="card-text text-secondary small mb-4">
@@ -185,8 +188,23 @@
                         <label for="txtStateAdd" class="form-label fw-semibold">State</label>
                         <input type="text" class="form-control" id="txtStateAdd" name="txtState" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label fw-semibold">Category</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Select a category</option>
+                            <option value="Books">Books</option>
+                            <option value="Stationery">Stationery</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Services">Services</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                 </div>
-
                 <div class="modal-footer justify-content-center">
                     <a href="ManageProductsController?route=list"
                        class="btn btn-danger"> Cancel </a>
@@ -223,7 +241,8 @@
                         <label for="DescriptionEdit" class="form-label fw-bold">Description
                         </label>
                         <textarea id="DescriptionEdit" class="form-control" name="txtDescription"
-                                  rows="6" placeholder="Enter description" maxlength="200" required>${product.description}</textarea>
+                                  rows="6" placeholder="Enter description" maxlength="200"
+                                  required>${product.description}</textarea>
                         <span id="charCountEdit" class="form-text text-muted">0 / 200</span>
                     </div>
                     <div class="mb-3">
@@ -231,6 +250,22 @@
                         </label> <input id="StateEdit" type="text"
                                         class="form-control" name="txtState"
                                         value="${product.state}" placeholder="Enter state" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label fw-semibold">Category</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Select a category</option>
+                            <option value="Books" <c:if test="${product.category == 'Books'}">selected</c:if>>Books</option>
+                            <option value="Stationery" <c:if test="${product.category == 'Stationery'}">selected</c:if>>Stationery</option>
+                            <option value="Electronics" <c:if test="${product.category == 'Electronics'}">selected</c:if>>Electronics</option>
+                            <option value="Furniture" <c:if test="${product.category == 'Furniture'}">selected</c:if>>Furniture</option>
+                            <option value="Clothing" <c:if test="${product.category == 'Clothing'}">selected</c:if>>Clothing</option>
+                            <option value="Services" <c:if test="${product.category == 'Services'}">selected</c:if>>Services</option>
+                            <option value="Entertainment" <c:if test="${product.category == 'Entertainment'}">selected</c:if>>Entertainment</option>
+                            <option value="Food" <c:if test="${product.category == 'Food'}">selected</c:if>>Food</option>
+                            <option value="Transport" <c:if test="${product.category == 'Transport'}">selected</c:if>>Transport</option>
+                            <option value="Other" <c:if test="${product.category == 'Other'}">selected</c:if>>Other</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">

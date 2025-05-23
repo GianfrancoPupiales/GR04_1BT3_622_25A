@@ -1,6 +1,7 @@
 package model.entities;
 
 import jakarta.persistence.*;
+import model.enums.ProductCategory;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -25,11 +26,15 @@ public class Product implements Serializable {
     @Column(name = "state")
     private String state;
 
-    @Column(name ="datePublication")
+    @Column(name = "datePublication")
     private Date datePublication;
 
     @Column(name = "isAvailable")
     private boolean isAvailable;
+
+    @Column(name = "category")
+    @Enumerated(EnumType.STRING)
+    private ProductCategory category;
 
     @ManyToOne
     @JoinColumn(name = "idUser")
@@ -37,7 +42,19 @@ public class Product implements Serializable {
 
     @ManyToMany(mappedBy = "offeredProducts")
     private List<Offer> offers;
+
     public Product() {
+    }
+
+    public Product(int idProduct, String title, String description, String state, ProductCategory category, User user) {
+        this.idProduct = idProduct;
+        this.title = title;
+        this.description = description;
+        this.state = state;
+        this.datePublication = new Date();
+        this.isAvailable = true;
+        this.category = category;
+        this.user = user;
     }
 
     public Product(int idProduct, String title, String description, String state, User user) {
@@ -116,6 +133,14 @@ public class Product implements Serializable {
 
     public void setOffers(List<Offer> offers) {
         this.offers = offers;
+    }
+
+    public ProductCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ProductCategory productCategory) {
+        this.category = productCategory;
     }
 
     @Override

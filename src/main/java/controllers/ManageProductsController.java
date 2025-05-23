@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.entities.Product;
 import model.entities.User;
+import model.enums.ProductCategory;
 import model.service.ProductService;
 
 @WebServlet("/ManageProductsController")
@@ -162,7 +163,22 @@ public class ManageProductsController extends HttpServlet {
         String title = req.getParameter("txtTitle");
         String description = req.getParameter("txtDescription");
         String state = req.getParameter("txtState");
-        return new Product(idProduct, title, description, state, getUser(req));
+        String categoryStr = req.getParameter("category");
+
+        ProductCategory category = null;
+        try {
+            if (categoryStr != null && !categoryStr.isEmpty()) {
+                category = ProductCategory.valueOf(categoryStr);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid category value: " + categoryStr);
+            // Manejar error o asignar un valor por defecto
+            category = ProductCategory.Other;
+        }
+
+        User user = getUser(req);
+
+        return new Product(idProduct, title, description, state, category, user);
     }
 
     private int parseProductId(String idParam) {

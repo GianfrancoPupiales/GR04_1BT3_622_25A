@@ -124,7 +124,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox"
                                                name="selectedProducts" value="${product.idProduct}" id="productCheckbox${product.idProduct}">
-                                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${product.idProduct}">
+                                        <label class="form-check-label text-primary fw-bold" for="productCheckbox${product.idProduct}">
                                             Offer this one ...
                                         </label>
                                     </div>
@@ -142,7 +142,7 @@
                     </div>
                 </c:forEach>
 
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
                     Confirm Offer
                 </button>
 
@@ -172,16 +172,16 @@
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-3">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro?</h5>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="confirmModalLabel">Are you sure?</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                ¿Quieres completar esta oferta con los productos seleccionados?
+                Do you want to complete this offer with selected products?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <button type="button" id="confirmOfferBtn" class="btn btn-danger">Sí</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+                <button type="button" id="confirmOfferBtn" class="btn btn-success">Yes</button>
             </div>
         </div>
     </div>

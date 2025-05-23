@@ -100,19 +100,32 @@
                                 <!-- Texto ocupa el espacio restante -->
                                 <div class="flex-grow-1 pe-3">
                                     <h2 class="card-title text-dark fw-bold">${product.title}</h2>
-                                    <p class="card-text text-secondary small mb-2">
+                                    <c:choose>
+                                        <c:when test="${not empty product.user.profile}">
+                                            <p class="card-text text-secondary small mb-4">
+                                                <i class="fa-solid fa-user me-2"></i>
+                                                <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${product.user.idUser}&from=home" class="text-decoration-none">
+                                                        ${product.user.profile.firstName} ${product.user.profile.lastName}
+                                                </a>
+                                            </p>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i> Unknown user</p>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <p class="card-text text-secondary small mb-4">
                                         <i class="fa-solid fa-align-left me-2"></i>${product.description}
                                     </p>
-                                    <p class="card-text text-secondary small mb-2">
+                                    <p class="card-text text-secondary small mb-4">
                                         <i class="fa-solid fa-layer-group me-2"></i>${product.state}
                                     </p>
-                                    <p class="card-text text-secondary small mb-2">
+                                    <p class="card-text text-secondary small mb-4">
                                         <i class="fa-solid fa-tags me-2"></i>${product.category}
                                     </p>
-                                    <p class="card-text text-secondary small mb-2">
+                                    <p class="card-text text-secondary small mb-4">
                                         <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
                                     </p>
-                                    <p class="card-text text-secondary small mb-3">
+                                    <p class="card-text text-secondary small mb-4">
                                         <c:choose>
                                             <c:when test="${product.isAvailable}">
                                                 <i class="fa-solid fa-check me-2"></i>Available

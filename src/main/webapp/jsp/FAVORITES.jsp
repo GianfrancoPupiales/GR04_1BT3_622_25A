@@ -87,7 +87,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="mb-0"> Favorite Products </h1>
             </div>
-            
+
             <%-- Mostrar el mensaje de advertencia si está presente --%>
             <c:if test="${not empty warningMessage}">
                 <div class="alert alert-warning" role="alert">
@@ -97,39 +97,67 @@
 
             <div class="row">
                 <c:forEach var="favorite" items="${favorites}">
-                    <div class="col-md-4 mb-3">
-                        <div class="card border-0 rounded-3">
-                            <div class="card-body p-4">
-                                <a class="card-title text-dark fw-bold"
-                                   href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">
-                                        ${favorite.product.title}
-                                </a>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-align-left me-2"></i>${favorite.product.description}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-layer-group me-2"></i>${favorite.product.state}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-calendar me-2"></i>${favorite.product.datePublication}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-0 rounded-3" style="height: 100%;">
+                            <div class="card-body p-4 d-flex">
+                                <!-- Texto ocupa el espacio restante -->
+                                <div class="flex-grow-1 pe-3">
+                                    <a class="card-title text-dark fw-bold"
+                                       href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">${favorite.product.title}</a>
                                     <c:choose>
-                                        <c:when test="${favorite.product.isAvailable}">
-                                            <i class="fa-solid fa-check me-2"></i>Available
+                                        <c:when test="${not empty favorite.product.user.profile}">
+                                            <p class="card-text text-secondary small mb-2">
+                                                <i class="fa-solid fa-user me-2"></i>
+                                                <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${favorite.product.user.idUser}&from=home"
+                                                   class="text-decoration-none">
+                                                        ${favorite.product.user.profile.firstName} ${favorite.product.user.profile.lastName}
+                                                </a>
+                                            </p>
                                         </c:when>
                                         <c:otherwise>
-                                            <i class="fa-solid fa-x me-2"></i> Not available
+                                            <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i>
+                                                Unknown user</p>
                                         </c:otherwise>
                                     </c:choose>
-                                </p>
-                                <!-- Botón para eliminar de favoritos -->
-                                <form action="${pageContext.request.contextPath}/FavoriteController?route=removeFavorite" method="post">
-                                    <input type="hidden" name="productId" value="${favorite.product.idProduct}">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fa-solid fa-trash-alt me-2"></i> Remove from Favorites
-                                    </button>
-                                </form>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-align-left me-2"></i>${favorite.product.description}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-layer-group me-2"></i>${favorite.product.state}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-tags me-2"></i>${favorite.product.category}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-calendar me-2"></i>${favorite.product.datePublication}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-3">
+                                        <c:choose>
+                                            <c:when test="${favorite.product.isAvailable}">
+                                                <i class="fa-solid fa-check me-2"></i>Available
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="fa-solid fa-x me-2"></i> Not available
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </p>
+                                    <!-- Botón para eliminar de favoritos -->
+                                    <form action="${pageContext.request.contextPath}/FavoriteController?route=removeFavorite"
+                                          method="post">
+                                        <input type="hidden" name="productId" value="${favorite.product.idProduct}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fa-solid fa-trash-alt me-2"></i> Remove from Favorites
+                                        </button>
+                                    </form>
+                                </div>
+                                <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
+                                <div style="width: 50%; max-width: 250px;">
+                                    <c:if test="${not empty favorite.product.photo}">
+                                        <img src="${pageContext.request.contextPath}/images/products/${favorite.product.photo}"
+                                             alt="Product Photo"
+                                             class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
+                                    </c:if>
+                                </div>
                             </div>
                         </div>
                     </div>

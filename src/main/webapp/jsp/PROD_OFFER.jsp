@@ -105,6 +105,9 @@
                                     <i class="fa-solid fa-layer-group me-2"></i>${availableProducts.state}
                                 </p>
                                 <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-tags me-2"></i>${availableProducts.category}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
                                     <i class="fa-solid fa-calendar me-2"></i>${availableProducts.datePublication}
                                 </p>
                                 <p class="card-text text-secondary small mb-4">

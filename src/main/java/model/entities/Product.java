@@ -2,6 +2,7 @@ package model.entities;
 
 import jakarta.persistence.*;
 import model.enums.ProductCategory;
+import model.enums.ProductState;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -24,7 +25,8 @@ public class Product implements Serializable {
     private String description;
 
     @Column(name = "state")
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private ProductState state;
 
     @Column(name = "datePublication")
     private Date datePublication;
@@ -46,7 +48,7 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(int idProduct, String title, String description, String state, ProductCategory category, User user) {
+    public Product(int idProduct, String title, String description, ProductState state, ProductCategory category, User user) {
         this.idProduct = idProduct;
         this.title = title;
         this.description = description;
@@ -61,7 +63,7 @@ public class Product implements Serializable {
         this.idProduct = idProduct;
         this.title = title;
         this.description = description;
-        this.state = state;
+        this.state = ProductState.valueOf(state);
         this.datePublication = new Date();
         this.isAvailable = true;
         this.user = user;
@@ -91,11 +93,11 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public String getState() {
+    public ProductState getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(ProductState state) {
         this.state = state;
     }
 

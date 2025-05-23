@@ -185,8 +185,13 @@
                         <span id="charCountAdd" class="form-text text-muted">0 / 200</span>
                     </div>
                     <div class="mb-3">
-                        <label for="txtStateAdd" class="form-label fw-semibold">State</label>
-                        <input type="text" class="form-control" id="txtStateAdd" name="txtState" required>
+                        <label for="txtState" class="form-label fw-semibold">State</label>
+                        <select id="txtState" name="txtState" class="form-select" required>
+                            <option value="">Select a state</option>
+                            <option value="New" <c:if test="${product.state == 'New'}">selected</c:if>>New</option>
+                            <option value="Semi_new" <c:if test="${product.state == 'Semi_new'}">selected</c:if>>Semi-new</option>
+                            <option value="Repaired" <c:if test="${product.state == 'Repaired'}">selected</c:if>>Repaired</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="category" class="form-label fw-semibold">Category</label>
@@ -246,10 +251,13 @@
                         <span id="charCountEdit" class="form-text text-muted">0 / 200</span>
                     </div>
                     <div class="mb-3">
-                        <label for="StateEdit" class="form-label fw-bold">State
-                        </label> <input id="StateEdit" type="text"
-                                        class="form-control" name="txtState"
-                                        value="${product.state}" placeholder="Enter state" required>
+                        <label for="txtState" class="form-label fw-semibold">State</label>
+                        <select id="txtState" name="txtState" class="form-select" required>
+                            <option value="">Select a state</option>
+                            <option value="New" <c:if test="${product.state == 'New'}">selected</c:if>>New</option>
+                            <option value="Semi_new" <c:if test="${product.state == 'Semi_new'}">selected</c:if>>Semi-new</option>
+                            <option value="Repaired" <c:if test="${product.state == 'Repaired'}">selected</c:if>>Repaired</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="category" class="form-label fw-semibold">Category</label>

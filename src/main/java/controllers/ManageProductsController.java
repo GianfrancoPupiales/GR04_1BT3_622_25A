@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import model.entities.Product;
 import model.entities.User;
 import model.enums.ProductCategory;
+import model.enums.ProductState;
 import model.service.ProductService;
 
 @WebServlet("/ManageProductsController")
@@ -145,12 +146,26 @@ public class ManageProductsController extends HttpServlet {
 
     private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
+
         product.setTitle(req.getParameter("txtTitle"));
         product.setDescription(req.getParameter("txtDescription"));
-        product.setState(req.getParameter("txtState"));
+
+        String stateStr = req.getParameter("txtState");
+        ProductState state = null;
+        try {
+            if (stateStr != null && !stateStr.isEmpty()) {
+                stateStr = stateStr.replace("-", "_").replace(" ", "_");
+                state = ProductState.valueOf(stateStr);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid state value: " + stateStr);
+            state = ProductState.New; // Valor por defecto si falla
+        }
+        product.setState(state);
 
         processProductSave(req, resp, product, true);
     }
+
 
     private void saveNewProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
@@ -162,9 +177,20 @@ public class ManageProductsController extends HttpServlet {
         int idProduct = parseProductId(txtId);
         String title = req.getParameter("txtTitle");
         String description = req.getParameter("txtDescription");
-        String state = req.getParameter("txtState");
         String categoryStr = req.getParameter("category");
+        String stateStr = req.getParameter("txtState");
 
+        ProductState state = null;
+        try {
+            if (stateStr != null && !stateStr.isEmpty()) {
+                // Convertimos guiones medios a guion bajo para que coincida con enum
+                stateStr = stateStr.replace("-", "_").replace(" ", "_");
+                state = ProductState.valueOf(stateStr);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid state value: " + stateStr);
+            state = ProductState.New; // Estado por defecto
+        }
         ProductCategory category = null;
         try {
             if (categoryStr != null && !categoryStr.isEmpty()) {

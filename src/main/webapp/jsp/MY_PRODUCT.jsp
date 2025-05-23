@@ -106,47 +106,51 @@
             <div class="row">
                 <c:forEach var="product" items="${products}">
                     <div class="col-md-6 mb-3">
-                        <div class="card border-0 rounded-3">
-                            <div class="card-body p-4">
-                                <h2 class="card-title text-dark fw-bold">${product.title}</h2>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-align-left me-2"></i>${product.description}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-layer-group me-2"></i>${product.state}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-tags me-2"></i>${product.category}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
-                                </p>
-                                <p class="card-text text-secondary small mb-4">
-                                    <c:choose>
-                                        <c:when test="${product.isAvailable}">
-                                            <i class="fa-solid fa-check me-2"></i>Available
-                                        </c:when>
-                                        <c:otherwise>
-                                            <i class="fa-solid fa-x me-2"></i> Not available
-                                        </c:otherwise>
-                                    </c:choose>
-                                </p>
-                                <c:if test="${not empty product.photo}">
-                                    <img src="${pageContext.request.contextPath}/images/${product.photo}" alt="Product Photo" class="img-fluid mb-3" />
-                                </c:if>
-                                <div class="d-flex justify-content-end">
-                                    <!-- Botón de editar -->
-                                    <a
-                                            href="ManageProductsController?route=edit&idProduct=${product.idProduct}"
-                                            class="btn btn-primary btn-sm me-2 px-3"> <i
-                                            class="fas fa-pen"></i> Edit
-                                    </a>
-                                    <!-- Botón de eliminar -->
-                                    <a
-                                            href="ManageProductsController?route=delete&idProduct=${product.idProduct}"
-                                            class="btn btn-danger btn-sm px-3"> <i
-                                            class="fas fa-trash-alt"></i> Delete
-                                    </a>
+                        <div class="card border-0 rounded-3" style="height: 100%;">
+                            <div class="card-body p-4 d-flex">
+                                <!-- Texto ocupa el espacio restante -->
+                                <div class="flex-grow-1 pe-3">
+                                    <h2 class="card-title text-dark fw-bold">${product.title}</h2>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-align-left me-2"></i>${product.description}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-layer-group me-2"></i>${product.state}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-tags me-2"></i>${product.category}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
+                                    </p>
+                                    <p class="card-text text-secondary small mb-3">
+                                        <c:choose>
+                                            <c:when test="${product.isAvailable}">
+                                                <i class="fa-solid fa-check me-2"></i>Available
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="fa-solid fa-x me-2"></i> Not available
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </p>
+                                    <div class="d-flex justify-content-start">
+                                        <a href="ManageProductsController?route=edit&idProduct=${product.idProduct}"
+                                           class="btn btn-primary btn-sm me-2 px-3">
+                                            <i class="fas fa-pen"></i> Edit
+                                        </a>
+                                        <a href="ManageProductsController?route=delete&idProduct=${product.idProduct}"
+                                           class="btn btn-danger btn-sm px-3">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
+                                <div style="width: 50%; max-width: 250px;">
+                                    <c:if test="${not empty product.photo}">
+                                        <img src="${pageContext.request.contextPath}/images/${product.photo}"
+                                             alt="Product Photo"
+                                             class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
+                                    </c:if>
                                 </div>
                             </div>
                         </div>
@@ -190,8 +194,12 @@
                         <select id="txtState" name="txtState" class="form-select" required>
                             <option value="">Select a state</option>
                             <option value="New" <c:if test="${product.state == 'New'}">selected</c:if>>New</option>
-                            <option value="Semi_new" <c:if test="${product.state == 'Semi_new'}">selected</c:if>>Semi-new</option>
-                            <option value="Repaired" <c:if test="${product.state == 'Repaired'}">selected</c:if>>Repaired</option>
+                            <option value="Semi_new" <c:if test="${product.state == 'Semi_new'}">selected</c:if>>
+                                Semi-new
+                            </option>
+                            <option value="Repaired" <c:if test="${product.state == 'Repaired'}">selected</c:if>>
+                                Repaired
+                            </option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -260,24 +268,45 @@
                         <select id="txtState" name="txtState" class="form-select" required>
                             <option value="">Select a state</option>
                             <option value="New" <c:if test="${product.state == 'New'}">selected</c:if>>New</option>
-                            <option value="Semi_new" <c:if test="${product.state == 'Semi_new'}">selected</c:if>>Semi-new</option>
-                            <option value="Repaired" <c:if test="${product.state == 'Repaired'}">selected</c:if>>Repaired</option>
+                            <option value="Semi_new" <c:if test="${product.state == 'Semi_new'}">selected</c:if>>
+                                Semi-new
+                            </option>
+                            <option value="Repaired" <c:if test="${product.state == 'Repaired'}">selected</c:if>>
+                                Repaired
+                            </option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="category" class="form-label fw-semibold">Category</label>
                         <select id="category" name="category" class="form-select" required>
                             <option value="">Select a category</option>
-                            <option value="Books" <c:if test="${product.category == 'Books'}">selected</c:if>>Books</option>
-                            <option value="Stationery" <c:if test="${product.category == 'Stationery'}">selected</c:if>>Stationery</option>
-                            <option value="Electronics" <c:if test="${product.category == 'Electronics'}">selected</c:if>>Electronics</option>
-                            <option value="Furniture" <c:if test="${product.category == 'Furniture'}">selected</c:if>>Furniture</option>
-                            <option value="Clothing" <c:if test="${product.category == 'Clothing'}">selected</c:if>>Clothing</option>
-                            <option value="Services" <c:if test="${product.category == 'Services'}">selected</c:if>>Services</option>
-                            <option value="Entertainment" <c:if test="${product.category == 'Entertainment'}">selected</c:if>>Entertainment</option>
-                            <option value="Food" <c:if test="${product.category == 'Food'}">selected</c:if>>Food</option>
-                            <option value="Transport" <c:if test="${product.category == 'Transport'}">selected</c:if>>Transport</option>
-                            <option value="Other" <c:if test="${product.category == 'Other'}">selected</c:if>>Other</option>
+                            <option value="Books" <c:if test="${product.category == 'Books'}">selected</c:if>>Books
+                            </option>
+                            <option value="Stationery" <c:if test="${product.category == 'Stationery'}">selected</c:if>>
+                                Stationery
+                            </option>
+                            <option value="Electronics"
+                                    <c:if test="${product.category == 'Electronics'}">selected</c:if>>Electronics
+                            </option>
+                            <option value="Furniture" <c:if test="${product.category == 'Furniture'}">selected</c:if>>
+                                Furniture
+                            </option>
+                            <option value="Clothing" <c:if test="${product.category == 'Clothing'}">selected</c:if>>
+                                Clothing
+                            </option>
+                            <option value="Services" <c:if test="${product.category == 'Services'}">selected</c:if>>
+                                Services
+                            </option>
+                            <option value="Entertainment"
+                                    <c:if test="${product.category == 'Entertainment'}">selected</c:if>>Entertainment
+                            </option>
+                            <option value="Food" <c:if test="${product.category == 'Food'}">selected</c:if>>Food
+                            </option>
+                            <option value="Transport" <c:if test="${product.category == 'Transport'}">selected</c:if>>
+                                Transport
+                            </option>
+                            <option value="Other" <c:if test="${product.category == 'Other'}">selected</c:if>>Other
+                            </option>
                         </select>
                     </div>
                     <div class="mb-3">

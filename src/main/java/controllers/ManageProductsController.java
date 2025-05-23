@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import model.entities.Product;
 import model.entities.User;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
+import model.service.FileStorageService;
 import model.service.ProductService;
 
+@MultipartConfig
 @WebServlet("/ManageProductsController")
 public class ManageProductsController extends HttpServlet {
 
@@ -172,14 +172,16 @@ public class ManageProductsController extends HttpServlet {
         processProductSave(req, resp, product, false);
     }
 
-    private Product parseProductFromRequest(HttpServletRequest req) {
+    private Product parseProductFromRequest(HttpServletRequest req) throws IOException, ServletException {
         String txtId = req.getParameter("txtIdProduct");
         int idProduct = parseProductId(txtId);
         String title = req.getParameter("txtTitle");
         String description = req.getParameter("txtDescription");
         String categoryStr = req.getParameter("category");
         String stateStr = req.getParameter("txtState");
+        String existingPhoto = req.getParameter("existingPhoto"); // Foto previa si no se sube nueva
 
+        // Manejo de estado
         ProductState state = null;
         try {
             if (stateStr != null && !stateStr.isEmpty()) {
@@ -191,6 +193,8 @@ public class ManageProductsController extends HttpServlet {
             System.out.println("Invalid state value: " + stateStr);
             state = ProductState.New; // Estado por defecto
         }
+
+        // Manejo de categoria
         ProductCategory category = null;
         try {
             if (categoryStr != null && !categoryStr.isEmpty()) {
@@ -202,9 +206,21 @@ public class ManageProductsController extends HttpServlet {
             category = ProductCategory.Other;
         }
 
+        // Manejo de foto subida
+        Part photoPart = req.getPart("photo");
+        String photoFileName;
+        if (photoPart != null && photoPart.getSize() > 0) {
+            String uploadPath = getServletContext().getRealPath("/images");
+            FileStorageService storageService = new FileStorageService(uploadPath);
+            photoFileName = storageService.savePhoto(photoPart);
+        } else {
+            // Si no hay foto nueva, conservar la existente
+            photoFileName = existingPhoto;
+        }
+
         User user = getUser(req);
 
-        return new Product(idProduct, title, description, state, category, user);
+        return new Product(idProduct, title, description, state, category, photoFileName, user);
     }
 
     private int parseProductId(String idParam) {

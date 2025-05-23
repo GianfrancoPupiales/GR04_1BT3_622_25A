@@ -38,6 +38,9 @@ public class Product implements Serializable {
     @Enumerated(EnumType.STRING)
     private ProductCategory category;
 
+    @Column(name = "photo")
+    private String photo;
+
     @ManyToOne
     @JoinColumn(name = "idUser")
     private User user;
@@ -48,7 +51,7 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(int idProduct, String title, String description, ProductState state, ProductCategory category, User user) {
+    public Product(int idProduct, String title, String description, ProductState state, ProductCategory category, String photo, User user) {
         this.idProduct = idProduct;
         this.title = title;
         this.description = description;
@@ -56,6 +59,7 @@ public class Product implements Serializable {
         this.datePublication = new Date();
         this.isAvailable = true;
         this.category = category;
+        this.photo = photo;
         this.user = user;
     }
 
@@ -143,6 +147,14 @@ public class Product implements Serializable {
 
     public void setCategory(ProductCategory productCategory) {
         this.category = productCategory;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     @Override

@@ -131,7 +131,9 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </p>
-
+                                <c:if test="${not empty product.photo}">
+                                    <img src="${pageContext.request.contextPath}/images/${product.photo}" alt="Product Photo" class="img-fluid mb-3" />
+                                </c:if>
                                 <div class="d-flex justify-content-end">
                                     <!-- Botón de editar -->
                                     <a
@@ -149,7 +151,6 @@
                             </div>
                         </div>
                     </div>
-
                 </c:forEach>
             </div>
             <c:if test="${empty products}">
@@ -172,7 +173,7 @@
                    aria-label="Close"></a>
             </div>
             <form action="ManageProductsController?route=saveNew"
-                  method="POST">
+                  method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="txtTitleAdd" class="form-label fw-semibold">Title</label>
@@ -180,7 +181,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="txtDescriptionAdd" class="form-label fw-semibold">Description</label>
-                        <textarea class="form-control" id="txtDescriptionAdd" name="txtDescription" rows="6"
+                        <textarea class="form-control" id="txtDescriptionAdd" name="txtDescription" rows="4"
                                   required></textarea>
                         <span id="charCountAdd" class="form-text text-muted">0 / 200</span>
                     </div>
@@ -209,6 +210,10 @@
                             <option value="Other">Other</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="photo" class="form-label fw-semibold">Product Photo</label>
+                        <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-center">
                     <a href="ManageProductsController?route=list"
@@ -233,7 +238,7 @@
                    aria-label="Close"></a>
             </div>
             <form action="ManageProductsController?route=saveExisting"
-                  method="POST">
+                  method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="txtIdProduct" value="${product.idProduct}">
                     <div class="mb-3">
@@ -246,7 +251,7 @@
                         <label for="DescriptionEdit" class="form-label fw-bold">Description
                         </label>
                         <textarea id="DescriptionEdit" class="form-control" name="txtDescription"
-                                  rows="6" placeholder="Enter description" maxlength="200"
+                                  rows="4" placeholder="Enter description" maxlength="200"
                                   required>${product.description}</textarea>
                         <span id="charCountEdit" class="form-text text-muted">0 / 200</span>
                     </div>
@@ -274,6 +279,11 @@
                             <option value="Transport" <c:if test="${product.category == 'Transport'}">selected</c:if>>Transport</option>
                             <option value="Other" <c:if test="${product.category == 'Other'}">selected</c:if>>Other</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="photo" class="form-label fw-semibold">Product Photo</label>
+                        <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
+                        <input type="hidden" name="existingPhoto" value="${product.photo}">
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">

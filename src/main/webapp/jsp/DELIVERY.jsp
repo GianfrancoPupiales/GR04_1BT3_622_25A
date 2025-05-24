@@ -80,33 +80,59 @@
     <div class="row">
         <c:forEach var="offer" items="${pendingDeliveries}">
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white d-flex align-items-center">
+                        <i class="fas fa-box-open me-2 fs-4"></i>
+                        <h5 class="mb-0 flex-grow-1">${offer.productToOffer.title}</h5>
+                    </div>
                     <div class="card-body">
-                        <!-- Nombre del producto que recibió la oferta -->
-                        <h4 class="card-title"><i class="fas fa-box-open me-2"></i> ${offer.productToOffer.title}</h4>
-                        <h5 style="text-align:center"> Information </h5>
-                        <p class="card-text">
-                            <!-- Información de IDs y DNIs -->
-                            <strong>ID :</strong> ${offer.idOffer} <br>
-                            <strong>Owner :</strong> ${offer.productToOffer.user.dni} <br>
-                            <strong>Offerer:</strong> ${offer.offeredByUser.dni} <br>
-                        </p>
+                        <img src="${pageContext.request.contextPath}/product-images/${offer.productToOffer.photo}"
+                             alt="${offer.productToOffer.title}"
+                             class="img-fluid rounded mx-auto d-block my-3" style="max-height: 180px; object-fit: contain;" />
+                        <h6 class="text-center text-secondary mb-3">Information</h6>
+                        <ul class="list-unstyled mb-4">
+                            <li><strong>ID:</strong> ${offer.idOffer}</li>
+                            <li><strong>Owner DNI:</strong> ${offer.productToOffer.user.dni}</li>
+                            <li><strong>Offerer DNI:</strong> ${offer.offeredByUser.dni}</li>
+                            <c:choose>
+                                <c:when test="${not empty offer.productToOffer.user.profile}">
+                                    <p class="card-text text-secondary small mb-2">
+                                        <i class="fa-solid fa-user me-2"></i>
+                                        <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${offer.productToOffer.user.idUser}&from=home" class="text-decoration-none">
+                                                ${offer.productToOffer.user.profile.firstName} ${offer.productToOffer.user.profile.lastName}
+                                        </a>
+                                    </p>
+                                </c:when>
+                                <c:otherwise>
+                                    <p class="card-text text-muted">
+                                        <i class="fa-solid fa-user me-2"></i> Unknown user
+                                    </p>
+                                </c:otherwise>
+                            </c:choose>
 
-                        <!-- Botones de acción -->
-                        <div class="d-flex justify-content-between">
-                            <!-- Confirmar entrega -->
-                            <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal"
+                            <li><strong>Contact this number to complete the delivery:</strong>
+                                <c:choose>
+                                    <c:when test="${not empty offer.offeredByUser.profile.phoneNumber}">
+                                        ${offer.offeredByUser.profile.phoneNumber}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <em>Not available</em>
+                                    </c:otherwise>
+                                </c:choose>
+                            </li>
+                        </ul>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success w-50" data-bs-toggle="modal"
                                     data-bs-target="#RATE_MODAL_${offer.idOffer}">
                                 <i class="fas fa-check"></i> Received
                             </button>
 
-                            <!-- Rechazar oferta -->
-                            <form action="${pageContext.request.contextPath}/TradeDeliveryController" method="POST"
-                                  class="d-inline">
+                            <form action="${pageContext.request.contextPath}/TradeDeliveryController" method="POST" class="w-50 m-0 p-0">
                                 <input type="hidden" name="route" value="rejectOffer">
                                 <input type="hidden" name="offerId" value="${offer.idOffer}">
-                                <button type="submit" class="btn btn-danger btn-sm px-3">
-                                    <i class="fas fa-times"></i> No received
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="fas fa-times"></i> Not Received
                                 </button>
                             </form>
                         </div>

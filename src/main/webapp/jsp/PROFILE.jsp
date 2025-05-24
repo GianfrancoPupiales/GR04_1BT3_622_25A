@@ -14,7 +14,70 @@
 </head>
 
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4" style="position: sticky; top: 0; z-index: 1030;">
+    <div class="container-fluid">
+        <!-- Inicio: Sección izquierda -->
+        <div class="d-flex">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=home">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ManageProductsController?route=list&view=user">
+                        <i class="fas fa-box"></i> My Products
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/RespondOfferController?route=list">
+                        <i class="fas fa-handshake"></i> Offers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/TradeDeliveryController?route=listDeliveries">
+                        <i class="fas fa-truck"></i> My Deliveries
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/FavoriteController?route=listFavorites">
+                        <i class="fas fa-heart"></i> My Favorites
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Fin: Sección derecha -->
+        <div class="d-flex">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="${pageContext.request.contextPath}/ProfileController?route=show">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link text-danger"
+                       href="${pageContext.request.contextPath}/LoginController?route=logOut">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <main class="container my-5">
+    <div class="mb-4 d-flex justify-content-start">
+        <button class="btn btn-secondary" onclick="history.back()">
+            <i class="fas fa-arrow-left me-2"></i>Back
+        </button>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-none border-0 rounded-3">
@@ -56,20 +119,6 @@
                     <c:if test="${empty profile.user.reputation}">
                         <p><strong>Reputation:</strong> Not available</p>
                     </c:if>
-
-                    <!-- Botón de regreso -->
-                    <div class="text-end mt-4">
-                        <a href="<c:choose>
-                                    <c:when test='${from eq "home"}'>
-                                        ${pageContext.request.contextPath}/ManageProductsController?route=list&view=home
-                                    </c:when>
-                                    <c:otherwise>
-                                        ${pageContext.request.contextPath}/ManageProductsController?route=list&view=user
-                                    </c:otherwise>
-                                 </c:choose>" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

@@ -28,7 +28,7 @@ public class ProfileDAO extends GenericDAO<Profile> {
 
     public List<Product> findProductsByUserId(int userId) {
         try (EntityManager em = getEntityManager()) {
-            String jpql = "SELECT p FROM Product p WHERE p.user.idUser = :userId";
+            String jpql = "SELECT p FROM Product p WHERE p.user.idUser = :userId and p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("userId", userId)
                     .getResultList();

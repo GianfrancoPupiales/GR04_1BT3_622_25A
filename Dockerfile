@@ -21,6 +21,10 @@ FROM tomcat:jdk21-openjdk-slim
 # Cambiar el puerto de Tomcat de 8080 a 9090
 RUN sed -i 's/port="8080"/port="9090"/' /usr/local/tomcat/conf/server.xml
 
+# Crear carpeta para imágenes y darle permisos al usuario que ejecuta Tomcat
+RUN mkdir -p /app/uploads/products && \
+    chown -R 1000:1000 /app/uploads
+
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/
 
 EXPOSE 9090

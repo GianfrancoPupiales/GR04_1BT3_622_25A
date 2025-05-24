@@ -78,7 +78,7 @@
 <main class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-sm border-0 rounded-3">
+            <div class="card shadow-none border-0 rounded-3">
                 <div class="card-body p-5">
                     <div class="d-flex align-items-center mb-4">
                         <div class="me-4">

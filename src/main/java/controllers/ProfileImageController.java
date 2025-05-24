@@ -17,6 +17,17 @@ public class ProfileImageController extends HttpServlet {
     private final String basePath = "C:\\trukea\\images\\profiles";
 
     @Override
+    public void init() throws ServletException {
+        File baseDir = new File(basePath);
+        if (!baseDir.exists()) {
+            boolean created = baseDir.mkdirs();
+            if (!created) {
+                throw new ServletException("The base directory could not be created: " + basePath);
+            }
+        }
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Obtiene la parte variable de la URL después de /profile-images/
         String requestedImage = req.getPathInfo(); // ej. /foto.jpg

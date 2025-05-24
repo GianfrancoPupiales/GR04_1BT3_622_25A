@@ -16,6 +16,18 @@ public class ProductImageController extends HttpServlet {
     private final String basePath = "C:\\trukea\\images\\products";
 
     @Override
+    public void init() throws ServletException {
+        // Crear la carpeta base si no existe
+        File baseDir = new File(basePath);
+        if (!baseDir.exists()) {
+            boolean created = baseDir.mkdirs();
+            if (!created) {
+                throw new ServletException("The base directory could not be created: " + basePath);
+            }
+        }
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String requestedImage = req.getPathInfo(); // /nombreimagen.jpg
 

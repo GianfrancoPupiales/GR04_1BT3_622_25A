@@ -90,7 +90,7 @@
         <!-- PRODUCT Section -->
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="mb-0"> Products </h1>
+                <h1 class="mb-0">Products</h1>
             </div>
             <div class="row">
                 <c:forEach var="product" items="${products}">
@@ -99,7 +99,11 @@
                             <div class="card-body p-4 d-flex">
                                 <!-- Texto ocupa el espacio restante -->
                                 <div class="flex-grow-1 pe-3">
-                                    <a class="card-title text-dark fw-bold" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">${product.title}</a>
+                                    <h3 class="card-title fw-bold">
+                                        <a class="text-dark text-decoration-underline" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">
+                                                ${product.title}
+                                        </a>
+                                    </h3>
                                     <c:choose>
                                         <c:when test="${not empty product.user.profile}">
                                             <p class="card-text text-secondary small mb-2">
@@ -157,7 +161,7 @@
                 </c:forEach>
             </div>
             <c:if test="${empty products}">
-                <div class="alert alert-warning text-center">There are currently no products to display.</div>
+                <div class="alert alert-warning text-center">There are currently no products to display</div>
             </c:if>
         </div>
     </div>

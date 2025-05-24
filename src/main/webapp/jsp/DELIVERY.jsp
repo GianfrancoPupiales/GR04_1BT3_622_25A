@@ -73,9 +73,10 @@
     </div>
 </nav>
 
-<main class="container mt-5">
-    <h2 class="mb-4">Offers Pending Delivery</h2>
-
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">Offers Pending Delivery</h1>
+    </div>
     <div class="row">
         <c:forEach var="offer" items="${pendingDeliveries}">
             <div class="col-md-4 mb-4">
@@ -100,7 +101,8 @@
                             </button>
 
                             <!-- Rechazar oferta -->
-                            <form action="${pageContext.request.contextPath}/TradeDeliveryController" method="POST" class="d-inline">
+                            <form action="${pageContext.request.contextPath}/TradeDeliveryController" method="POST"
+                                  class="d-inline">
                                 <input type="hidden" name="route" value="rejectOffer">
                                 <input type="hidden" name="offerId" value="${offer.idOffer}">
                                 <button type="submit" class="btn btn-danger btn-sm px-3">
@@ -154,7 +156,7 @@
 
     <!-- Mensaje si no hay entregas pendientes -->
     <c:if test="${empty pendingDeliveries}">
-        <div class="alert alert-warning text-center mt-4">No pending deliveries found.</div>
+        <div class="alert alert-warning text-center">No pending deliveries found.</div>
     </c:if>
 
     <!-- Mensajes de éxito o error -->

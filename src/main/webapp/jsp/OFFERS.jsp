@@ -78,8 +78,9 @@
 </nav>
 
 <main class="container my-4">
-    <h1>Pending Offers</h1>
-
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">Pending Offers </h1>
+    </div>
     <!-- Mostrar mensajes dinámicos -->
     <c:if test="${not empty message}">
         <div class="alert alert-${messageType} alert-dismissible fade show" role="alert">
@@ -109,8 +110,11 @@
                                     <input type="hidden" name="route" value="respond">
                                     <input type="hidden" name="offerId" value="${offer.idOffer}">
 
-                                    <button type="submit" name="status" value="accepted" class="btn btn-success">Accept</button>
-                                    <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject</button>
+                                    <button type="submit" name="status" value="accepted" class="btn btn-success">
+                                        Accept
+                                    </button>
+                                    <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -119,14 +123,12 @@
             </div>
         </c:when>
         <c:otherwise>
-            <div class="alert alert-warning">No pending offers found.</div>
+            <div class="alert alert-warning text-center">No pending offers found</div>
         </c:otherwise>
     </c:choose>
 </main>
 
-
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

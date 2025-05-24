@@ -85,7 +85,7 @@
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="mb-0"> Favorite Products </h1>
+                <h1 class="mb-0">Favorite Products</h1>
             </div>
 
             <%-- Mostrar el mensaje de advertencia si está presente --%>
@@ -102,8 +102,11 @@
                             <div class="card-body p-4 d-flex">
                                 <!-- Texto ocupa el espacio restante -->
                                 <div class="flex-grow-1 pe-3">
-                                    <a class="card-title text-dark fw-bold"
-                                       href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">${favorite.product.title}</a>
+                                    <h3 class="card-title fw-bold">
+                                        <a class="text-dark text-decoration-underline" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">
+                                                ${favorite.product.title}
+                                        </a>
+                                    </h3>
                                     <c:choose>
                                         <c:when test="${not empty favorite.product.user.profile}">
                                             <p class="card-text text-secondary small mb-2">
@@ -153,7 +156,7 @@
                                 <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
                                 <div style="width: 50%; max-width: 250px;">
                                     <c:if test="${not empty favorite.product.photo}">
-                                        <img src="${pageContext.request.contextPath}/images/products/${favorite.product.photo}"
+                                        <img src="${pageContext.request.contextPath}/product-images/${favorite.product.photo}"
                                              alt="Product Photo"
                                              class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
                                     </c:if>
@@ -162,6 +165,11 @@
                         </div>
                     </div>
                 </c:forEach>
+                <c:if test="${empty favorites}">
+                    <div class="alert alert-warning text-center">
+                        You don't have any favourite products yet
+                    </div>
+                </c:if>
             </div>
         </div>
     </div>

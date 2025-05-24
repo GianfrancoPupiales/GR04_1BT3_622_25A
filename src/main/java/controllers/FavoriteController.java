@@ -114,10 +114,21 @@ public class FavoriteController extends HttpServlet {
 
         FavoriteService favoriteService = new FavoriteService();
 
+        // Obtener todos los favoritos
         List<Favorite> favorites = favoriteService.getFavoritesByUser(user);
-        req.setAttribute("favorites", favorites);
+
+        // Filtrar solo productos disponibles
+        List<Favorite> availableFavorites = favorites.stream()
+                .filter(fav -> fav.getProduct() != null && fav.getProduct().isAvailable())
+                .toList();
+
+        // Eliminar favoritos no disponibles de la base de datos para limpiar
+        favorites.stream()
+                .filter(fav -> fav.getProduct() != null && !fav.getProduct().isAvailable())
+                .forEach(fav -> favoriteService.removeFavorite(user, fav.getProduct()));
+
+        req.setAttribute("favorites", availableFavorites);
         req.getRequestDispatcher("/jsp/FAVORITES.jsp").forward(req, resp);
     }
-
 }
 

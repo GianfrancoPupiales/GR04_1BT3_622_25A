@@ -88,11 +88,15 @@
                 <h1 class="mb-0">Favorite Products</h1>
             </div>
 
-            <%-- Mostrar el mensaje de advertencia si está presente --%>
-            <c:if test="${not empty warningMessage}">
-                <div class="alert alert-warning" role="alert">
-                        ${warningMessage}
+            <!-- Feedback Message -->
+            <c:if test="${not empty sessionScope.message}">
+                <div id="notification"
+                     class="alert text-center ${sessionScope.messageType == 'info' ? 'alert-success' : 'alert-danger'}"
+                     role="alert">
+                        ${sessionScope.message}
                 </div>
+                <c:remove var="message" scope="session"/>
+                <c:remove var="messageType" scope="session"/>
             </c:if>
 
             <div class="row">
@@ -100,7 +104,6 @@
                     <div class="col-md-6 mb-3">
                         <div class="card border-0 rounded-3" style="height: 100%;">
                             <div class="card-body p-4 d-flex">
-                                <!-- Texto ocupa el espacio restante -->
                                 <div class="flex-grow-1 pe-3">
                                     <h3 class="card-title fw-bold">
                                         <a class="text-dark text-decoration-underline" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${favorite.product.idProduct}">

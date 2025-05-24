@@ -61,17 +61,23 @@ public class FavoriteController extends HttpServlet {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
-        FavoriteService favoriteService = new FavoriteService();
         ProductService productService = new ProductService();
+        FavoriteService favoriteService = new FavoriteService();
         Product product = productService.findById(idProduct);
 
-        favoriteService.addFavorite(user, product);
-
-        // Verificamos si el producto ya estaba en favoritos para mostrar la advertencia
+        // Comprobamos antes de invocar al servicio
         if (favoriteService.isProductAlreadyFavorite(user, product)) {
-            req.setAttribute("warningMessage", "Este producto ya está en tus favoritos.");
+            // Mensaje de error/advertencia
+            session.setAttribute("message", "This product is already in your favourites");
+            session.setAttribute("messageType", "error");
+        } else {
+            // Agregamos y mensaje de éxito
+            favoriteService.addFavorite(user, product);
+            session.setAttribute("message", "Product added to favourites");
+            session.setAttribute("messageType", "info");
         }
 
+        // Redirigimos siempre al listado de favoritos
         resp.sendRedirect(req.getContextPath() + "/FavoriteController?route=listFavorites");
     }
 
@@ -94,7 +100,7 @@ public class FavoriteController extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/FavoriteController?route=listFavorites");
             } else {
                 // Si la eliminación falla, redirigir o mostrar un mensaje de error
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "No se pudo eliminar el producto de favoritos.");
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The product could not be removed from favourites.");
             }
         } else {
             resp.sendRedirect(req.getContextPath() + "/LoginController?route=login");

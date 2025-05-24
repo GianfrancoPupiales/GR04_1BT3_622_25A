@@ -61,19 +61,19 @@ public class OfferService {
     public ResponseMessage processOfferStatus(int offerId, String status) {
         Offer offer = offerDAO.findById(offerId);
         if (offer == null) {
-            return new ResponseMessage("error", "La oferta no existe.");
+            return new ResponseMessage("error", "The offer doesn't exist.");
         }
 
         // Evitar que se procese más de una vez
         if (!"pending".equalsIgnoreCase(offer.getStatus())) {
-            return new ResponseMessage("warning", "La oferta ya fue procesada anteriormente.");
+            return new ResponseMessage("warning", "The offer has already been processed.");
         }
 
         offer.setStatus(status);
         boolean updated = offerDAO.update(offer);
 
         if (!updated) {
-            return new ResponseMessage("error", "No se pudo actualizar el estado de la oferta.");
+            return new ResponseMessage("error", "The status of the offer could not be updated.");
         }
 
         if ("accepted".equalsIgnoreCase(status)) {
@@ -96,15 +96,15 @@ public class OfferService {
                 }
                 productService.updateProductAvailability(offer.getOfferedProducts(), false);
             } else {
-                System.out.println("OfferedProducts está vacío o es null");
+                System.out.println("OfferedProducts is empty or null");
             }
         }
 
 
         return switch (status.toLowerCase()) {
-            case "accepted" -> new ResponseMessage("success", "¡Felicidades por tu intercambio!");
-            case "rejected" -> new ResponseMessage("warning", "Lo siento, tu oferta ha sido rechazada.");
-            default -> new ResponseMessage("error", "Estado de oferta inválido.");
+            case "accepted" -> new ResponseMessage("success", "Congratulations on your exchange!");
+            case "rejected" -> new ResponseMessage("success", "The offer has been successfully rejected");
+            default -> new ResponseMessage("error", "Invalid offer status");
         };
     }
 

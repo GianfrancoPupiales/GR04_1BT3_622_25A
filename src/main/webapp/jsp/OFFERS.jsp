@@ -95,24 +95,23 @@
                         <div class="card border-0 shadow rounded-3 h-100">
                             <div class="card-body p-4">
                                 <h5 class="card-title fw-bold mb-3">
-                                    <i class="fas fa-gift me-2 text-primary"></i> Offered Products
+                                    <i class="fas fa-box-open text-secondary me-2"></i> Offered Products
                                 </h5>
                                 <ul class="list-unstyled ps-3 mb-3">
                                     <c:forEach var="product" items="${offer.offeredProducts}">
                                         <li>
-                                            <i class="fas fa-box-open text-secondary me-2"></i>
+                                            <i class="fa-solid fa-gift me-2"></i>
                                             <a href="${pageContext.request.contextPath}/ManageProductsController?route=select&idProduct=${product.idProduct}"
                                                class="text-decoration-underline text-dark">
                                                     ${product.title}
                                             </a>
-
                                         </li>
                                     </c:forEach>
                                 </ul>
 
                                 <p class="card-text mb-2">
-                                    <i class="fas fa-hand-holding me-2 text-success"></i>
-                                    <strong>Requested:</strong>
+                                    <i class="fa-solid fa-question me-2"></i>
+                                    <strong>  Requested:</strong>
                                     <a href="${pageContext.request.contextPath}/ManageProductsController?route=select&idProduct=${offer.productToOffer.idProduct}"
                                        class="text-decoration-underline text-dark">
                                             ${offer.productToOffer.title}
@@ -121,7 +120,7 @@
 
                                 <p class="card-text mb-4">
                                     <i class="fas fa-user me-2 text-muted"></i>
-                                    <strong>User:</strong>
+                                    <strong>By User:</strong>
                                     <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${offer.offeredByUser.idUser}&from=offers"
                                        class="text-decoration-underline text-dark">
                                             ${offer.offeredByUser.profile.firstName} ${offer.offeredByUser.profile.lastName}

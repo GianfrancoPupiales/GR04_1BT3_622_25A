@@ -115,7 +115,6 @@
                     <c:if test="${empty profile.user.reputation}">
                         <p><strong>Reputation:</strong> Not available</p>
                     </c:if>
-
                     <div class="text-end">
                         <a href="ProfileController?route=editForm" class="btn btn-primary">
                             Editar Perfil
@@ -165,6 +164,11 @@
                         <label for="description" class="form-label fw-bold">Descripción</label>
                         <textarea class="form-control" id="description" name="description"
                                   rows="3">${profile.description}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Número de Teléfono</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" maxlength="10" pattern="\d{10}" title="Debe tener 10 dígitos numéricos" required
+                               value="${profile.phoneNumber != null ? profile.phoneNumber : ''}">
                     </div>
                     <div class="mb-3">
                         <label for="photoFile" class="form-label fw-bold">Foto de perfil</label>

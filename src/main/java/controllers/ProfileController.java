@@ -142,7 +142,8 @@ public class ProfileController extends HttpServlet {
         String firstName = req.getParameter("firstName");
         String lastName = req.getParameter("lastName");
         String description = req.getParameter("description");
-        return new Profile(0, firstName, lastName, null, description, getUser(req));
+        String phoneNumber = req.getParameter("phoneNumber");
+        return new Profile(0, firstName, lastName, null, description, phoneNumber, getUser(req));
     }
 
 
@@ -173,6 +174,7 @@ public class ProfileController extends HttpServlet {
                     validatedData.getLastName(),
                     validatedData.getPhoto(),
                     validatedData.getDescription(),
+                    validatedData.getPhoneNumber(),
                     validatedData.getUser()
             );
             System.out.println("Profile update: " + profileUpdate.getPhoto());
@@ -194,9 +196,10 @@ public class ProfileController extends HttpServlet {
         String firstName = req.getParameter("firstName");
         String lastName = req.getParameter("lastName");
         String description = req.getParameter("description");
+        String phoneNumber = req.getParameter("phoneNumber");
         User user = getUser(req);
 
-        // Obtener foto previa del formulario (campo oculto)
+        // Foto previa
         String existingPhoto = req.getParameter("existingPhoto");
 
         Part photoPart = req.getPart("photoFile");
@@ -210,8 +213,21 @@ public class ProfileController extends HttpServlet {
             return null;
         }
 
-        return new Profile(id, firstName, lastName, photo, description, user);
+        if (!isValidPhoneNumber(phoneNumber)) {
+            req.setAttribute("messageType", ERROR);
+            req.setAttribute("message", "El número de teléfono debe tener exactamente 10 dígitos numéricos.");
+            req.setAttribute("profile", profileService.getProfileByUserId(user.getUserId()));
+            req.getRequestDispatcher("jsp/MY_PROFILE.jsp").forward(req, resp);
+            return null;
+        }
+
+        return new Profile(id, firstName, lastName, photo, description, phoneNumber, user);
     }
+
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        return phoneNumber != null && phoneNumber.matches("\\d{10}");
+    }
+
 
     private void handleValidationError(HttpServletRequest req, HttpServletResponse resp, ProfileService service, User user)
             throws ServletException, IOException {

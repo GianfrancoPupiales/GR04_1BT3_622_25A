@@ -33,7 +33,7 @@ class ProfileServiceTest {
      */
     @Test
     void given_registered_user_when_profile_created_then_profile_should_be_stored() {
-        Profile profile = new Profile(1, "Luis", "Gomez", "photo.jpg", "Engineering student", new User());
+        Profile profile = new Profile(1, "Luis", "Gomez", "photo.jpg", "Engineering student","0123456789", new User());
         assertEquals("Luis", profile.getFirstName());
         assertEquals("Gomez", profile.getLastName());
         assertEquals("photo.jpg", profile.getPhoto());
@@ -46,7 +46,7 @@ class ProfileServiceTest {
      */
     @Test
     void given_created_profile_when_accessing_my_profile_then_return_profile_info() {
-        Profile profile = new Profile(1, "Luis", "Gomez", "photo.jpg", "Engineering student", new User());
+        Profile profile = new Profile(1, "Luis", "Gomez", "photo.jpg", "Engineering student","0123456789", new User());
         InMemoryProfileDAO dao = new InMemoryProfileDAO();
         dao.save(profile);
         ProfileService service = new ProfileService(dao);
@@ -68,7 +68,7 @@ class ProfileServiceTest {
     void given_valid_profile_update_when_saveProfile_then_persists_data() {
         User user = new User();
         user.setIdUser(1);
-        Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción");
+        Profile profileToUpdate = new Profile(1, "Ana", "Torres", "nueva.jpg", "Nueva descripción","0123456789");
 
 
         profileToUpdate.setUser(user);
@@ -86,7 +86,7 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
     */
     @Test
     void given_invalid_profile_update_when_saveProfile_then_fails() {
-        Profile invalidProfile = new Profile(1, "", "Torres", "foto.jpg", "desc");
+        Profile invalidProfile = new Profile(1, "", "Torres", "foto.jpg", "desc","0123456789");
 
         boolean result = service.updateProfile(invalidProfile);
 
@@ -106,7 +106,7 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
             "'Nombre', ' ', 'foto.jpg'"
     })
     void given_incomplete_profile_when_validateProfile_then_return_false(String firstName, String lastName, String photo) {
-        Profile profile = new Profile(1, firstName, lastName, photo, "desc");
+        Profile profile = new Profile(1, firstName, lastName, photo, "desc","0123456789");
         assertFalse(service.validateProfile(profile));
     }
 
@@ -119,7 +119,7 @@ Test con mockito: Asegura que si el perfil es inválido , no se llama al DAO ('n
             "'Juan', 'Perez', 'img.png'"
     })
     void given_valid_profile_when_validateProfile_then_return_true(String firstName, String lastName, String photo) {
-        Profile profile = new Profile(1, firstName, lastName, photo, "desc");
+        Profile profile = new Profile(1, firstName, lastName, photo, "desc","0123456789");
         assertTrue(service.validateProfile(profile));
     }
 
@@ -133,7 +133,7 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         InMemoryProfileDAO dao = new InMemoryProfileDAO();
         ProfileService service = new ProfileService(dao);
 
-        Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante");
+        Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante","0123456789");
         dao.save(profile);
 
         Profile result = service.getProfileByUserId(1);
@@ -153,7 +153,7 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         ProfileService service = new ProfileService(dao);
         User user = new User();
 
-        Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante");
+        Profile profile = new Profile(1, "Carlos", "Lopez", "foto2.jpg", "Estudiante","0123456789");
         user.setIdUser(1);
         profile.setUser(user);
         dao.save(profile);
@@ -196,7 +196,7 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
 
     @Test
     void given_other_user_profile_when_loaded_then_display_all_profile_data() {
-        Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
+        Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform","0123456789");
         assertEquals("Ana", profile.getFirstName());
         assertEquals("Ramirez", profile.getLastName());
         assertEquals("ana.jpg", profile.getPhoto());
@@ -214,7 +214,7 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         InMemoryProfileDAO inMemoryDAO = new InMemoryProfileDAO();
         ProfileService service = new ProfileService(inMemoryDAO);
 
-        Profile expectedProfile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
+        Profile expectedProfile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform","0123456789");
         inMemoryDAO.save(expectedProfile);
 
         Profile result = service.getProfileByUserId(2);
@@ -234,7 +234,7 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
         InMemoryProfileDAO inMemoryDAO = new InMemoryProfileDAO();
         ProfileService service = new ProfileService(inMemoryDAO);
 
-        Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform");
+        Profile profile = new Profile(2, "Ana", "Ramirez", "ana.jpg", "User of platform","0123456789");
         User user = new User(2, "123456879", "123456");
 
         Product product1 = new Product(1, "Notebook", "Electronics", "New", user);

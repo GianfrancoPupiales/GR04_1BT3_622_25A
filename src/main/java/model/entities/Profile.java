@@ -27,6 +27,9 @@ public class Profile implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "phoneNumber", length = 10)
+    private String phoneNumber;
+
     @OneToOne
     @JoinColumn(name = "idUser")
     private User user;
@@ -35,21 +38,23 @@ public class Profile implements Serializable {
 
     }
 
-    public Profile(int idProfile, String firstName, String lastName, String photo, String description, User user) {
+    public Profile(int idProfile, String firstName, String lastName, String photo, String description,String phoneNumber,  User user) {
         this.idProfile = idProfile;
         this.firstName = firstName;
         this.lastName = lastName;
         this.photo = photo;
         this.description = description;
+        this.phoneNumber = phoneNumber;
         this.user = user;
     }
 
-    public Profile(int idProfile, String firstName, String lastName, String photo, String description) {
+    public Profile(int idProfile, String firstName, String lastName, String photo, String description, String phoneNumber) {
         this.idProfile = idProfile;
         this.firstName = firstName;
         this.lastName = lastName;
         this.photo = photo;
         this.description = description;
+        this.phoneNumber = phoneNumber;
     }
 
     public int getIdProfile() {
@@ -98,5 +103,28 @@ public class Profile implements Serializable {
 
     public void setIdProfile(int id) {
         this.idProfile = id;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

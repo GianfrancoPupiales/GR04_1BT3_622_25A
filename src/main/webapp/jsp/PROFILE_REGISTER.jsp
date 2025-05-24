@@ -26,6 +26,10 @@
                     <label for="description" class="form-label">Description</label>
                     <input type="text" class="form-control" id="description" name="description" required>
                 </div>
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label">Phone number</label>
+                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" maxlength="10" pattern="\d{10}" title="Must have 10 numeric digits" required>
+                </div>
                 <button type="submit" class="btn btn-primary w-100">Register</button>
             </form>
             <div class="text-center">

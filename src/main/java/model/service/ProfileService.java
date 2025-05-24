@@ -38,7 +38,8 @@ public class ProfileService {
     public boolean validateProfile(Profile profile) {
         return profile != null
                 && profile.getFirstName() != null && !profile.getFirstName().isBlank()
-                && profile.getLastName() != null && !profile.getLastName().isBlank();
+                && profile.getLastName() != null && !profile.getLastName().isBlank()
+                && profile.getPhoneNumber() != null && profile.getPhoneNumber().matches("\\d{10}");
     }
 
     public boolean createProfile(Profile profile) {

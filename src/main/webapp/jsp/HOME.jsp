@@ -80,10 +80,13 @@
 <main class="container my-4">
     <!-- Feedback Message -->
     <c:if test="${not empty sessionScope.message}">
-        <div id="notification" class="alert alert-danger"
-             style="background-color: #f8d7da; color: #721c24;" role="alert">
-                ${sessionScope.message}</div>
+        <div id="notification"
+             class="alert ${sessionScope.messageType == 'info' ? 'alert-success' : 'alert-danger'}"
+             role="alert">
+                ${sessionScope.message}
+        </div>
         <c:remove var="message" scope="session"/>
+        <c:remove var="messageType" scope="session"/>
     </c:if>
 
     <div class="row">

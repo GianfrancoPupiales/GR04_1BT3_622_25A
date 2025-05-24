@@ -78,18 +78,23 @@
 <!-- Main Content -->
 <main class="container my-4">
     <!-- Feedback Message -->
-    <c:if test="${not empty sessionScope.message}">
-        <div id="notification" class="alert alert-danger"
-             style="background-color: #f8d7da; color: #721c24;" role="alert">
-                ${sessionScope.message}</div>
-        <c:remove var="message" scope="session"/>
-    </c:if>
+    <main class="container my-4">
+        <!-- Feedback Message dinámico -->
+        <c:if test="${not empty sessionScope.message}">
+            <div id="notification"
+                 class="alert ${sessionScope.messageType == 'info' ? 'alert-success' : 'alert-danger'}"
+                 role="alert">
+                    ${sessionScope.message}
+            </div>
+            <c:remove var="message" scope="session"/>
+            <c:remove var="messageType" scope="session"/>
+        </c:if>
 
-    <div class="row">
+        <div class="row">
         <!-- PRODUCT TO OFFER Section -->
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="mb-0"> Make An Offer </h1>
+                <h1 class="mb-0">Make An Offer</h1>
             </div>
             <div class="row">
                 <c:forEach var="product" items="${products}">
@@ -124,7 +129,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox"
                                                name="selectedProducts" value="${product.idProduct}" id="productCheckbox${product.idProduct}">
-                                        <label class="form-check-label text-primary fw-bold" for="productCheckbox${product.idProduct}">
+                                        <label class="form-check-label text-danger fw-bold" for="productCheckbox${product.idProduct}">
                                             Offer this one ...
                                         </label>
                                     </div>
@@ -141,11 +146,9 @@
                         </div>
                     </div>
                 </c:forEach>
-
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal">
                     Confirm Offer
                 </button>
-
             </div>
             <c:if test="${empty products}">
                 <div class="alert alert-warning text-center">You have not created any product.</div>
@@ -240,7 +243,5 @@
         });
     });
 </script>
-
-
 </body>
 </html>

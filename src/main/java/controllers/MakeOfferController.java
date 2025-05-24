@@ -121,7 +121,7 @@ public class MakeOfferController extends HttpServlet {
 
         if (created) {
             session.setAttribute("message", "Offer created successfully.");
-            session.setAttribute("messageType", "success");
+            session.setAttribute("messageType", "info");
         } else {
             session.setAttribute("message", "Failed to create offer.");
             session.setAttribute("messageType", "error");

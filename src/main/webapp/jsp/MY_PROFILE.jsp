@@ -84,7 +84,7 @@
                         <div class="me-4">
                             <c:choose>
                                 <c:when test="${not empty profile.photo and profile.photo ne 'null' and fn:trim(profile.photo) ne ''}">
-                                    <img src="${pageContext.request.contextPath}/images/${profile.photo}"
+                                    <img src="${pageContext.request.contextPath}/profile-images/${profile.photo}"
                                          alt="Foto de perfil"
                                          class="rounded-circle"
                                          style="width: 100px; height: 100px; object-fit: cover;">
@@ -96,9 +96,7 @@
                                          style="width: 100px; height: 100px; object-fit: cover;">
                                 </c:otherwise>
                             </c:choose>
-
                         </div>
-
                         <div>
                             <h4 class="mb-0">${profile.firstName} ${profile.lastName}</h4>
                             <small class="text-muted">DNI: <em>${profile.user.dni}</em></small>
@@ -152,6 +150,7 @@
             <form action="ProfileController?route=edit" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="id" value="${profile.idProfile}"/>
+                    <input type="hidden" name="existingPhoto" value="${profile.photo}"/>
                     <div class="mb-3">
                         <label for="firstName" class="form-label fw-bold">Nombre</label>
                         <input type="text" class="form-control" id="firstName" name="firstName"

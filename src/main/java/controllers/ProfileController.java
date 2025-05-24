@@ -190,18 +190,20 @@ public class ProfileController extends HttpServlet {
     }
 
     private Profile extractAndValidate(HttpServletRequest req, HttpServletResponse resp, ProfileService profileService) throws ServletException, IOException {
-        //Extraer parámetros
         String idParam = req.getParameter("id");
         String firstName = req.getParameter("firstName");
         String lastName = req.getParameter("lastName");
         String description = req.getParameter("description");
         User user = getUser(req);
-        Part photoPart = req.getPart("photoFile");
-        String photo = saveProfilePhoto(photoPart);
 
-        //Validaciones
+        // Obtener foto previa del formulario (campo oculto)
+        String existingPhoto = req.getParameter("existingPhoto");
+
+        Part photoPart = req.getPart("photoFile");
+        String photo = saveProfilePhoto(photoPart, existingPhoto);
+
         validateId(idParam);
-        int id = Integer.parseInt(req.getParameter("id"));
+        int id = Integer.parseInt(idParam);
 
         if (isRequiredFieldEmpty(firstName, lastName)) {
             handleValidationError(req, resp, profileService, user);
@@ -237,13 +239,14 @@ public class ProfileController extends HttpServlet {
     }
 
 
-    private String saveProfilePhoto(Part photoPart) throws IOException {
-        String photo = null;
-        String uploadPath = getServletContext().getRealPath("/images");
-
-        FileStorageService photoStorageService = new FileStorageService(uploadPath);
-        photo = photoStorageService.savePhoto(photoPart);
-
-        return photo;
+    private String saveProfilePhoto(Part photoPart, String existingPhoto) throws IOException {
+        if (photoPart != null && photoPart.getSize() > 0) {
+            String uploadPath = "C:\\trukea\\images\\profiles";
+            FileStorageService photoStorageService = new FileStorageService(uploadPath);
+            return photoStorageService.savePhoto(photoPart);
+        } else {
+            // No hay nueva foto subida, conservar la existente
+            return existingPhoto;
+        }
     }
 }

@@ -8,7 +8,6 @@ import model.entities.Product;
 import model.entities.Reputation;
 import model.entities.User;
 import model.service.OfferService;
-import model.service.ProductService;
 import model.service.ReputationService;
 
 import java.io.IOException;
@@ -20,8 +19,7 @@ import java.util.Map;
 public class RespondOfferController extends HttpServlet {
 
 
-    private final ProductService productService = new ProductService();
-    private final OfferService offerService = new OfferService(productService);
+    private final OfferService offerService = new OfferService();
     private final ReputationService reputationService = new ReputationService();
 
     @Override

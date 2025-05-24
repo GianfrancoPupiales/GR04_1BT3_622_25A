@@ -1,17 +1,15 @@
 package controllers;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.dao.OfferDAO;
-import model.dao.ProductDAO;
 import model.entities.Offer;
 import model.entities.Product;
 import model.entities.User;
+import model.service.OfferService;
 import model.service.ProductService;
 
 import java.io.IOException;
@@ -21,7 +19,6 @@ import java.util.List;
 
 @WebServlet("/MakeOfferController")
 public class MakeOfferController extends HttpServlet {
-    private static EntityManagerFactory entityManagerFactory;
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +35,6 @@ public class MakeOfferController extends HttpServlet {
     private void router(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Control logic
         String route = (req.getParameter("route") == null) ? "list" : req.getParameter("route");
-
         switch (route) {
             case "list":
                 this.viewMyProducts(req, resp);
@@ -58,46 +54,47 @@ public class MakeOfferController extends HttpServlet {
     }
 
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        String viewType = req.getParameter("view"); // "home" o "user"
-        String id = req.getParameter("id");
-        String productToOffer = req.getParameter("id");
-        if (productToOffer != null && !productToOffer.isEmpty()) {
-            req.getSession().setAttribute("idProductToOffer", productToOffer);
-        }
-        ProductDAO productDAO = new ProductDAO();
-        List<Product> availableProducts;
-        // Mostrar productos del usuario (PRODUCT_OFF.jsp)
-        HttpSession session = req.getSession();
-        Product product = (Product) session.getAttribute("product");
-        availableProducts = productDAO.findProductById(Integer.parseInt(id));
-        req.setAttribute("availableProducts", availableProducts);
+        int idProductToOffer = Integer.parseInt(req.getParameter("id"));
+        req.getSession().setAttribute("idProductToOffer", String.valueOf(idProductToOffer));
+        ProductService productService = new ProductService();
+        Product productToOffer = productService.findById(idProductToOffer);
+        req.setAttribute("product", productToOffer);
         req.getRequestDispatcher("jsp/PROD_OFFER.jsp").forward(req, resp);
     }
 
+
     private void makeOffer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
-        List<Product> products = new ProductDAO().findProductsByUserId(user.getUserId());
+        User user = getUser(req);
+        List<Product> products = new ProductService().findAvailableProductsByUserId(user.getIdUser());
         req.setAttribute("products", products);
-        req.setAttribute("route", "list");
         req.getRequestDispatcher("jsp/OFFER.jsp").forward(req, resp);
     }
 
-    private void confirmOffer(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        String productToOfferId = (String) req.getSession().getAttribute("idProductToOffer");
+    private static User getUser(HttpServletRequest req) {
+        HttpSession session = req.getSession();
+        return (User) session.getAttribute("user");
+    }
+
+    private void confirmOffer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        HttpSession session = req.getSession();
+        String productToOfferId = (String) session.getAttribute("idProductToOffer");
+
+        if (productToOfferId == null) {
+            session.setAttribute("message", "No product selected to offer.");
+            session.setAttribute("messageType", "error");
+            resp.sendRedirect(req.getContextPath() + "/ManageProductsController?route=list&view=home");
+            return;
+        }
+
         Offer offer = parseOfferFromRequest(req);
 
-        //Agregar el producto principal
-        ProductDAO productDAO = new ProductDAO();
-        Product productToOffer = productDAO.findById(Integer.parseInt(productToOfferId));
+        ProductService productService = new ProductService();
+        Product productToOffer = productService.findById(Integer.parseInt(productToOfferId));
         offer.setProductToOffer(productToOffer);
 
-        //Agregar al Usuario
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         offer.setOfferedByUser(user);
 
-        //Agregar los productos ofrecidos (+1-n)
         String listOfferedProductsParam = req.getParameter("listOfferedProducts");
         if (listOfferedProductsParam != null && !listOfferedProductsParam.trim().isEmpty()) {
             String[] idStrings = listOfferedProductsParam.split(",");
@@ -106,94 +103,99 @@ public class MakeOfferController extends HttpServlet {
             for (String idStr : idStrings) {
                 try {
                     int id = Integer.parseInt(idStr.trim());
-                    Product offeredProduct = productDAO.findById(id);
+                    Product offeredProduct = productService.findById(id);
                     if (offeredProduct != null) {
                         offeredProducts.add(offeredProduct);
-                        System.out.println("Added one product: " + offeredProduct);
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("ID inválido: " + idStr); // Logging para depuración
+                    // Log error
                 }
             }
-
-            //Asignar a la lista de productos de la oferta
             offer.setOfferedProducts(offeredProducts);
-            System.out.println("Final list: " + offeredProducts);
         }
 
-        OfferDAO offerDAO = new OfferDAO();
-        if (offerDAO.create(offer)) {
-            req.setAttribute("messageType", "info");
-            req.setAttribute("message", "Offer created successfully.");
-            req.getRequestDispatcher("MakeOfferController?route=list").forward(req, resp);
+        OfferService offerService = new OfferService();
+        boolean created = offerService.createOffer(offer);
+
+        session.removeAttribute("idProductToOffer"); // Limpiar sesion
+
+        if (created) {
+            session.setAttribute("message", "Offer created successfully.");
+            session.setAttribute("messageType", "success");
         } else {
-            req.setAttribute("messageType", "error");
-            req.setAttribute("message", "Failed to create offer.");
-            req.getRequestDispatcher("MakeOfferController?route=list").forward(req, resp);
+            session.setAttribute("message", "Failed to create offer.");
+            session.setAttribute("messageType", "error");
         }
+        // Redirigir a home para evitar repost
+        resp.sendRedirect(req.getContextPath() + "/ManageProductsController?route=list&view=home");
     }
+
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String viewType = req.getParameter("view"); // "home" o "user"
         ProductService productService = new ProductService();
         List<Product> products;
-        // Mostrar productos del usuario (MY_PRODUCT.jsp)
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
+        User user = getUser(req);
         products = productService.findAvailableProductsByUserId(user.getUserId());
         req.setAttribute("products", products);
         req.getRequestDispatcher("jsp/OFFER.jsp").forward(req, resp);
     }
 
     private Offer parseOfferFromRequest(HttpServletRequest req) {
-        int idOffer = 0;
-        String txtId = req.getParameter("txtIdOffer");
+        int idOffer = parseOfferId(req.getParameter("txtIdOffer"));
+        Product productToOffer = parseProduct(req.getParameter("productToOffer"));
+        List<Product> offeredProducts = parseOfferedProducts(req.getParameterValues("selectedProducts"));
 
-        if (txtId != null && !txtId.trim().isEmpty()) {
-            try {
-                idOffer = Integer.parseInt(txtId);
-            } catch (NumberFormatException e) {
-                System.out.println("Error al convertir el ID: " + e.getMessage());
-            }
-        }
-
-        HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
-
-        // Validación de "listOfferedProducts" para asegurarse de que no esté vacío
-        String[] offeredProductIds = req.getParameterValues("selectedProducts");
-        List<Product> offeredProducts = new ArrayList<>();
-        if (offeredProductIds != null && offeredProductIds.length > 0) {
-            for (String id : offeredProductIds) {
-                if (id != null && !id.trim().isEmpty()) {  // Verificar que no sea vacío
-                    try {
-                        Product product = new ProductDAO().findById(Integer.parseInt(id));
-                        if (product != null) {
-                            offeredProducts.add(product);  // Añadir el producto si es válido
-                            System.out.println(product);
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error al convertir el ID del producto: " + e.getMessage());
-                    }
-                }
-            }
-        } else{
-            System.out.println("Empty list of products");
-        }
-
-        // Validación para el producto principal a ofrecer
-        String productToOfferId = req.getParameter("productToOffer");
-        Product productToOffer = null;
-        if (productToOfferId != null && !productToOfferId.trim().isEmpty()) {
-            try {
-                productToOffer = new ProductDAO().findById(Integer.parseInt(productToOfferId));
-            } catch (NumberFormatException e) {
-                System.out.println("Error al convertir el ID del producto a ofrecer: " + e.getMessage());
-            }
-        }
-
-        // Retornar la oferta con los productos
         return new Offer(idOffer, offeredProducts, productToOffer, "pending");
     }
 
+    private int parseOfferId(String txtId) {
+        if (txtId == null || txtId.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(txtId.trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Error converting ID: " + e.getMessage());
+            return 0;
+        }
+    }
 
+    private Product parseProduct(String productIdStr) {
+        if (productIdStr == null || productIdStr.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            int id = Integer.parseInt(productIdStr.trim());
+            return new ProductService().findById(id);
+        } catch (NumberFormatException e) {
+            System.out.println("Error converting product ID to offer: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private List<Product> parseOfferedProducts(String[] offeredProductIds) {
+        List<Product> offeredProducts = new ArrayList<>();
+        if (offeredProductIds == null || offeredProductIds.length == 0) {
+            System.out.println("Empty list of products");
+            return offeredProducts;
+        }
+
+        ProductService productService = new ProductService();
+
+        for (String idStr : offeredProductIds) {
+            if (idStr == null || idStr.trim().isEmpty()) {
+                continue;
+            }
+            try {
+                int id = Integer.parseInt(idStr.trim());
+                Product product = productService.findById(id);
+                if (product != null) {
+                    offeredProducts.add(product);
+                    System.out.println(product);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error converting product ID: " + e.getMessage());
+            }
+        }
+        return offeredProducts;
+    }
 }

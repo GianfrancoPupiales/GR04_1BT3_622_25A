@@ -132,7 +132,7 @@
                                 <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
                                 <div style="width: 50%; max-width: 250px;">
                                     <c:if test="${not empty product.photo}">
-                                        <img src="${pageContext.request.contextPath}/images/products/${product.photo}"
+                                        <img src="${pageContext.request.contextPath}/product-images/${product.photo}"
                                              alt="Product Photo"
                                              class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
                                     </c:if>

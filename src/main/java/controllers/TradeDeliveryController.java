@@ -1,6 +1,5 @@
 package controllers;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,7 +9,6 @@ import jakarta.servlet.http.HttpSession;
 import model.entities.Offer;
 import model.entities.User;
 import model.service.OfferService;
-import model.service.ProductService;
 
 import java.io.IOException;
 import java.io.Serial;
@@ -18,9 +16,7 @@ import java.util.List;
 
 @WebServlet("/TradeDeliveryController")
 public class TradeDeliveryController extends HttpServlet {
-    private static EntityManagerFactory entityManagerFactory;
-    private final ProductService productService = new ProductService();
-    private final OfferService offerService = new OfferService(productService);
+    private final OfferService offerService = new OfferService();
 
     @Serial
     private static final long serialVersionUID = 1L;

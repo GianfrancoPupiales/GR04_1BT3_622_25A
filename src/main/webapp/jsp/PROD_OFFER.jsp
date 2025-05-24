@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Available Product</title>
+    <title>Product to Offer</title>
     <!-- Bootstrap CSS -->
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -93,66 +93,64 @@
                 <h1 class="mb-0"> Product Info </h1>
             </div>
             <div class="row">
-                <c:forEach var="product" items="${availableProducts}">
-                    <div class="col-md-6 mb-3">
-                        <div class="card border-0 rounded-3" style="height: 100%;">
-                            <div class="card-body p-4 d-flex">
-                                <!-- Texto ocupa el espacio restante -->
-                                <div class="flex-grow-1 pe-3">
-                                    <h2 class="card-title text-dark fw-bold">${product.title}</h2>
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 rounded-3" style="height: 100%;">
+                        <div class="card-body p-4 d-flex">
+                            <!-- Texto ocupa el espacio restante -->
+                            <div class="flex-grow-1 pe-3">
+                                <h2 class="card-title text-dark fw-bold">${product.title}</h2>
+                                <c:choose>
+                                    <c:when test="${not empty product.user.profile}">
+                                        <p class="card-text text-secondary small mb-4">
+                                            <i class="fa-solid fa-user me-2"></i>
+                                            <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${product.user.idUser}&from=home"
+                                               class="text-decoration-none">
+                                                    ${product.user.profile.firstName} ${product.user.profile.lastName}
+                                            </a>
+                                        </p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i> Unknown
+                                            user</p>
+                                    </c:otherwise>
+                                </c:choose>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-align-left me-2"></i>${product.description}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-layer-group me-2"></i>${product.state}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-tags me-2"></i>${product.category}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
+                                    <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
+                                </p>
+                                <p class="card-text text-secondary small mb-4">
                                     <c:choose>
-                                        <c:when test="${not empty product.user.profile}">
-                                            <p class="card-text text-secondary small mb-4">
-                                                <i class="fa-solid fa-user me-2"></i>
-                                                <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${product.user.idUser}&from=home" class="text-decoration-none">
-                                                        ${product.user.profile.firstName} ${product.user.profile.lastName}
-                                                </a>
-                                            </p>
+                                        <c:when test="${product.isAvailable}">
+                                            <i class="fa-solid fa-check me-2"></i>Available
                                         </c:when>
                                         <c:otherwise>
-                                            <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i> Unknown user</p>
+                                            <i class="fa-solid fa-x me-2"></i> Not available
                                         </c:otherwise>
                                     </c:choose>
-                                    <p class="card-text text-secondary small mb-4">
-                                        <i class="fa-solid fa-align-left me-2"></i>${product.description}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-4">
-                                        <i class="fa-solid fa-layer-group me-2"></i>${product.state}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-4">
-                                        <i class="fa-solid fa-tags me-2"></i>${product.category}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-4">
-                                        <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-4">
-                                        <c:choose>
-                                            <c:when test="${product.isAvailable}">
-                                                <i class="fa-solid fa-check me-2"></i>Available
-                                            </c:when>
-                                            <c:otherwise>
-                                                <i class="fa-solid fa-x me-2"></i> Not available
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </p>
-                                </div>
-                                <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
-                                <div style="width: 50%; max-width: 250px;">
-                                    <c:if test="${not empty product.photo}">
-                                        <img src="${pageContext.request.contextPath}/images/products/${product.photo}"
-                                             alt="Product Photo"
-                                             class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
-                                    </c:if>
-                                </div>
+                                </p>
+                            </div>
+                            <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
+                            <div style="width: 50%; max-width: 250px;">
+                                <c:if test="${not empty product.photo}">
+                                    <img src="${pageContext.request.contextPath}/product-images/${product.photo}"
+                                         alt="Product Photo"
+                                         class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
+                                </c:if>
                             </div>
                         </div>
                     </div>
-                    <a href="${pageContext.request.contextPath}/MakeOfferController?route=list&view=user" class="btn btn-danger">Start Offer</a>
-                </c:forEach>
+                </div>
+                <a href="${pageContext.request.contextPath}/MakeOfferController?route=list&view=user"
+                   class="btn btn-danger">Start Offer</a>
             </div>
-            <c:if test="${empty availableProducts}">
-                <div class="alert alert-warning text-center">You have not created any product.</div>
-            </c:if>
         </div>
     </div>
 </main>

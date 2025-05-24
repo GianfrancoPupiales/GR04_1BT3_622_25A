@@ -1,23 +1,19 @@
 package model.service;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import model.dao.OfferDAO;
 import model.entities.Offer;
 import model.entities.Product;
 import model.entities.User;
 
-import javax.sound.midi.SysexMessage;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OfferService {
 
     private final OfferDAO offerDAO;
-    private static EntityManagerFactory entityManagerFactory;
     private final ProductService productService;
 
-    public OfferService(ProductService productService) {
+    public OfferService() {
         this.offerDAO = new OfferDAO();
         this.productService = new ProductService();
     }
@@ -113,7 +109,7 @@ public class OfferService {
     }
 
     public void confirmDelivery(Offer offer) {
-        offer.markAsDelivered(offer.getOfferedByUser( ));
+        offer.markAsDelivered(offer.getOfferedByUser());
     }
 
     public boolean updateOffer(Offer offer) {
@@ -124,5 +120,7 @@ public class OfferService {
     public record ResponseMessage(String type, String message) {
     }
 
-
+    public boolean createOffer(Offer offer) {
+        return offerDAO.create(offer);
+    }
 }

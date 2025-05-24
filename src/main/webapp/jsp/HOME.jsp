@@ -100,7 +100,6 @@
                     <div class="col-md-6 mb-3">
                         <div class="card border-0 rounded-3" style="height: 100%;">
                             <div class="card-body p-4 d-flex">
-                                <!-- Texto ocupa el espacio restante -->
                                 <div class="flex-grow-1 pe-3">
                                     <h3 class="card-title fw-bold">
                                         <a class="text-dark text-decoration-underline" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">

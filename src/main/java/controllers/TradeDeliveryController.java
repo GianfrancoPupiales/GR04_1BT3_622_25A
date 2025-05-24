@@ -64,12 +64,12 @@ public class TradeDeliveryController extends HttpServlet {
         if (offer != null) {
             boolean success = offerService.rateOfferAndMarkDelivered(offer, score);
             if (success) {
-                req.setAttribute("successMessage", "✅ Rating submitted successfully!");
+                req.setAttribute("successMessage", "Rating submitted successfully!");
             } else {
-                req.setAttribute("errorMessage", "⚠️ User who made the offer not found. Please try again.");
+                req.setAttribute("errorMessage", "User who made the offer not found. Please try again.");
             }
         } else {
-            req.setAttribute("errorMessage", "⚠️ Offer not found. Please try again.");
+            req.setAttribute("errorMessage", "Offer not found. Please try again.");
         }
 
         this.listDeliveries(req, resp);
@@ -106,11 +106,11 @@ public class TradeDeliveryController extends HttpServlet {
             if (success) {
                 resp.sendRedirect(req.getContextPath() + "/TradeDeliveryController?route=showRatingForm&offerId=" + offerId + "&toUserId=" + toUserId);
             } else {
-                req.setAttribute("errorMessage", "⚠️ Error al confirmar la entrega.");
+                req.setAttribute("errorMessage", "Error confirming delivery");
                 this.listDeliveries(req, resp);
             }
         } else {
-            req.setAttribute("errorMessage", "⚠️ Oferta no encontrada o no aceptada.");
+            req.setAttribute("errorMessage", "Offer not found or not accepted");
             this.listDeliveries(req, resp);
         }
     }
@@ -128,16 +128,15 @@ public class TradeDeliveryController extends HttpServlet {
         if (offer != null && offer.getStatus().equals("accepted")) {
             boolean rejected = offerService.changeOfferStatusToPending(offer);
             if (rejected) {
-                req.setAttribute("successMessage", "⚠️ The offer has been rejected and is now pending.");
+                req.setAttribute("successMessage", "The offer has been rejected and is now pending.");
             } else {
-                req.setAttribute("errorMessage", "⚠️ An error occurred while rejecting the offer.");
+                req.setAttribute("errorMessage", "An error occurred while rejecting the offer.");
             }
             this.listDeliveries(req, resp);
         } else {
-            req.setAttribute("errorMessage", "⚠️ Offer not found or not accepted.");
+            req.setAttribute("errorMessage", "Offer not found or not accepted.");
             this.listDeliveries(req, resp);  // Mostrar la página con el mensaje de error
         }
     }
-
 
 }

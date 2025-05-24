@@ -27,7 +27,7 @@ public class RespondOfferController extends HttpServlet {
         String route = req.getParameter("route");
 
         if (route == null || route.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ruta no especificada.");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Route not specified.");
             return;
         }
 
@@ -39,7 +39,7 @@ public class RespondOfferController extends HttpServlet {
                 handleViewOffer(req, resp);
                 break;
             default:
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Ruta no encontrada: " + route);
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Route not found: " + route);
         }
     }
 
@@ -48,7 +48,7 @@ public class RespondOfferController extends HttpServlet {
         String route = req.getParameter("route");
 
         if (route == null || route.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ruta no especificada.");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Route not specified.");
             return;
         }
 
@@ -57,7 +57,7 @@ public class RespondOfferController extends HttpServlet {
                 handleRespondOffer(req, resp);
                 break;
             default:
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Ruta no encontrada: " + route);
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Route not found: " + route);
         }
     }
 
@@ -77,7 +77,7 @@ public class RespondOfferController extends HttpServlet {
             int offerId = Integer.parseInt(req.getParameter("offerId"));
             Offer offer = offerService.findById(offerId);
             if (offer == null) {
-                req.setAttribute("error", "La oferta no existe.");
+                req.setAttribute("error", "The offer doesn't exist.");
                 req.getRequestDispatcher("jsp/error.jsp").forward(req, resp);
                 return;
             }
@@ -96,11 +96,11 @@ public class RespondOfferController extends HttpServlet {
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            req.setAttribute("error", "ID de oferta inválido.");
+            req.setAttribute("error", "Invalid offer ID.");
             req.getRequestDispatcher("jsp/error.jsp").forward(req, resp);
         } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("error", "Ocurrió un error al procesar la oferta.");
+            req.setAttribute("error", "An error occurred while processing the offer.");
             req.getRequestDispatcher("jsp/error.jsp").forward(req, resp);
         }
     }
@@ -119,7 +119,7 @@ public class RespondOfferController extends HttpServlet {
 
         if (status == null || offerIdStr == null) {
             responseMessage.put("type", "error");
-            responseMessage.put("message", "Datos incompletos para procesar la oferta.");
+            responseMessage.put("message", "Incomplete data for processing the offer.");
         } else {
             try {
                 int offerId = Integer.parseInt(offerIdStr);
@@ -140,7 +140,7 @@ public class RespondOfferController extends HttpServlet {
                 }
             } catch (NumberFormatException e) {
                 responseMessage.put("type", "error");
-                responseMessage.put("message", "ID de oferta inválido.");
+                responseMessage.put("message", "Invalid offer ID.");
             }
         }
 

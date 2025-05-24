@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileStorageService {
-    private String uploadPath;
+    private final String uploadPath;
 
     public FileStorageService(String uploadPath) {
         this.uploadPath = uploadPath;
@@ -18,18 +18,18 @@ public class FileStorageService {
     public String savePhoto(Part photoPart) throws IOException {
         String photo = null;
         if (photoPart != null && photoPart.getSize() > 0) {
-            String fileName = Paths.get(photoPart.getSubmittedFileName()).getFileName().toString();
+            String originalFileName = Paths.get(photoPart.getSubmittedFileName()).getFileName().toString();
+            String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
 
             File uploadDir = new File(uploadPath);
-
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
-            File file = new File(uploadDir, fileName);
+            File file = new File(uploadDir, uniqueFileName);
             Files.copy(photoPart.getInputStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-            photo = fileName;
+            photo = uniqueFileName;
         }
         return photo;
     }

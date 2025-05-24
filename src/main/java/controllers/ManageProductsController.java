@@ -210,9 +210,10 @@ public class ManageProductsController extends HttpServlet {
         Part photoPart = req.getPart("photo");
         String photoFileName;
         if (photoPart != null && photoPart.getSize() > 0) {
-            String uploadPath = getServletContext().getRealPath("/images/products");
+            String uploadPath = "C:\\trukea\\images\\products";
             FileStorageService storageService = new FileStorageService(uploadPath);
             photoFileName = storageService.savePhoto(photoPart);
+
         } else {
             // Si no hay foto nueva, conservar la existente
             photoFileName = existingPhoto;

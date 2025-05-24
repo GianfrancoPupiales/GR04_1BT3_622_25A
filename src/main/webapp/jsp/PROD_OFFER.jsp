@@ -92,8 +92,8 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="mb-0"> Product Info </h1>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-8 mb-3">
                     <div class="card border-0 rounded-3" style="height: 100%;">
                         <div class="card-body p-4 d-flex">
                             <!-- Texto ocupa el espacio restante -->

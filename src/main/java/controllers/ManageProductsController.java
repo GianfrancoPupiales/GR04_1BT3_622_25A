@@ -70,8 +70,29 @@ public class ManageProductsController extends HttpServlet {
             case "accept":
                 this.confirmRemove(req, resp);
                 break;
+            case "select":
+                this.selectProduct(req, resp);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
+        }
+    }
+
+    private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String idParam = req.getParameter("idProduct");
+        if (idParam == null || !idParam.matches("\\d+")) {
+            resp.sendRedirect("ManageProductsController?route=list");
+            return;
+        }
+
+        int idProduct = Integer.parseInt(idParam);
+        Product product = getProductService().findProductById(idProduct);
+
+        if (product != null) {
+            req.setAttribute("product", product);
+            req.getRequestDispatcher("jsp/PRODUCT.jsp").forward(req, resp);
+        } else {
+            forwardWithMessage(req, resp, "error", "Product not found.");
         }
     }
 

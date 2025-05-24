@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Delivery - Ratings</title>
+    <title>Pending Offers</title>
     <!-- Bootstrap CSS -->
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -13,11 +13,8 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
-
 <body>
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4" style="position: sticky; top: 0; z-index: 1030;">
     <div class="container-fluid">
         <!-- Inicio: Sección izquierda -->
@@ -95,25 +92,54 @@
             <div class="row">
                 <c:forEach var="offer" items="${offers}">
                     <div class="col-md-6 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Offered Products:
-                                    <c:forEach var="product" items="${offer.offeredProducts}">
-                                        ${product.title} <br>
-                                    </c:forEach>
+                        <div class="card border-0 shadow rounded-3 h-100">
+                            <div class="card-body p-4">
+                                <h5 class="card-title fw-bold mb-3">
+                                    <i class="fas fa-gift me-2 text-primary"></i> Offered Products
                                 </h5>
-                                <p class="card-text">Requested Product: ${offer.productToOffer.title}</p>
-                                <p class="card-text">User: ${offer.offeredByUser.dni}</p>
+                                <ul class="list-unstyled ps-3 mb-3">
+                                    <c:forEach var="product" items="${offer.offeredProducts}">
+                                        <li>
+                                            <i class="fas fa-box-open text-secondary me-2"></i>
+                                            <a href="${pageContext.request.contextPath}/ManageProductsController?route=select&idProduct=${product.idProduct}"
+                                               class="text-decoration-underline text-dark">
+                                                    ${product.title}
+                                            </a>
 
-                                <!-- Form to respond to the offer -->
-                                <form action="RespondOfferController" method="post">
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+
+                                <p class="card-text mb-2">
+                                    <i class="fas fa-hand-holding me-2 text-success"></i>
+                                    <strong>Requested:</strong>
+                                    <a href="${pageContext.request.contextPath}/ManageProductsController?route=select&idProduct=${offer.productToOffer.idProduct}"
+                                       class="text-decoration-underline text-dark">
+                                            ${offer.productToOffer.title}
+                                    </a>
+                                </p>
+
+                                <p class="card-text mb-4">
+                                    <i class="fas fa-user me-2 text-muted"></i>
+                                    <strong>User:</strong>
+                                    <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${offer.offeredByUser.idUser}&from=offers"
+                                       class="text-decoration-underline text-dark">
+                                            ${offer.offeredByUser.profile.firstName} ${offer.offeredByUser.profile.lastName}
+                                    </a>
+
+                                </p>
+
+                                <form action="RespondOfferController" method="post" class="d-flex gap-2">
                                     <input type="hidden" name="route" value="respond">
                                     <input type="hidden" name="offerId" value="${offer.idOffer}">
 
-                                    <button type="submit" name="status" value="accepted" class="btn btn-success">
-                                        Accept
+                                    <button type="submit" name="status" value="accepted"
+                                            class="btn btn-outline-success w-50">
+                                        <i class="fas fa-check"></i> Accept
                                     </button>
-                                    <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject
+                                    <button type="submit" name="status" value="rejected"
+                                            class="btn btn-outline-danger w-50">
+                                        <i class="fas fa-times"></i> Reject
                                     </button>
                                 </form>
                             </div>

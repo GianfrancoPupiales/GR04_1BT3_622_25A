@@ -58,7 +58,7 @@ class ProductServiceTest {
     void givenInvalidCategory_whenSearchProductsByCategory_thenReturnAllProductsWithErrorMessage() {
         when(productDAO.findAll()).thenReturn(sampleProducts);
 
-        SearchResult result = productService.searchProductsByCategory("CategoriaInvalida");
+        SearchResult result = productService.searchProductsByCategory("InvalidCategory");
 
         assertEquals(sampleProducts, result.getProducts());
         assertEquals("Invalid status, showing all products", result.getMessage());

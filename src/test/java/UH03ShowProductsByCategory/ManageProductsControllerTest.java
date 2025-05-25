@@ -39,7 +39,7 @@ class ManageProductsControllerTest {
 
     @Test
     void givenCategoryParam_whenViewProductsByCategory_thenPassResultToView() throws Exception {
-        String categoryParam = "Books";  // o puede ser "Todos", null, "Invalid"
+        String categoryParam = "Books";
         ProductCategory categoryEnum = ProductCategory.Books;
 
         when(request.getParameter("category")).thenReturn(categoryParam);
@@ -54,7 +54,7 @@ class ManageProductsControllerTest {
 
         controller.viewProductsByCategory(request, response);
 
-        verify(productService).searchProductsByCategory(categoryEnum); // o parámetro adecuado (puedes usar ArgumentCaptor)
+        verify(productService).searchProductsByCategory(categoryEnum);
         verify(request).setAttribute("products", products);
         verify(request).setAttribute("selectedCategory", categoryEnum);
         verify(request, never()).setAttribute(eq("message"), any());
@@ -68,7 +68,7 @@ class ManageProductsControllerTest {
 
         when(request.getParameter("category")).thenReturn(categoryParam);
 
-        SearchResult searchResult = new SearchResult(Collections.emptyList(), "No hay productos en esta categoría");
+        SearchResult searchResult = new SearchResult(Collections.emptyList(), "There are no products in this category");
 
         when(productService.searchProductsByCategory(any())).thenReturn(searchResult);
         when(request.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
@@ -78,7 +78,7 @@ class ManageProductsControllerTest {
         verify(productService).searchProductsByCategory(categoryEnum);
         verify(request).setAttribute("products", Collections.emptyList());
         verify(request).setAttribute("selectedCategory", categoryEnum);
-        verify(request).setAttribute("message", "No hay productos en esta categoría");
+        verify(request).setAttribute("message", "There are no products in this category");
         verify(dispatcher).forward(request, response);
     }
 }

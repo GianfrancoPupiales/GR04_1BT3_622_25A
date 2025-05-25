@@ -6,10 +6,13 @@ import model.dao.ProductDAO;
 import model.entities.Product;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -18,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +35,11 @@ class ProductDAOTest {
 
     @Mock
     TypedQuery<Product> query;
+
+    @BeforeEach
+    void setup() {
+        productDAO = new ProductDAO(entityManager);
+    }
 
     @Test
     void givenValidCategory_whenGetProductsByCategory_thenReturnFilteredProducts() {
@@ -62,12 +71,13 @@ class ProductDAOTest {
                 new Product(2, "Title2", "Description", ProductState.New, ProductCategory.Electronics, "", null)
         );
 
-        // We simulate findAll() being called inside getProductsByCategory(null)
-        // So we mock findAll() to return allProducts
-        when(productDAO.findAll()).thenReturn(allProducts);
+        // Create a spy of the real productDAO instance.
+        // A spy allows you to override specific method behavior while keeping the rest of the logic real.
+        ProductDAO spyDao = Mockito.spy(productDAO);
+        Mockito.doReturn(allProducts).when(spyDao).findAll();
 
         // When
-        List<Product> result = productDAO.getProductsByCategory(null);
+        List<Product> result = spyDao.getProductsByCategory(null);
 
         // Then
         assertNotNull(result);

@@ -8,6 +8,7 @@ import model.dto.SearchResult;
 import model.entities.Product;
 import model.enums.ProductCategory;
 import model.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,6 +38,11 @@ class ManageProductsControllerTest {
     @Mock
     RequestDispatcher dispatcher;
 
+    @BeforeEach
+    void setup() {
+        controller = new ManageProductsController(productService);
+    }
+
     @Test
     void givenCategoryParam_whenViewProductsByCategory_thenPassResultToView() throws Exception {
         String categoryParam = "Books";
@@ -54,7 +60,7 @@ class ManageProductsControllerTest {
 
         controller.viewProductsByCategory(request, response);
 
-        verify(productService).searchProductsByCategory(categoryEnum);
+        verify(productService).searchProductsByCategory(categoryParam);
         verify(request).setAttribute("products", products);
         verify(request).setAttribute("selectedCategory", categoryEnum);
         verify(request, never()).setAttribute(eq("message"), any());
@@ -75,7 +81,7 @@ class ManageProductsControllerTest {
 
         controller.viewProductsByCategory(request, response);
 
-        verify(productService).searchProductsByCategory(categoryEnum);
+        verify(productService).searchProductsByCategory(categoryParam);
         verify(request).setAttribute("products", Collections.emptyList());
         verify(request).setAttribute("selectedCategory", categoryEnum);
         verify(request).setAttribute("message", "There are no products in this category");

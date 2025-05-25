@@ -2,17 +2,26 @@ package model.dao;
 
 import jakarta.persistence.EntityManager;
 import model.entities.Product;
+import model.enums.ProductCategory;
 
 import java.util.List;
 
 public class ProductDAO extends GenericDAO<Product> {
 
+    private final EntityManager em;
+
     public ProductDAO() {
         super(Product.class);
+        this.em = getEntityManager(); // crea uno real para producción
+    }
+
+    public ProductDAO(EntityManager em) {
+        super(Product.class);
+        this.em = em;
     }
 
     public List<Product> findProductsByUserId(int idUser) {
-        try (EntityManager em = getEntityManager()) {
+        try {
             String jpql = "SELECT p FROM Product p WHERE p.user.idUser = :idUser";
             return em.createQuery(jpql, Product.class)
                     .setParameter("idUser", idUser)
@@ -23,7 +32,7 @@ public class ProductDAO extends GenericDAO<Product> {
     }
 
     public List<Product> findAvailableProductsByUserId(int idUser) {
-        try (EntityManager em = getEntityManager()) {
+        try {
             String jpql = "SELECT p FROM Product p WHERE p.user.idUser = :idUser AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("idUser", idUser)
@@ -34,7 +43,7 @@ public class ProductDAO extends GenericDAO<Product> {
     }
 
     public List<Product> findProductById(int idProduct) {
-        try (EntityManager em = getEntityManager()) {
+        try {
             String jpql = "SELECT p FROM Product p WHERE p.idProduct = :idProduct";
             return em.createQuery(jpql, Product.class)
                     .setParameter("idProduct", idProduct)
@@ -46,7 +55,6 @@ public class ProductDAO extends GenericDAO<Product> {
 
 
     public boolean updateProductAvailability(List<Product> products, boolean available) {
-        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             for (Product product : products) {
@@ -63,10 +71,24 @@ public class ProductDAO extends GenericDAO<Product> {
     }
 
     public List<Product> findAvailableProductsExceptUser(int userId) {
-        try (EntityManager em = getEntityManager()) {
+        try {
             String jpql = "SELECT p FROM Product p WHERE p.user.idUser != :userId AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("userId", userId)
+                    .getResultList();
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    public List<Product> getProductsByCategory(ProductCategory category) {
+        try {
+            if (category == null) {
+                return findAll();
+            }
+            String jpql = "SELECT p FROM Product p WHERE p.category = :category";
+            return em.createQuery(jpql, Product.class)
+                    .setParameter("category", category)
                     .getResultList();
         } catch (Exception e) {
             return List.of();

@@ -1,4 +1,4 @@
-package model.service;
+package model.utils;
 
 import model.dao.FavoriteDAO;
 import model.entities.Favorite;

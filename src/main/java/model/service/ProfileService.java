@@ -47,26 +47,30 @@ public class ProfileService {
     }
 
     public Profile getFullProfileWithProducts(int userId) {
-        Profile profile = profileDAO.findProfileByUserId(userId);
+        Profile profile = getProfileByUserId(userId);
         if (profile == null) {
             return null;
         }
 
+        User user = getUserWithProducts(userId);
+        profile.setUser(user);
+
+        return profile;
+    }
+
+    private User getUserWithProducts(int userId) {
         User user = profileDAO.findUserById(userId);
-        if (user == null) {
-            profile.setUser(null);
-            return profile;
-        }
+        if (user == null) return null;
 
         List<Product> products = profileDAO.findProductsByUserId(userId);
-        if (products != null) {
+        if (products != null && !products.isEmpty()) {
             for (Product product : products) {
                 product.setUser(user);
             }
             user.setProducts(products);
         }
 
-        profile.setUser(user);
-        return profile;
+        return user;
     }
+
 }

@@ -9,12 +9,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.dto.SearchResult;
 import model.entities.Product;
 import model.entities.User;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
 import model.service.FileStorageService;
 import model.service.ProductService;
+import model.utils.ProductCategoryHelper;
 
 @MultipartConfig
 @WebServlet("/ManageProductsController")
@@ -23,7 +25,15 @@ public class ManageProductsController extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final ProductService productService = new ProductService();
+    private final ProductService productService;
+
+    public ManageProductsController() {
+        this.productService = new ProductService();
+    }
+
+    public ManageProductsController(ProductService productService) {
+        this.productService = productService;
+    }
 
     private ProductService getProductService() {
         return productService;
@@ -47,7 +57,7 @@ public class ManageProductsController extends HttpServlet {
             case "list":
                 String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
                 if ("home".equals(view)) {
-                    viewProducts(req, resp);
+                    viewProductsByCategory(req, resp);
                 } else {
                     viewMyProducts(req, resp);
                 }
@@ -275,5 +285,22 @@ public class ManageProductsController extends HttpServlet {
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Product> products = getProductsByUserId(req);
         forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
+    }
+
+    public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String categoryParam = request.getParameter("category");
+        SearchResult result = productService.searchProductsByCategory(categoryParam);
+
+        request.setAttribute("products", result.getProducts());
+
+        if (ProductCategoryHelper.parseCategory(categoryParam).isPresent()) {
+            request.setAttribute("selectedCategory", ProductCategory.valueOf(categoryParam));
+        }
+
+        if (result.getMessage() != null) {
+            request.setAttribute("message", result.getMessage());
+        }
+
+        request.getRequestDispatcher("jsp/HOME.jsp").forward(request, response);
     }
 }

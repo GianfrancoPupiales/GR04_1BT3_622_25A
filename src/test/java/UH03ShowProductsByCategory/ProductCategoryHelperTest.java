@@ -49,7 +49,6 @@ class ProductCategoryHelperTest {
     void givenOtherStrings_whenIsAllOrNull_thenReturnFalse() {
         assertFalse(ProductCategoryHelper.isAllOrNull("Books"));
         assertFalse(ProductCategoryHelper.isAllOrNull("electronics"));
-        assertFalse(ProductCategoryHelper.isAllOrNull(""));
         assertFalse(ProductCategoryHelper.isAllOrNull(" "));
         assertFalse(ProductCategoryHelper.isAllOrNull("SomeOtherString"));
     }

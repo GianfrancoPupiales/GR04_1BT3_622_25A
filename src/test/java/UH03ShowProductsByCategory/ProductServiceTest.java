@@ -35,11 +35,13 @@ class ProductServiceTest {
                 new Product(1, "Product A", "Description", null, ProductCategory.Books, "", null),
                 new Product(2, "Product B", "Description", null, ProductCategory.Electronics, "", null)
         );
+        productService = new ProductService(productDAO);
     }
 
     // Escenario 04: Selección “All” o null muestra todos los productos sin mensaje
     @Test
     void givenNullOrAllCategory_whenSearchProductsByCategory_thenReturnAllProductsWithoutMessage() {
+
         when(productDAO.findAll()).thenReturn(sampleProducts);
 
         SearchResult resultNull = productService.searchProductsByCategory(null);

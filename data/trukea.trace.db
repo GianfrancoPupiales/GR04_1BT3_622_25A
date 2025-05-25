@@ -1,0 +1,31 @@
+2025-05-25 10:19:42.328200-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT" not found (this database is empty); SQL statement:
+SELECT 1 FROM client [42104-224]
+2025-05-25 10:19:42.362202-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "PRODUCT" no encontrada
+Table "PRODUCT" not found; SQL statement:
+SELECT 1 FROM PRODUCT [42102-224]
+2025-05-25 10:19:42.366201-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "OFFER" no encontrada
+Table "OFFER" not found; SQL statement:
+SELECT 1 FROM OFFER [42102-224]
+2025-05-25 10:19:42.370200-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "REPUTATION" no encontrada
+Table "REPUTATION" not found; SQL statement:
+SELECT 1 FROM REPUTATION [42102-224]
+2025-05-25 10:19:42.373201-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "FAVORITES" no encontrada
+Table "FAVORITES" not found; SQL statement:
+SELECT 1 FROM favorites [42102-224]
+2025-05-25 10:19:42.377201-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "PROFILE" no encontrada
+Table "PROFILE" not found; SQL statement:
+SELECT 1 FROM PROFILE [42102-224]
+2025-05-25 10:19:42.380200-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "OFFER_PRODUCTS" no encontrada
+Table "OFFER_PRODUCTS" not found; SQL statement:
+SELECT 1 FROM offer_products [42102-224]
+2025-05-25 10:19:42.415200-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "SEQUENCE" no encontrada
+Table "SEQUENCE" not found; SQL statement:
+SELECT 1 FROM SEQUENCE [42102-224]

@@ -56,12 +56,16 @@ public class ManageProductsController extends HttpServlet {
         switch (route) {
             case "list":
                 String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
-                if ("home".equals(view)) {
+                String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+                if (!title.isEmpty()) {
+                    getProductsByTitle(req, resp);
+                } else if ("home".equals(view)) {
                     viewProductsByCategory(req, resp);
                 } else {
                     viewMyProducts(req, resp);
                 }
                 break;
+
             case "add":
                 this.addProduct(req, resp);
                 break;
@@ -82,6 +86,9 @@ public class ManageProductsController extends HttpServlet {
                 break;
             case "select":
                 this.selectProduct(req, resp);
+                break;
+            case "searchByTitle":
+                this.getProductsByTitle(req, resp);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
@@ -303,4 +310,26 @@ public class ManageProductsController extends HttpServlet {
 
         request.getRequestDispatcher("jsp/HOME.jsp").forward(request, response);
     }
+
+    public void getProductsByTitle(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String title = req.getParameter("title");
+
+        // Si el título es null o solo espacios, lo tratamos como búsqueda vacía y pedimos todos los productos
+        if (title == null || title.trim().isEmpty()) {
+            title = "";
+        }
+
+        int currentUserId = getUser(req).getUserId();
+        SearchResult result = productService.searchProductsByTitle(title);
+
+        req.setAttribute("products", result.getProducts());
+        req.setAttribute("searchedTitle", title); // útil para mantener el texto en el campo
+        if (result.getMessage() != null) {
+            req.setAttribute("message", result.getMessage());
+            req.setAttribute("messageType", "info");
+        }
+
+        req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
+    }
+
 }

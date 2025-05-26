@@ -83,18 +83,17 @@ public class ProductService {
     }
 
     public SearchResult searchProductsByTitle(String title) {
-        List<Product> products;
+        title = title == null ? "" : title.trim();
 
-        if (title == null || title.trim().isEmpty() || title.length() > 50) {
-            products = productDAO.findAll();
-            String message = title != null && title.length() > 50
-                    ? "The search text must not exceed 50 characters."
-                    : null;
-            return new SearchResult(products, message);
+        if (title.isEmpty() || title.length() > 50) {
+            List<Product> all = productDAO.findAll();
+            String message = ProductSearchHelper.getSearchMessage(title, List.of());
+            return new SearchResult(all, message);
         }
 
-        products = productDAO.getProductsByTitle(title);
+        List<Product> products = productDAO.getProductsByTitle(title);
         String message = ProductSearchHelper.getSearchMessage(title, products);
         return new SearchResult(products, message);
     }
+
 }

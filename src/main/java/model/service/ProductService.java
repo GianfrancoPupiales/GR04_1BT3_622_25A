@@ -59,26 +59,34 @@ public class ProductService {
 
 
     public SearchResult searchProductsByCategory(Object inputCategory, int userId) {
-        List<Product> products;
-        String message = null;
+        List<Product> products = findProductsByCategory(inputCategory, userId);
+        String message = buildMessage(inputCategory, products);
+        return new SearchResult(products, message);
+    }
 
+    private List<Product> findProductsByCategory(Object inputCategory, int userId) {
         if (ProductCategoryHelper.isAllOrNull(inputCategory)) {
-            products = productDAO.findAvailableProductsExceptUser(userId);
-        } else {
+            return productDAO.findAvailableProductsExceptUser(userId);
+        }
+
+        Optional<ProductCategory> categoryOpt = ProductCategoryHelper.parseCategory(String.valueOf(inputCategory));
+        if (categoryOpt.isPresent()) {
+            return productDAO.getProductsByCategory(categoryOpt.get(), userId);
+        }
+
+        return productDAO.findAvailableProductsExceptUser(userId);
+    }
+
+    private String buildMessage(Object inputCategory, List<Product> products) {
+        if (!ProductCategoryHelper.isAllOrNull(inputCategory)) {
             Optional<ProductCategory> categoryOpt = ProductCategoryHelper.parseCategory(String.valueOf(inputCategory));
-            if (categoryOpt.isPresent()) {
-                products = productDAO.getProductsByCategory(categoryOpt.get(), userId);
-                if (products.isEmpty()) {
-                    message = "There are no products in this category";
-                }
-            } else {
-                products = productDAO.findAvailableProductsExceptUser(userId);
-                if (inputCategory != null && !inputCategory.toString().equalsIgnoreCase("all")) {
-                    message = "Invalid category, showing all products";
-                }
+            if (categoryOpt.isPresent() && products.isEmpty()) {
+                return "There are no products in this category";
+            } else if (inputCategory != null && !inputCategory.toString().equalsIgnoreCase("all") && categoryOpt.isEmpty()) {
+                return "Invalid category, showing all products";
             }
         }
-        return new SearchResult(products, message);
+        return null;
     }
 
 }

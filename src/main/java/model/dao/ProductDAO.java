@@ -81,14 +81,15 @@ public class ProductDAO extends GenericDAO<Product> {
         }
     }
 
-    public List<Product> getProductsByCategory(ProductCategory category) {
+    public List<Product> getProductsByCategory(ProductCategory category, int userId) {
         try {
             if (category == null) {
                 return findAll();
             }
-            String jpql = "SELECT p FROM Product p WHERE p.category = :category";
+            String jpql = "SELECT p FROM Product p WHERE p.category = :category AND p.user.idUser != :userId AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("category", category)
+                    .setParameter("userId", userId)
                     .getResultList();
         } catch (Exception e) {
             return List.of();

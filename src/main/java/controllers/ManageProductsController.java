@@ -299,13 +299,15 @@ public class ManageProductsController extends HttpServlet {
 
     public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String categoryParam = request.getParameter("category");
-        SearchResult result = productService.searchProductsByCategory(categoryParam);
+        int userId = getUser(request).getUserId(); // Asegúrate de tener este método
+
+        SearchResult result = productService.searchProductsByCategory(categoryParam, userId);
 
         request.setAttribute("products", result.getProducts());
 
-        if (ProductCategoryHelper.parseCategory(categoryParam).isPresent()) {
-            request.setAttribute("selectedCategory", ProductCategory.valueOf(categoryParam));
-        }
+        ProductCategoryHelper.parseCategory(categoryParam).ifPresent(category ->
+                request.setAttribute("selectedCategory", category)
+        );
 
         if (result.getMessage() != null) {
             request.setAttribute("message", result.getMessage());

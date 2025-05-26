@@ -94,4 +94,17 @@ public class ProductDAO extends GenericDAO<Product> {
             return List.of();
         }
     }
+
+    public List<Product> getProductsByTitle(String title) {
+        try {
+            String jpql = "SELECT p FROM Product p WHERE LOWER(p.title) LIKE LOWER(:title)";
+            return em.createQuery(jpql, Product.class)
+                    .setParameter("title", "%" + title + "%")
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace(); // para depuración, puedes quitarlo en producción
+            return List.of();
+        }
+    }
+
 }

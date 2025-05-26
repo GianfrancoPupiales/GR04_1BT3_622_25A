@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import model.dao.ProductDAO;
 import model.entities.Product;
+import model.entities.User;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,26 +37,31 @@ class ProductDAOTest {
     @Mock
     TypedQuery<Product> query;
 
+    private final int userId = 42;
+
     @BeforeEach
     void setup() {
         productDAO = new ProductDAO(entityManager);
     }
 
     @Test
-    void givenValidCategory_whenGetProductsByCategory_thenReturnFilteredProducts() {
+    void givenValidCategoryAndUserId_whenGetProductsByCategory_thenReturnFilteredProducts() {
         // Given
         ProductCategory category = ProductCategory.Books;
+        User user = new User();
+        user.setIdUser(10);
         List<Product> mockProducts = List.of(
-                new Product(1, "Title1", "Description", ProductState.New, category, "", null)
+                new Product(1, "Title1", "Description", ProductState.New, category, "", user)
         );
 
         when(entityManager.createQuery(anyString(), eq(Product.class)))
                 .thenReturn(query);
         when(query.setParameter("category", category)).thenReturn(query);
+        when(query.setParameter("userId", userId)).thenReturn(query);
         when(query.getResultList()).thenReturn(mockProducts);
 
         // When
-        List<Product> result = productDAO.getProductsByCategory(category);
+        List<Product> result = productDAO.getProductsByCategory(category, userId);
 
         // Then
         assertNotNull(result);
@@ -71,13 +77,12 @@ class ProductDAOTest {
                 new Product(2, "Title2", "Description", ProductState.New, ProductCategory.Electronics, "", null)
         );
 
-        // Create a spy of the real productDAO instance.
-        // A spy allows you to override specific method behavior while keeping the rest of the logic real.
+        // Create a spy para el método findAll
         ProductDAO spyDao = Mockito.spy(productDAO);
         Mockito.doReturn(allProducts).when(spyDao).findAll();
 
         // When
-        List<Product> result = spyDao.getProductsByCategory(null);
+        List<Product> result = spyDao.getProductsByCategory(null, userId);
 
         // Then
         assertNotNull(result);
@@ -93,10 +98,11 @@ class ProductDAOTest {
         when(entityManager.createQuery(anyString(), eq(Product.class)))
                 .thenReturn(query);
         when(query.setParameter("category", category)).thenReturn(query);
+        when(query.setParameter("userId", userId)).thenReturn(query);
         when(query.getResultList()).thenReturn(Collections.emptyList());
 
         // When
-        List<Product> result = productDAO.getProductsByCategory(category);
+        List<Product> result = productDAO.getProductsByCategory(category, userId);
 
         // Then
         assertNotNull(result);

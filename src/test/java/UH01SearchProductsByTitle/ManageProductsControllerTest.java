@@ -4,6 +4,7 @@ import controllers.ManageProductsController;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.entities.Product;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
@@ -38,11 +39,20 @@ class ManageProductsControllerTest {
     @Mock
     RequestDispatcher dispatcher;
 
+    @Mock
+    HttpSession session;
+
     @Test
     void givenValidTitle_whenGetProductsByTitle_thenSetProductsAndForward() throws Exception {
         String title = "Pen";
         List<Product> filtered = List.of(new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null));
         SearchResult serviceResult = new SearchResult(filtered, null);
+
+        // Mock usuario en sesión
+        model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(123);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(title);
         when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
@@ -60,6 +70,12 @@ class ManageProductsControllerTest {
         String title = "Nonexistent";
         List<Product> emptyList = Collections.emptyList();
         SearchResult serviceResult = new SearchResult(emptyList, "No products were found with this title");
+
+        // Mock usuario en sesión
+        model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(123);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(title);
         when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
@@ -81,8 +97,15 @@ class ManageProductsControllerTest {
         );
         SearchResult serviceResult = new SearchResult(allProducts, null);
 
+        // Mock usuario en sesión
+        model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(123);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
+
         when(req.getParameter("title")).thenReturn(title);
-        when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
+        when(productService.searchProductsByTitle("")).thenReturn(serviceResult);  // <- aquí
+
         when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByTitle(req, resp);
@@ -92,11 +115,18 @@ class ManageProductsControllerTest {
         verify(dispatcher).forward(req, resp);
     }
 
+
     @Test
     void givenTitleLongerThan50Chars_whenGetProductsByTitle_thenSetErrorMessage() throws Exception {
         String longTitle = "a".repeat(51);
         List<Product> allProducts = List.of(new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null));
         SearchResult serviceResult = new SearchResult(allProducts, "The search text must not exceed 50 characters.");
+
+        // Mock usuario en sesión
+        model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(123);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(longTitle);
         when(productService.searchProductsByTitle(longTitle)).thenReturn(serviceResult);

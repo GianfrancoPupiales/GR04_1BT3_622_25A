@@ -9,12 +9,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.dto.SearchResult;
 import model.entities.Product;
 import model.entities.User;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
 import model.service.FileStorageService;
 import model.service.ProductService;
+import model.utils.ProductCategoryHelper;
 
 @MultipartConfig
 @WebServlet("/ManageProductsController")
@@ -23,7 +25,15 @@ public class ManageProductsController extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final ProductService productService = new ProductService();
+    private final ProductService productService;
+
+    public ManageProductsController() {
+        this.productService = new ProductService();
+    }
+
+    public ManageProductsController(ProductService productService) {
+        this.productService = productService;
+    }
 
     private ProductService getProductService() {
         return productService;
@@ -47,7 +57,7 @@ public class ManageProductsController extends HttpServlet {
             case "list":
                 String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
                 if ("home".equals(view)) {
-                    viewProducts(req, resp);
+                    viewProductsByCategory(req, resp);
                 } else {
                     viewMyProducts(req, resp);
                 }
@@ -276,4 +286,24 @@ public class ManageProductsController extends HttpServlet {
         List<Product> products = getProductsByUserId(req);
         forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
     }
+
+    public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String categoryParam = request.getParameter("category");
+        int userId = getUser(request).getUserId(); // Asegúrate de tener este método
+
+        SearchResult result = productService.searchProductsByCategory(categoryParam, userId);
+
+        request.setAttribute("products", result.getProducts());
+
+        ProductCategoryHelper.parseCategory(categoryParam).ifPresent(category ->
+                request.setAttribute("selectedCategory", category)
+        );
+
+        if (result.getMessage() != null) {
+            request.setAttribute("message", result.getMessage());
+        }
+
+        request.getRequestDispatcher("jsp/HOME.jsp").forward(request, response);
+    }
+
 }

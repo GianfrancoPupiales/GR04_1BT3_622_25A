@@ -4,6 +4,7 @@ import model.dao.FavoriteDAO;
 import model.entities.Favorite;
 import model.entities.Product;
 import model.entities.User;
+import model.utils.FavoriteValidator;
 
 import java.util.List;
 

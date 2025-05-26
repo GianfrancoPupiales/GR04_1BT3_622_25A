@@ -95,6 +95,37 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="mb-0">Products</h1>
             </div>
+            <!-- Filtro de categoría -->
+            <form class="row g-3 align-items-center mb-3" action="ManageProductsController" method="get">
+                <input type="hidden" name="route" value="list" />
+                <input type="hidden" name="view" value="home" />
+
+                <div class="col-auto">
+                    <label for="category" class="col-form-label fw-bold">Filter by Category:</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" name="category" id="category">
+                        <option value="">All</option>
+                        <option value="Books" ${selectedCategory == 'Books' ? 'selected' : ''}>Books</option>
+                        <option value="Stationery" ${selectedCategory == 'Stationery' ? 'selected' : ''}>Stationery</option>
+                        <option value="Electronics" ${selectedCategory == 'Electronics' ? 'selected' : ''}>Electronics</option>
+                        <option value="Furniture" ${selectedCategory == 'Furniture' ? 'selected' : ''}>Furniture</option>
+                        <option value="Clothing" ${selectedCategory == 'Clothing' ? 'selected' : ''}>Clothing</option>
+                        <option value="Services" ${selectedCategory == 'Services' ? 'selected' : ''}>Services</option>
+                        <option value="Entertainment" ${selectedCategory == 'Entertainment' ? 'selected' : ''}>Entertainment</option>
+                        <option value="Food" ${selectedCategory == 'Food' ? 'selected' : ''}>Food</option>
+                        <option value="Transport" ${selectedCategory == 'Transport' ? 'selected' : ''}>Transport</option>
+                        <option value="Other" ${selectedCategory == 'Other' ? 'selected' : ''}>Other</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-filter me-1"></i> Filter
+                    </button>
+                </div>
+            </form>
+
+            <!-- Cards -->
             <div class="row">
                 <c:forEach var="product" items="${products}">
                     <div class="col-md-6 mb-3">

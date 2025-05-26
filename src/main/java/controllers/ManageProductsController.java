@@ -299,7 +299,7 @@ public class ManageProductsController extends HttpServlet {
 
     public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String categoryParam = request.getParameter("category");
-        int userId = getUser(request).getUserId(); // Asegúrate de tener este método
+        int userId = getUser(request).getUserId();
 
         SearchResult result = productService.searchProductsByCategory(categoryParam, userId);
 
@@ -318,19 +318,26 @@ public class ManageProductsController extends HttpServlet {
 
     public void getProductsByTitle(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+        String view = Optional.ofNullable(req.getParameter("view")).orElse("user");
+        int userId = getUser(req).getUserId();
 
-        SearchResult result = productService.searchProductsByTitle(title);
+        if (!title.isEmpty()) {
+            SearchResult result = productService.searchProductsByTitle(title, userId);
 
-        req.setAttribute("products", result.getProducts());
-        req.setAttribute("searchedTitle", title);
+            req.setAttribute("products", result.getProducts());
 
-        if (result.getMessage() != null) {
-            req.setAttribute("message", result.getMessage());
-            req.setAttribute("messageType", "info");
+            if (result.getMessage() != null) {
+                req.setAttribute("message", result.getMessage());
+            }
+
+            String jspPage = "home".equals(view) ? "jsp/HOME.jsp" : "jsp/MY_PRODUCT.jsp";
+            req.getRequestDispatcher(jspPage).forward(req, resp);
+        } else {
+            // Si el título está vacío, redirigimos a la lista predeterminada
+            resp.sendRedirect("ManageProductsController?route=list&view=" + view);
         }
-
-        req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
+
 
 
 }

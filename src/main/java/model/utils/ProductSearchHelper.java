@@ -8,7 +8,7 @@ public class ProductSearchHelper {
 
     public static String getSearchMessage(String title, List<Product> results) {
         if (title == null || title.trim().isEmpty()) {
-            return null;
+            return "Showing all available products.";
         }
 
         if (title.length() > 50) {
@@ -21,4 +21,5 @@ public class ProductSearchHelper {
 
         return null;
     }
+
 }

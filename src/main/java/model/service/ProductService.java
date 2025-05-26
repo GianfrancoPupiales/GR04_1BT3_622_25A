@@ -90,18 +90,20 @@ public class ProductService {
         return null;
     }
 
-    public SearchResult searchProductsByTitle(String title) {
+    public SearchResult searchProductsByTitle(String title, int userId) {
         title = title == null ? "" : title.trim();
 
         if (title.isEmpty() || title.length() > 50) {
-            List<Product> all = productDAO.findAll();
-            String message = ProductSearchHelper.getSearchMessage(title, List.of());
+            List<Product> all = productDAO.findAvailableProductsExceptUser(userId);
+            String message = ProductSearchHelper.getSearchMessage(title, all);
             return new SearchResult(all, message);
         }
 
-        List<Product> products = productDAO.getProductsByTitle(title);
+        List<Product> products = productDAO.getProductsByTitle(title, userId);
         String message = ProductSearchHelper.getSearchMessage(title, products);
         return new SearchResult(products, message);
     }
+
+
 
 }

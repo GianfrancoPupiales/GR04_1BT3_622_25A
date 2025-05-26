@@ -332,4 +332,6 @@ public class ManageProductsController extends HttpServlet {
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
 
+    public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) {
+    }
 }

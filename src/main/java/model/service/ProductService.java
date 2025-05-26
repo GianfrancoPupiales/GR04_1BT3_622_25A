@@ -97,4 +97,8 @@ public class ProductService {
         String message = ProductSearchHelper.getSearchMessage(title, products);
         return new SearchResult(products, message);
     }
+
+    public SearchResult searchProductsByState(Object stateParam) {
+        return null;
+    }
 }

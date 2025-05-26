@@ -3,6 +3,7 @@ package model.dao;
 import jakarta.persistence.EntityManager;
 import model.entities.Product;
 import model.enums.ProductCategory;
+import model.enums.ProductState;
 
 import java.util.List;
 
@@ -107,4 +108,7 @@ public class ProductDAO extends GenericDAO<Product> {
         }
     }
 
+    public List<Product> getProductsByState(ProductState state) {
+        return null;
+    }
 }

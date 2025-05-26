@@ -58,23 +58,23 @@ public class ProductService {
     }
 
 
-    public SearchResult searchProductsByCategory(Object inputCategory) {
+    public SearchResult searchProductsByCategory(Object inputCategory, int userId) {
         List<Product> products;
         String message = null;
 
         if (ProductCategoryHelper.isAllOrNull(inputCategory)) {
-            products = productDAO.findAll();
+            products = productDAO.findAvailableProductsExceptUser(userId);
         } else {
             Optional<ProductCategory> categoryOpt = ProductCategoryHelper.parseCategory(String.valueOf(inputCategory));
             if (categoryOpt.isPresent()) {
-                products = productDAO.getProductsByCategory(categoryOpt.get());
+                products = productDAO.getProductsByCategory(categoryOpt.get(), userId);
                 if (products.isEmpty()) {
                     message = "There are no products in this category";
                 }
             } else {
-                products = productDAO.findAll();
+                products = productDAO.findAvailableProductsExceptUser(userId);
                 if (inputCategory != null && !inputCategory.toString().equalsIgnoreCase("all")) {
-                    message = "Invalid status, showing all products";
+                    message = "Invalid category, showing all products";
                 }
             }
         }

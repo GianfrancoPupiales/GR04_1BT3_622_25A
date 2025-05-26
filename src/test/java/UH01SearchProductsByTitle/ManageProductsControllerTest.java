@@ -50,9 +50,6 @@ class ManageProductsControllerTest {
 
         // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
-        when(mockUser.getUserId()).thenReturn(123);
-        when(req.getSession()).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(title);
         when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
@@ -73,9 +70,6 @@ class ManageProductsControllerTest {
 
         // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
-        when(mockUser.getUserId()).thenReturn(123);
-        when(req.getSession()).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(title);
         when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
@@ -99,9 +93,6 @@ class ManageProductsControllerTest {
 
         // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
-        when(mockUser.getUserId()).thenReturn(123);
-        when(req.getSession()).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(title);
         when(productService.searchProductsByTitle("")).thenReturn(serviceResult);  // <- aquí
@@ -124,9 +115,6 @@ class ManageProductsControllerTest {
 
         // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
-        when(mockUser.getUserId()).thenReturn(123);
-        when(req.getSession()).thenReturn(session);
-        when(session.getAttribute("user")).thenReturn(mockUser);
 
         when(req.getParameter("title")).thenReturn(longTitle);
         when(productService.searchProductsByTitle(longTitle)).thenReturn(serviceResult);

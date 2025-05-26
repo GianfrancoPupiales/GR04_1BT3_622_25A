@@ -109,6 +109,16 @@ public class ProductDAO extends GenericDAO<Product> {
     }
 
     public List<Product> getProductsByState(ProductState state) {
-        return null;
+        try {
+            if (state == null) {
+                return findAll();
+            }
+            String jpql = "SELECT p FROM Product p WHERE p.state = :state";
+            return em.createQuery(jpql, Product.class)
+                    .setParameter("state", state)
+                    .getResultList();
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 }

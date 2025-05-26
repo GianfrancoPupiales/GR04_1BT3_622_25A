@@ -5,6 +5,7 @@ import model.dto.SearchResult;
 import model.entities.Product;
 import model.enums.ProductCategory;
 import model.utils.ProductCategoryHelper;
+import model.utils.ProductSearchHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,4 +82,19 @@ public class ProductService {
         return new SearchResult(products, message);
     }
 
+    public SearchResult searchProductsByTitle(String title) {
+        List<Product> products;
+
+        if (title == null || title.trim().isEmpty() || title.length() > 50) {
+            products = productDAO.findAll();
+            String message = title != null && title.length() > 50
+                    ? "The search text must not exceed 50 characters."
+                    : null;
+            return new SearchResult(products, message);
+        }
+
+        products = productDAO.getProductsByTitle(title);
+        String message = ProductSearchHelper.getSearchMessage(title, products);
+        return new SearchResult(products, message);
+    }
 }

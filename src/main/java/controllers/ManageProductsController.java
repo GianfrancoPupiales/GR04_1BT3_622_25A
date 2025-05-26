@@ -17,6 +17,7 @@ import model.enums.ProductState;
 import model.service.FileStorageService;
 import model.service.ProductService;
 import model.utils.ProductCategoryHelper;
+import model.utils.ProductStateHelper;
 
 @MultipartConfig
 @WebServlet("/ManageProductsController")
@@ -56,11 +57,14 @@ public class ManageProductsController extends HttpServlet {
         switch (route) {
             case "list":
                 String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
+                String show = Optional.ofNullable(req.getParameter("show")).filter(v -> !v.isEmpty()).orElse("user");
                 String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
                 if (!title.isEmpty()) {
                     getProductsByTitle(req, resp);
                 } else if ("home".equals(view)) {
                     viewProductsByCategory(req, resp);
+                } else if ("home".equals(show)){
+                    getProductsByState(req, resp);
                 } else {
                     viewMyProducts(req, resp);
                 }
@@ -332,6 +336,20 @@ public class ManageProductsController extends HttpServlet {
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
 
-    public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) {
+    public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String stateParam = req.getParameter("state");
+        SearchResult result = productService.searchProductsByState(stateParam);
+
+        req.setAttribute("products", result.getProducts());
+
+        if (ProductStateHelper.parseState(stateParam).isPresent()) {
+            req.setAttribute("selectedState", ProductState.valueOf(stateParam));
+        }
+
+        if (result.getMessage() != null) {
+            req.setAttribute("message", result.getMessage());
+        }
+
+        req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
 }

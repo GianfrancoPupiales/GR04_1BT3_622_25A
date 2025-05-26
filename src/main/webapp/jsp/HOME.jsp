@@ -100,6 +100,7 @@
                 <input type="hidden" name="route" value="list" />
                 <input type="hidden" name="view" value="home" />
 
+                <!-- Filtro por categoría -->
                 <div class="col-auto">
                     <label for="category" class="col-form-label fw-bold">Filter by Category:</label>
                 </div>
@@ -118,11 +119,29 @@
                         <option value="Other" ${selectedCategory == 'Other' ? 'selected' : ''}>Other</option>
                     </select>
                 </div>
+
+                <!-- Botón de envio -->
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa-solid fa-filter me-1"></i> Filter
                     </button>
                 </div>
+
+
+                <!-- Filtro por título -->
+                <div class="col-auto">
+                    <label for="title" class="col-form-label fw-bold">Search by Title:</label>
+                </div>
+                <div class="col-auto">
+                    <input type="text" id="title" name="title" class="form-control"
+                           value="${param.title}" placeholder="e.g. Calculator, Chair...">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-search me-1"></i> Search
+                    </button>
+                </div>
+
             </form>
 
             <!-- Cards -->

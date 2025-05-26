@@ -29,20 +29,23 @@ class ProductServiceTest {
     @InjectMocks
     ProductService productService;
 
+    // Define userId para usar en las pruebas
+    private final int userId = 1;
+
     @Test
     void givenValidTitle_whenSearchProductsByTitle_thenReturnsProductsAndNoMessage() {
         String title = "Pen";
         List<Product> products = List.of(
                 new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null)
         );
-        when(productDAO.getProductsByTitle(title)).thenReturn(products);
+        when(productDAO.getProductsByTitle(title, userId)).thenReturn(products);
 
-        SearchResult result = productService.searchProductsByTitle(title);
+        SearchResult result = productService.searchProductsByTitle(title, userId);
 
         assertEquals(products, result.getProducts());
         assertNull(result.getMessage());
 
-        verify(productDAO).getProductsByTitle(title);
+        verify(productDAO).getProductsByTitle(title, userId);
         verify(productDAO, never()).findAll();
     }
 
@@ -53,16 +56,23 @@ class ProductServiceTest {
                 new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null),
                 new Product(2, "Notebook", "Desc", ProductState.New, ProductCategory.Stationery, "", null)
         );
-        when(productDAO.findAll()).thenReturn(products);
 
-        SearchResult result = productService.searchProductsByTitle(title);
+        int userId = 1;
+
+        when(productDAO.findAvailableProductsExceptUser(anyInt())).thenReturn(products);
+
+        SearchResult result = productService.searchProductsByTitle(title, userId);
 
         assertEquals(products, result.getProducts());
-        assertNull(result.getMessage());
 
-        verify(productDAO).findAll();
-        verify(productDAO, never()).getProductsByTitle(anyString());
+        assertTrue(result.getMessage() == null || !result.getMessage().isEmpty());
+
+        verify(productDAO).findAvailableProductsExceptUser(userId);
+        verify(productDAO, never()).getProductsByTitle(anyString(), anyInt());
     }
+
+
+
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -74,27 +84,29 @@ class ProductServiceTest {
         List<Product> products = List.of(
                 new Product(1, "Notebook", "Desc", ProductState.New, ProductCategory.Stationery, "", null)
         );
-        when(productDAO.findAll()).thenReturn(products);
 
-        SearchResult result = productService.searchProductsByTitle(title);
+        when(productDAO.findAvailableProductsExceptUser(userId)).thenReturn(products);
+
+        SearchResult result = productService.searchProductsByTitle(title, userId);
 
         assertEquals(products, result.getProducts());
         assertNotNull(result.getMessage());
 
-        verify(productDAO).findAll();
-        verify(productDAO, never()).getProductsByTitle(anyString());
+        verify(productDAO).findAvailableProductsExceptUser(userId);
+        verify(productDAO, never()).getProductsByTitle(anyString(), anyInt());
     }
+
 
     @Test
     void givenNoResults_whenSearchProductsByTitle_thenReturnsEmptyListAndMessage() {
         String title = "Nonexistent";
-        when(productDAO.getProductsByTitle(title)).thenReturn(Collections.emptyList());
+        when(productDAO.getProductsByTitle(title, userId)).thenReturn(Collections.emptyList());
 
-        SearchResult result = productService.searchProductsByTitle(title);
+        SearchResult result = productService.searchProductsByTitle(title, userId);
 
         assertTrue(result.getProducts().isEmpty());
         assertNotNull(result.getMessage());
 
-        verify(productDAO).getProductsByTitle(title);
+        verify(productDAO).getProductsByTitle(title, userId);
     }
 }

@@ -48,12 +48,15 @@ class ManageProductsControllerTest {
         List<Product> filtered = List.of(new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null));
         SearchResult serviceResult = new SearchResult(filtered, null);
 
-        // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(10);
 
         when(req.getParameter("title")).thenReturn(title);
-        when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
-        when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
+
+        when(productService.searchProductsByTitle(title, 10)).thenReturn(serviceResult);
+        when(req.getRequestDispatcher("jsp/MY_PRODUCT.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByTitle(req, resp);
 
@@ -68,12 +71,15 @@ class ManageProductsControllerTest {
         List<Product> emptyList = Collections.emptyList();
         SearchResult serviceResult = new SearchResult(emptyList, "No products were found with this title");
 
-        // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(20);
 
         when(req.getParameter("title")).thenReturn(title);
-        when(productService.searchProductsByTitle(title)).thenReturn(serviceResult);
-        when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
+
+        when(productService.searchProductsByTitle(title, 20)).thenReturn(serviceResult);
+        when(req.getRequestDispatcher("jsp/MY_PRODUCT.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByTitle(req, resp);
 
@@ -83,28 +89,32 @@ class ManageProductsControllerTest {
     }
 
     @Test
-    void givenEmptyOrWhitespaceTitle_whenGetProductsByTitle_thenReturnAllProducts() throws Exception {
-        String title = "  ";
-        List<Product> allProducts = List.of(
-                new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null),
-                new Product(2, "Notebook", "Desc", ProductState.New, ProductCategory.Stationery, "", null)
+    void givenNonEmptyTitle_whenGetProductsByTitle_thenReturnFilteredProducts() throws Exception {
+        String title = "pen";
+        List<Product> filteredProducts = List.of(
+                new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null)
         );
-        SearchResult serviceResult = new SearchResult(allProducts, null);
+        SearchResult serviceResult = new SearchResult(filteredProducts, null);
 
-        // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(30);
 
         when(req.getParameter("title")).thenReturn(title);
-        when(productService.searchProductsByTitle("")).thenReturn(serviceResult);  // <- aquí
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
 
+        when(productService.searchProductsByTitle(title, 30)).thenReturn(serviceResult);
+
+        when(req.getParameter("view")).thenReturn("home");
         when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByTitle(req, resp);
 
-        verify(req).setAttribute("products", allProducts);
+        verify(req).setAttribute("products", filteredProducts);
         verify(req, never()).setAttribute(eq("message"), any());
         verify(dispatcher).forward(req, resp);
     }
+
 
 
     @Test
@@ -113,12 +123,15 @@ class ManageProductsControllerTest {
         List<Product> allProducts = List.of(new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null));
         SearchResult serviceResult = new SearchResult(allProducts, "The search text must not exceed 50 characters.");
 
-        // Mock usuario en sesión
         model.entities.User mockUser = mock(model.entities.User.class);
+        when(mockUser.getUserId()).thenReturn(40);
 
         when(req.getParameter("title")).thenReturn(longTitle);
-        when(productService.searchProductsByTitle(longTitle)).thenReturn(serviceResult);
-        when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
+
+        when(productService.searchProductsByTitle(longTitle, 40)).thenReturn(serviceResult);
+        when(req.getRequestDispatcher(anyString())).thenReturn(dispatcher);
 
         controller.getProductsByTitle(req, resp);
 

@@ -68,7 +68,7 @@ class ManageProductsControllerTest {
         when(productService.searchProductsByState(stateParam)).thenReturn(searchResult);
         when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
-        controller.getProducgit ptsByState(req, resp);
+        controller.getProductsByState(req, resp);
 
         verify(req).setAttribute("products", emptyList);
         verify(req).setAttribute("message", "There are no products with this status");

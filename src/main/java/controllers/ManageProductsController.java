@@ -51,21 +51,13 @@ public class ManageProductsController extends HttpServlet {
 
     private void router(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Control logic
-        String route = (req.getParameter("route") == null) ? "list" : req.getParameter("route");
+        String route = Optional.ofNullable(req.getParameter("route")).orElse("list");
+        String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
 
         switch (route) {
             case "list":
-                String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
-                String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
-                if (!title.isEmpty()) {
-                    getProductsByTitle(req, resp);
-                } else if ("home".equals(view)) {
-                    viewProductsByCategory(req, resp);
-                } else {
-                    viewMyProducts(req, resp);
-                }
+                handleListRoute(req, resp, view);
                 break;
-
             case "add":
                 this.addProduct(req, resp);
                 break;
@@ -92,6 +84,17 @@ public class ManageProductsController extends HttpServlet {
                 break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
+        }
+    }
+
+    private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view) throws ServletException, IOException {
+        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+        if (!title.isEmpty()) {
+            getProductsByTitle(req, resp);
+        } else if ("home".equals(view)) {
+            viewProductsByCategory(req, resp);
+        } else {
+            viewMyProducts(req, resp);
         }
     }
 
@@ -312,18 +315,13 @@ public class ManageProductsController extends HttpServlet {
     }
 
     public void getProductsByTitle(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String title = req.getParameter("title");
+        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
 
-        // Si el título es null o solo espacios, lo tratamos como búsqueda vacía y pedimos todos los productos
-        if (title == null || title.trim().isEmpty()) {
-            title = "";
-        }
-
-        int currentUserId = getUser(req).getUserId();
         SearchResult result = productService.searchProductsByTitle(title);
 
         req.setAttribute("products", result.getProducts());
-        req.setAttribute("searchedTitle", title); // útil para mantener el texto en el campo
+        req.setAttribute("searchedTitle", title);
+
         if (result.getMessage() != null) {
             req.setAttribute("message", result.getMessage());
             req.setAttribute("messageType", "info");
@@ -331,5 +329,6 @@ public class ManageProductsController extends HttpServlet {
 
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
+
 
 }

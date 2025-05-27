@@ -96,16 +96,19 @@ public class ProductDAO extends GenericDAO<Product> {
         }
     }
 
-    public List<Product> getProductsByTitle(String title) {
+    public List<Product> getProductsByTitle(String title, int userId) {
         try {
-            String jpql = "SELECT p FROM Product p WHERE LOWER(p.title) LIKE LOWER(:title)";
+            String jpql = "SELECT p FROM Product p WHERE LOWER(p.title) LIKE LOWER(:title) AND p.user.idUser <> :userId";
             return em.createQuery(jpql, Product.class)
                     .setParameter("title", "%" + title + "%")
+                    .setParameter("userId", userId)
                     .getResultList();
         } catch (Exception e) {
-            e.printStackTrace(); // para depuración, puedes quitarlo en producción
+            e.printStackTrace();
             return List.of();
         }
     }
+
+
 
 }

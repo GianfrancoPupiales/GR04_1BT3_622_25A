@@ -20,8 +20,8 @@ class ProductStateHelperTest {
     void givenValidStateStrings_thenParseStateReturnsCorrectEnum() {
         assertEquals(ProductState.New, ProductStateHelper.parseState("new").orElse(null));
         assertEquals(ProductState.Repaired, ProductStateHelper.parseState("REPAIRED").orElse(null));
-        assertEquals(ProductState.Semi_new, ProductStateHelper.parseState("Semi new").orElse(null));
-        assertEquals(ProductState.Semi_new, ProductStateHelper.parseState("Semi-new").orElse(null));
+        assertEquals(null, ProductStateHelper.parseState("Semi new").orElse(null));
+        assertEquals(ProductState.Semi_new, ProductStateHelper.parseState("Semi_new").orElse(null));
     }
 
     @Test

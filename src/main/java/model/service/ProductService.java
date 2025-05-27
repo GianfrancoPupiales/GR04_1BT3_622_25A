@@ -110,26 +110,23 @@ public class ProductService {
     }
 
     public SearchResult searchProductsByState(Object inputState) {
-        List<Product> products;
-        String message = null;
+        String stateStr = String.valueOf(inputState);
 
         if (ProductCategoryHelper.isAllOrNull(inputState)) {
-            products = productDAO.findAll();
-        } else {
-            Optional<ProductState> stateOpt = ProductStateHelper.parseState(String.valueOf(inputState));
-            if (stateOpt.isPresent()) {
-                products = productDAO.getProductsByState(stateOpt.get());
-                if (products.isEmpty()) {
-                    message = "There are no products with this state";
-                }
-            } else {
-                products = productDAO.findAll();
-                if (inputState != null && !inputState.toString().equalsIgnoreCase("all")) {
-                    message = "Invalid status, showing all products";
-                }
-            }
+            return new SearchResult(productDAO.findAll(), null);
         }
-        return new SearchResult(products, message);
+
+        Optional<ProductState> stateOpt = ProductStateHelper.parseState(stateStr);
+
+        if (stateOpt.isPresent()) {
+            List<Product> products = productDAO.getProductsByState(stateOpt.get());
+            String message = products.isEmpty() ? "There are no products with this state" : null;
+            return new SearchResult(products, message);
+        }
+
+        String message = (!"all".equalsIgnoreCase(stateStr)) ? "Invalid status, showing all products" : null;
+        return new SearchResult(productDAO.findAll(), message);
     }
+
 
 }

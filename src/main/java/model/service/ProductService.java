@@ -5,6 +5,7 @@ import model.dto.SearchResult;
 import model.entities.Product;
 import model.enums.ProductCategory;
 import model.utils.ProductCategoryHelper;
+import model.utils.ProductSearchHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,6 +88,21 @@ public class ProductService {
             }
         }
         return null;
+    }
+
+
+    public SearchResult searchProductsByTitle(String title, int userId) {
+        title = title == null ? "" : title.trim();
+
+        if (title.isEmpty() || title.length() > 50) {
+            List<Product> all = productDAO.findAvailableProductsExceptUser(userId);
+            String message = ProductSearchHelper.getSearchMessage(title, all);
+            return new SearchResult(all, message);
+        }
+
+        List<Product> products = productDAO.getProductsByTitle(title, userId);
+        String message = ProductSearchHelper.getSearchMessage(title, products);
+        return new SearchResult(products, message);
     }
 
 }

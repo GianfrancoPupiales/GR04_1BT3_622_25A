@@ -52,24 +52,25 @@ public class ManageProductsController extends HttpServlet {
 
     private void router(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Control logic
-        String route = (req.getParameter("route") == null) ? "list" : req.getParameter("route");
+        String route = Optional.ofNullable(req.getParameter("route")).orElse("list");
+        String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
+        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
 
         switch (route) {
             case "list":
-                String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
-                String show = Optional.ofNullable(req.getParameter("show")).filter(v -> !v.isEmpty()).orElse("user");
-                String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
                 if (!title.isEmpty()) {
                     getProductsByTitle(req, resp);
                 } else if ("home".equals(view)) {
                     viewProductsByCategory(req, resp);
-                } else if ("home".equals(show)){
+                } else if ("home".equals(view)){
                     getProductsByState(req, resp);
                 } else {
                     viewMyProducts(req, resp);
                 }
-                break;
 
+                handleListRoute(req, resp, view);
+
+                break;
             case "add":
                 this.addProduct(req, resp);
                 break;
@@ -96,6 +97,17 @@ public class ManageProductsController extends HttpServlet {
                 break;
             default:
                 throw new IllegalArgumentException("Unknown route: " + route);
+        }
+    }
+
+    private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view) throws ServletException, IOException {
+        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+        if (!title.isEmpty()) {
+            getProductsByTitle(req, resp);
+        } else if ("home".equals(view)) {
+            viewProductsByCategory(req, resp);
+        } else {
+            viewMyProducts(req, resp);
         }
     }
 
@@ -300,13 +312,16 @@ public class ManageProductsController extends HttpServlet {
 
     public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String categoryParam = request.getParameter("category");
-        SearchResult result = productService.searchProductsByCategory(categoryParam);
+
+        int userId = getUser(request).getUserId();
+
+        SearchResult result = productService.searchProductsByCategory(categoryParam, userId);
 
         request.setAttribute("products", result.getProducts());
 
-        if (ProductCategoryHelper.parseCategory(categoryParam).isPresent()) {
-            request.setAttribute("selectedCategory", ProductCategory.valueOf(categoryParam));
-        }
+        ProductCategoryHelper.parseCategory(categoryParam).ifPresent(category ->
+                request.setAttribute("selectedCategory", category)
+        );
 
         if (result.getMessage() != null) {
             request.setAttribute("message", result.getMessage());
@@ -315,25 +330,27 @@ public class ManageProductsController extends HttpServlet {
         request.getRequestDispatcher("jsp/HOME.jsp").forward(request, response);
     }
 
+
     public void getProductsByTitle(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String title = req.getParameter("title");
+        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+        String view = Optional.ofNullable(req.getParameter("view")).orElse("user");
+        int userId = getUser(req).getUserId();
 
-        // Si el título es null o solo espacios, lo tratamos como búsqueda vacía y pedimos todos los productos
-        if (title == null || title.trim().isEmpty()) {
-            title = "";
+        if (!title.isEmpty()) {
+            SearchResult result = productService.searchProductsByTitle(title, userId);
+
+            req.setAttribute("products", result.getProducts());
+
+            if (result.getMessage() != null) {
+                req.setAttribute("message", result.getMessage());
+            }
+
+            String jspPage = "home".equals(view) ? "jsp/HOME.jsp" : "jsp/MY_PRODUCT.jsp";
+            req.getRequestDispatcher(jspPage).forward(req, resp);
+        } else {
+            // Si el título está vacío, redirigimos a la lista predeterminada
+            resp.sendRedirect("ManageProductsController?route=list&view=" + view);
         }
-
-        int currentUserId = getUser(req).getUserId();
-        SearchResult result = productService.searchProductsByTitle(title);
-
-        req.setAttribute("products", result.getProducts());
-        req.setAttribute("searchedTitle", title); // útil para mantener el texto en el campo
-        if (result.getMessage() != null) {
-            req.setAttribute("message", result.getMessage());
-            req.setAttribute("messageType", "info");
-        }
-
-        req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
 
     public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -352,4 +369,5 @@ public class ManageProductsController extends HttpServlet {
 
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
+
 }

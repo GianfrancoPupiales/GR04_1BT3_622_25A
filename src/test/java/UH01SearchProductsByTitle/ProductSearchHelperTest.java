@@ -30,12 +30,13 @@ class ProductSearchHelperTest {
     }
 
     @Test
-    void givenEmptyOrWhitespaceTitle_thenReturnsNullMessage() {
+    void givenEmptyOrWhitespaceTitle_thenReturnsMessage() {
         String title = "   ";
         List<Product> results = List.of();
         String message = ProductSearchHelper.getSearchMessage(title, results);
-        assertNull(message);
+        assertEquals("Showing all available products.", message);
     }
+
 
     @Test
     void givenValidTitleWithResults_thenReturnsNullMessage() {

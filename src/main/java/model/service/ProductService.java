@@ -34,9 +34,11 @@ public class ProductService {
     public boolean updateProductAvailability(List<Product> products, boolean available) {
         return productDAO.updateProductAvailability(products, available);
     }
+
     public boolean createProduct(Product product) {
         return productDAO.create(product);
     }
+
     public boolean updateProduct(Product product) {
         return productDAO.update(product);
     }
@@ -48,6 +50,7 @@ public class ProductService {
     public Product findProductById(int idProduct) {
         return productDAO.findById(idProduct);
     }
+
     public List<Product> findAllProducts() {
         return productDAO.findAll();
     }
@@ -60,42 +63,48 @@ public class ProductService {
         return productDAO.findById(idProduct);
     }
 
-
-    public SearchResult searchProductsByCategory(Object inputCategory) {
-        List<Product> products;
-        String message = null;
-
-        if (ProductCategoryHelper.isAllOrNull(inputCategory)) {
-            products = productDAO.findAll();
-        } else {
-            Optional<ProductCategory> categoryOpt = ProductCategoryHelper.parseCategory(String.valueOf(inputCategory));
-            if (categoryOpt.isPresent()) {
-                products = productDAO.getProductsByCategory(categoryOpt.get());
-                if (products.isEmpty()) {
-                    message = "There are no products in this category";
-                }
-            } else {
-                products = productDAO.findAll();
-                if (inputCategory != null && !inputCategory.toString().equalsIgnoreCase("all")) {
-                    message = "Invalid status, showing all products";
-                }
-            }
-        }
+    public SearchResult searchProductsByCategory(Object inputCategory, int userId) {
+        List<Product> products = findProductsByCategory(inputCategory, userId);
+        String message = buildMessage(inputCategory, products);
         return new SearchResult(products, message);
     }
 
-    public SearchResult searchProductsByTitle(String title) {
-        List<Product> products;
-
-        if (title == null || title.trim().isEmpty() || title.length() > 50) {
-            products = productDAO.findAll();
-            String message = title != null && title.length() > 50
-                    ? "The search text must not exceed 50 characters."
-                    : null;
-            return new SearchResult(products, message);
+    private List<Product> findProductsByCategory(Object inputCategory, int userId) {
+        if (ProductCategoryHelper.isAllOrNull(inputCategory)) {
+            return productDAO.findAvailableProductsExceptUser(userId);
         }
 
-        products = productDAO.getProductsByTitle(title);
+        Optional<ProductCategory> categoryOpt = ProductCategoryHelper.parseCategory(String.valueOf(inputCategory));
+        if (categoryOpt.isPresent()) {
+            return productDAO.getProductsByCategory(categoryOpt.get(), userId);
+        }
+
+        return productDAO.findAvailableProductsExceptUser(userId);
+    }
+
+    private String buildMessage(Object inputCategory, List<Product> products) {
+        if (!ProductCategoryHelper.isAllOrNull(inputCategory)) {
+            Optional<ProductCategory> categoryOpt = ProductCategoryHelper.parseCategory(String.valueOf(inputCategory));
+            if (categoryOpt.isPresent() && products.isEmpty()) {
+                return "There are no products in this category";
+            } else if (inputCategory != null && !inputCategory.toString().equalsIgnoreCase("all")
+                    && categoryOpt.isEmpty()) {
+                return "Invalid category, showing all products";
+            }
+        }
+        return null;
+    }
+
+    public SearchResult searchProductsByTitle(String title, int userId) {
+        title = title == null ? "" : title.trim();
+
+        if (title.isEmpty() || title.length() > 50) {
+            List<Product> all = productDAO.findAvailableProductsExceptUser(userId);
+            String message = ProductSearchHelper.getSearchMessage(title, all);
+            return new SearchResult(all, message);
+        }
+
+        List<Product> products = productDAO.getProductsByTitle(title, userId);
         String message = ProductSearchHelper.getSearchMessage(title, products);
         return new SearchResult(products, message);
     }
@@ -122,4 +131,5 @@ public class ProductService {
         }
         return new SearchResult(products, message);
     }
+
 }

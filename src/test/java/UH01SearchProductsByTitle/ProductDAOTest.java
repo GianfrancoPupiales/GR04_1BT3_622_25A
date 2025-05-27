@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +31,9 @@ class ProductDAOTest {
     @Mock
     TypedQuery<Product> query;
 
+    // Definimos un userId ejemplo para las pruebas
+    private final int userId = 1;
+
     @Test
     void givenValidTitle_whenGetProductsByTitle_thenReturnMatchingProducts() {
         // Given
@@ -39,11 +41,11 @@ class ProductDAOTest {
         List<Product> expected = List.of(new Product(1, "Pen Black", "Desc", ProductState.New, ProductCategory.Stationery, "", null));
 
         when(em.createQuery(anyString(), eq(Product.class))).thenReturn(query);
-        when(query.setParameter(eq("title"), anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), any())).thenReturn(query);
         when(query.getResultList()).thenReturn(expected);
 
         // When
-        List<Product> result = productDAO.getProductsByTitle(searchTitle);
+        List<Product> result = productDAO.getProductsByTitle(searchTitle, userId);
 
         // Then
         assertNotNull(result);
@@ -57,11 +59,11 @@ class ProductDAOTest {
         String searchTitle = "NonexistentTitle";
 
         when(em.createQuery(anyString(), eq(Product.class))).thenReturn(query);
-        when(query.setParameter(eq("title"), anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), any())).thenReturn(query);
         when(query.getResultList()).thenReturn(Collections.emptyList());
 
         // When
-        List<Product> result = productDAO.getProductsByTitle(searchTitle);
+        List<Product> result = productDAO.getProductsByTitle(searchTitle, userId);
 
         // Then
         assertNotNull(result);

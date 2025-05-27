@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dto.SearchResult;
 import model.entities.Product;
+import model.entities.User;
 import model.enums.ProductCategory;
 import model.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +40,17 @@ class ManageProductsControllerTest {
     @Mock
     RequestDispatcher dispatcher;
 
+    @Mock
+    HttpSession session;
+
+    @Mock
+    User mockUser;
+
     @BeforeEach
     void setup() {
-        controller = new ManageProductsController(productService);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
+        when(mockUser.getUserId()).thenReturn(1);
     }
 
     @Test
@@ -55,12 +65,12 @@ class ManageProductsControllerTest {
         );
         SearchResult searchResult = new SearchResult(products, null);
 
-        when(productService.searchProductsByCategory(any())).thenReturn(searchResult);
+        when(productService.searchProductsByCategory(eq(categoryParam), eq(1))).thenReturn(searchResult);
         when(request.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.viewProductsByCategory(request, response);
 
-        verify(productService).searchProductsByCategory(categoryParam);
+        verify(productService).searchProductsByCategory(categoryParam, 1);
         verify(request).setAttribute("products", products);
         verify(request).setAttribute("selectedCategory", categoryEnum);
         verify(request, never()).setAttribute(eq("message"), any());
@@ -76,12 +86,12 @@ class ManageProductsControllerTest {
 
         SearchResult searchResult = new SearchResult(Collections.emptyList(), "There are no products in this category");
 
-        when(productService.searchProductsByCategory(any())).thenReturn(searchResult);
+        when(productService.searchProductsByCategory(eq(categoryParam), eq(1))).thenReturn(searchResult);
         when(request.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.viewProductsByCategory(request, response);
 
-        verify(productService).searchProductsByCategory(categoryParam);
+        verify(productService).searchProductsByCategory(categoryParam, 1);
         verify(request).setAttribute("products", Collections.emptyList());
         verify(request).setAttribute("selectedCategory", categoryEnum);
         verify(request).setAttribute("message", "There are no products in this category");

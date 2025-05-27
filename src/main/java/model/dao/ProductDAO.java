@@ -73,7 +73,7 @@ public class ProductDAO extends GenericDAO<Product> {
 
     public List<Product> findAvailableProductsExceptUser(int userId) {
         try {
-            String jpql = "SELECT p FROM Product p WHERE p.user.idUser != :userId AND p.isAvailable = true";
+            String jpql = "SELECT p FROM Product p WHERE p.user.idUser <> :userId AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("userId", userId)
                     .getResultList();
@@ -87,7 +87,7 @@ public class ProductDAO extends GenericDAO<Product> {
             if (category == null) {
                 return findAll();
             }
-            String jpql = "SELECT p FROM Product p WHERE p.category = :category AND p.user.idUser != :userId AND p.isAvailable = true";
+            String jpql = "SELECT p FROM Product p WHERE p.category = :category AND p.user.idUser <> :userId AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("category", category)
                     .setParameter("userId", userId)
@@ -110,14 +110,15 @@ public class ProductDAO extends GenericDAO<Product> {
         }
     }
 
-    public List<Product> getProductsByState(ProductState state) {
+    public List<Product> getProductsByState(ProductState state, int userId) {
         try {
             if (state == null) {
                 return findAll();
             }
-            String jpql = "SELECT p FROM Product p WHERE p.state = :state";
+            String jpql = "SELECT p FROM Product p WHERE p.state = :state AND p.user.idUser <> :userId";
             return em.createQuery(jpql, Product.class)
                     .setParameter("state", state)
+                    .setParameter("userId", userId)
                     .getResultList();
         } catch (Exception e) {
             return List.of();

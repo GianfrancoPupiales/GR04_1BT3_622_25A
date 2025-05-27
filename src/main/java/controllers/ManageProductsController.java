@@ -351,7 +351,8 @@ public class ManageProductsController extends HttpServlet {
     }
     public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String stateParam = req.getParameter("state");
-        SearchResult result = productService.searchProductsByState(stateParam);
+        int userId = getUser(req).getUserId();
+        SearchResult result = productService.searchProductsByState(stateParam, userId);
 
         req.setAttribute("products", result.getProducts());
 

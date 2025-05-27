@@ -109,7 +109,7 @@ public class ProductService {
         return new SearchResult(products, message);
     }
 
-    public SearchResult searchProductsByState(Object inputState) {
+    public SearchResult searchProductsByState(Object inputState,int userId) {
         String stateStr = String.valueOf(inputState);
 
         if (ProductCategoryHelper.isAllOrNull(inputState)) {
@@ -119,7 +119,7 @@ public class ProductService {
         Optional<ProductState> stateOpt = ProductStateHelper.parseState(stateStr);
 
         if (stateOpt.isPresent()) {
-            List<Product> products = productDAO.getProductsByState(stateOpt.get());
+            List<Product> products = productDAO.getProductsByState(stateOpt.get(),userId);
             String message = products.isEmpty() ? "There are no products with this state" : null;
             return new SearchResult(products, message);
         }

@@ -14,16 +14,24 @@ public class ProductStateHelper {
     }
 
     public static Optional<ProductState> parseState(String input) {
-        if (input == null || input.trim().isEmpty()) {
+        if (isBlank(input)) {
             return Optional.empty();
         }
 
+        return findMatchingState(input.trim());
+    }
+
+    private static boolean isBlank(String input) {
+        return input == null || input.trim().isEmpty();
+    }
+
+    private static Optional<ProductState> findMatchingState(String cleanedInput) {
         for (ProductState state : ProductState.values()) {
-            if (state.name().equalsIgnoreCase(input.trim())) {
+            if (state.name().equalsIgnoreCase(cleanedInput)) {
                 return Optional.of(state);
             }
         }
-
         return Optional.empty();
     }
+
 }

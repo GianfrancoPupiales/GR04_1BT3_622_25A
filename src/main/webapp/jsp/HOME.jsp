@@ -95,7 +95,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="mb-0">Products</h1>
             </div>
-            <!-- Filtro de categoría -->
+            <!-- FILTROS -->
             <form class="row g-3 align-items-center mb-3" action="ManageProductsController" method="get">
                 <input type="hidden" name="route" value="list" />
                 <input type="hidden" name="view" value="home" />
@@ -119,14 +119,12 @@
                         <option value="Other" ${selectedCategory == 'Other' ? 'selected' : ''}>Other</option>
                     </select>
                 </div>
-
                 <!-- Botón de envio -->
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa-solid fa-filter me-1"></i> Filter
                     </button>
                 </div>
-
 
                 <!-- Filtro por título -->
                 <div class="col-auto">
@@ -142,79 +140,103 @@
                     </button>
                 </div>
 
+                <!-- Filtro por estado -->
+                <div class="col-auto">
+                    <label for="state" class="col-form-label fw-bold">Filter by State:</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" name="state" id="state">
+                        <option value="">All</option>
+                        <option value="New" ${selectedState == 'New' ? 'selected' : ''}>New</option>
+                        <option value="Semi_new" ${selectedState == 'Semi_new' ? 'selected' : ''}>Semi_new</option>
+                        <option value="Repaired" ${selectedState == 'Repaired' ? 'selected' : ''}>Repaired</option>
+                    </select>
+                </div>
+                <!-- Botón de envio -->
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-filter me-1"></i> Filter
+                    </button>
+                </div>
+
             </form>
 
-            <!-- Cards -->
-            <div class="row">
-                <c:forEach var="product" items="${products}">
-                    <div class="col-md-6 mb-3">
-                        <div class="card border-0 rounded-3" style="height: 100%;">
-                            <div class="card-body p-4 d-flex">
-                                <div class="flex-grow-1 pe-3">
-                                    <h3 class="card-title fw-bold">
-                                        <a class="text-dark text-decoration-underline" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">
-                                                ${product.title}
-                                        </a>
-                                    </h3>
-                                    <c:choose>
-                                        <c:when test="${not empty product.user.profile}">
-                                            <p class="card-text text-secondary small mb-2">
-                                                <i class="fa-solid fa-user me-2"></i>
-                                                <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${product.user.idUser}&from=home" class="text-decoration-none">
-                                                        ${product.user.profile.firstName} ${product.user.profile.lastName}
-                                                </a>
-                                            </p>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i> Unknown user</p>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <p class="card-text text-secondary small mb-2">
-                                        <i class="fa-solid fa-align-left me-2"></i>${product.description}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-2">
-                                        <i class="fa-solid fa-layer-group me-2"></i>${product.state}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-2">
-                                        <i class="fa-solid fa-tags me-2"></i>${product.category}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-2">
-                                        <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
-                                    </p>
-                                    <p class="card-text text-secondary small mb-3">
+
+            <form class="row g-3 align-items-center mb-3" action="ManageProductsController" method="get">
+                <input type="hidden" name="route" value="list" />
+                <input type="hidden" name="show" value="home" />
+
+                <!-- Cards -->
+                <div class="row">
+                    <c:forEach var="product" items="${products}">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-0 rounded-3" style="height: 100%;">
+                                <div class="card-body p-4 d-flex">
+                                    <div class="flex-grow-1 pe-3">
+                                        <h3 class="card-title fw-bold">
+                                            <a class="text-dark text-decoration-underline" href="${pageContext.request.contextPath}/MakeOfferController?route=select&view=product&id=${product.idProduct}">
+                                                    ${product.title}
+                                            </a>
+                                        </h3>
                                         <c:choose>
-                                            <c:when test="${product.isAvailable}">
-                                                <i class="fa-solid fa-check me-2"></i>Available
+                                            <c:when test="${not empty product.user.profile}">
+                                                <p class="card-text text-secondary small mb-2">
+                                                    <i class="fa-solid fa-user me-2"></i>
+                                                    <a href="${pageContext.request.contextPath}/ProfileController?route=public&id=${product.user.idUser}&from=home" class="text-decoration-none">
+                                                            ${product.user.profile.firstName} ${product.user.profile.lastName}
+                                                    </a>
+                                                </p>
                                             </c:when>
                                             <c:otherwise>
-                                                <i class="fa-solid fa-x me-2"></i> Not available
+                                                <p class="card-text text-muted"><i class="fa-solid fa-user me-2"></i> Unknown user</p>
                                             </c:otherwise>
                                         </c:choose>
-                                    </p>
-                                    <form action="${pageContext.request.contextPath}/FavoriteController?route=add"
-                                          method="post">
-                                        <input type="hidden" name="idProduct" value="${product.idProduct}">
-                                        <button type="submit" class="btn btn-outline-warning">
-                                            <i class="fa-solid fa-star"></i> Add to Favorites
-                                        </button>
-                                    </form>
-                                </div>
-                                <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
-                                <div style="width: 50%; max-width: 250px;">
-                                    <c:if test="${not empty product.photo}">
-                                        <img src="${pageContext.request.contextPath}/product-images/${product.photo}"
-                                             alt="Product Photo"
-                                             class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
-                                    </c:if>
+                                        <p class="card-text text-secondary small mb-2">
+                                            <i class="fa-solid fa-align-left me-2"></i>${product.description}
+                                        </p>
+                                        <p class="card-text text-secondary small mb-2">
+                                            <i class="fa-solid fa-layer-group me-2"></i>${product.state}
+                                        </p>
+                                        <p class="card-text text-secondary small mb-2">
+                                            <i class="fa-solid fa-tags me-2"></i>${product.category}
+                                        </p>
+                                        <p class="card-text text-secondary small mb-2">
+                                            <i class="fa-solid fa-calendar me-2"></i>${product.datePublication}
+                                        </p>
+                                        <p class="card-text text-secondary small mb-3">
+                                            <c:choose>
+                                                <c:when test="${product.isAvailable}">
+                                                    <i class="fa-solid fa-check me-2"></i>Available
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="fa-solid fa-x me-2"></i> Not available
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p>
+                                        <form action="${pageContext.request.contextPath}/FavoriteController?route=add"
+                                              method="post">
+                                            <input type="hidden" name="idProduct" value="${product.idProduct}">
+                                            <button type="submit" class="btn btn-outline-warning">
+                                                <i class="fa-solid fa-star"></i> Add to Favorites
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <!-- Imagen al lado derecho, ocupa tamaño completo de la card -->
+                                    <div style="width: 50%; max-width: 250px;">
+                                        <c:if test="${not empty product.photo}">
+                                            <img src="${pageContext.request.contextPath}/product-images/${product.photo}"
+                                                 alt="Product Photo"
+                                                 class="img-fluid h-100" style="object-fit: cover; border-radius: 0.25rem;">
+                                        </c:if>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </c:forEach>
-            </div>
-            <c:if test="${empty products}">
+                    </c:forEach>
+                </div>
+                <c:if test="${empty products}">
                 <div class="alert alert-warning text-center">There are currently no products to display</div>
-            </c:if>
+                </c:if>
         </div>
     </div>
 </main>

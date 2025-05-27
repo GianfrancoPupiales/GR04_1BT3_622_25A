@@ -48,7 +48,7 @@ class ManageProductsControllerTest {
         SearchResult searchResult = new SearchResult(products, null);
 
         when(req.getParameter("state")).thenReturn(stateParam);
-        when(productService.searchProductsByState(stateParam)).thenReturn(searchResult);
+        when(productService.searchProductsByState(eq(stateParam), eq(1))).thenReturn(searchResult);
         when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByState(req, resp);
@@ -65,7 +65,7 @@ class ManageProductsControllerTest {
         SearchResult searchResult = new SearchResult(emptyList, "There are no products with this status");
 
         when(req.getParameter("state")).thenReturn(stateParam);
-        when(productService.searchProductsByState(stateParam)).thenReturn(searchResult);
+        when(productService.searchProductsByState(eq(stateParam), eq(1))).thenReturn(searchResult);
         when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByState(req, resp);
@@ -84,7 +84,7 @@ class ManageProductsControllerTest {
         SearchResult searchResult = new SearchResult(products, null);
 
         when(req.getParameter("state")).thenReturn(stateParam);
-        when(productService.searchProductsByState(stateParam)).thenReturn(searchResult);
+        when(productService.searchProductsByState(eq(stateParam), eq(1))).thenReturn(searchResult);
         when(req.getRequestDispatcher("jsp/HOME.jsp")).thenReturn(dispatcher);
 
         controller.getProductsByState(req, resp);

@@ -8,9 +8,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import model.dao.ProductDAO;
 import model.entities.Product;
+import model.entities.User;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -26,25 +28,38 @@ class ProductDAOTest {
     ProductDAO productDAO;
 
     @Mock
+    EntityManager entityManager;
+
+    @Mock
     EntityManager em;
 
     @Mock
     TypedQuery<Product> query;
 
+    private final int userId = 42;
+
+    @BeforeEach
+    void setup() {
+        productDAO = new ProductDAO(entityManager);
+    }
     @Test
     void givenValidState_whenGetProductsByState_thenReturnProducts() {
         // Given
         ProductState state = ProductState.New;
+        User user = new User();
+        user.setIdUser(11);
         List<Product> expected = List.of(
-                new Product(1, "Title1", "Desc", state, ProductCategory.Books, "", null)
+                new Product(1, "Title1", "Desc", state, ProductCategory.Books, "", user)
         );
 
-        when(em.createQuery(anyString(), eq(Product.class))).thenReturn(query);
+        when(entityManager.createQuery(anyString(), eq(Product.class)))
+                .thenReturn(query);
         when(query.setParameter("state", state)).thenReturn(query);
+        when(query.setParameter("user", userId)).thenReturn(query);
         when(query.getResultList()).thenReturn(expected);
 
         // When
-        List<Product> result = productDAO.getProductsByState(state);
+        List<Product> result = productDAO.getProductsByState(state,userId);
 
         // Then
         assertNotNull(result);
@@ -57,12 +72,14 @@ class ProductDAOTest {
         // Given
         ProductState state = ProductState.Repaired;
 
-        when(em.createQuery(anyString(), eq(Product.class))).thenReturn(query);
+        when(entityManager.createQuery(anyString(), eq(Product.class)))
+                .thenReturn(query);
         when(query.setParameter("state", state)).thenReturn(query);
+        when(query.setParameter("userId", userId)).thenReturn(query);
         when(query.getResultList()).thenReturn(Collections.emptyList());
 
         // When
-        List<Product> result = productDAO.getProductsByState(state);
+        List<Product> result = productDAO.getProductsByState(state, userId);
 
         // Then
         assertNotNull(result);
@@ -74,12 +91,14 @@ class ProductDAOTest {
         // Given
         ProductState state = null;
 
-        when(em.createQuery(anyString(), eq(Product.class))).thenReturn(query);
+        when(entityManager.createQuery(anyString(), eq(Product.class)))
+                .thenReturn(query);
         when(query.setParameter("state", state)).thenReturn(query);
+        when(query.setParameter("userId", userId)).thenReturn(query);
         when(query.getResultList()).thenReturn(Collections.emptyList());
 
         // When
-        List<Product> result = productDAO.getProductsByState(state);
+        List<Product> result = productDAO.getProductsByState(state, userId);
 
         // Then
         assertNotNull(result);

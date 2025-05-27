@@ -27,6 +27,7 @@ class ProductServiceTest {
 
     @InjectMocks
     ProductService productService;
+    private final int userId = 42;
 
     private List<Product> sampleProducts;
 
@@ -40,10 +41,10 @@ class ProductServiceTest {
 
     @Test
     void givenNullOrTodosState_whenSearchProductsByState_thenReturnAllProductsWithoutMessage() {
-        when(productDAO.findAll()).thenReturn(sampleProducts);
+        when(productDAO.findAvailableProductsExceptUser(userId)).thenReturn(sampleProducts);
 
-        SearchResult resultNull = productService.searchProductsByState(null);
-        SearchResult resultTodos = productService.searchProductsByState("Todos");
+        SearchResult resultNull = productService.searchProductsByState(null, userId);
+        SearchResult resultTodos = productService.searchProductsByState("Todos", userId);
 
         assertEquals(sampleProducts, resultNull.getProducts());
         assertNull(resultNull.getMessage());
@@ -54,9 +55,9 @@ class ProductServiceTest {
 
     @Test
     void givenInvalidState_whenSearchProductsByState_thenReturnAllProductsWithErrorMessage() {
-        when(productDAO.findAll()).thenReturn(sampleProducts);
+        when(productDAO.findAvailableProductsExceptUser(userId)).thenReturn(sampleProducts);
 
-        SearchResult result = productService.searchProductsByState("InvalidState");
+        SearchResult result = productService.searchProductsByState("InvalidState", userId);
 
         assertEquals(sampleProducts, result.getProducts());
         assertEquals("Estado inválido, mostrando todos los productos", result.getMessage());
@@ -66,9 +67,9 @@ class ProductServiceTest {
     void givenValidNewState_whenSearchProductsByState_thenReturnFilteredProductsWithoutMessage() {
         ProductState state = ProductState.New;
         List<Product> filtered = List.of(new Product(3, "Filtered New Product", "Desc", state, ProductCategory.Books, "", null));
-        when(productDAO.getProductsByState(state)).thenReturn(filtered);
+        when(productDAO.getProductsByState(state, userId)).thenReturn(filtered);
 
-        SearchResult result = productService.searchProductsByState("New");
+        SearchResult result = productService.searchProductsByState("New",userId);
 
         assertEquals(filtered, result.getProducts());
         assertNull(result.getMessage());
@@ -77,9 +78,10 @@ class ProductServiceTest {
     @Test
     void givenValidRepairedStateWithNoProducts_whenSearchProductsByState_thenReturnEmptyListWithInfoMessage() {
         ProductState state = ProductState.Repaired;
-        when(productDAO.getProductsByState(state)).thenReturn(Collections.emptyList());
 
-        SearchResult result = productService.searchProductsByState("Repaired");
+        when(productDAO.getProductsByState(state, userId)).thenReturn(Collections.emptyList());
+
+        SearchResult result = productService.searchProductsByState("Repaired", userId);
 
         assertTrue(result.getProducts().isEmpty());
         assertEquals("No hay productos con este estado", result.getMessage());
@@ -89,10 +91,10 @@ class ProductServiceTest {
     void givenValidSemiNewStateWithDash_whenSearchProductsByState_thenReturnFilteredProductsWithoutMessage() {
         ProductState state = ProductState.Semi_new;
         List<Product> filtered = List.of(new Product(4, "Filtered SemiNew Product", "Desc", state, ProductCategory.Books, "", null));
-        when(productDAO.getProductsByState(state)).thenReturn(filtered);
+        when(productDAO.getProductsByState(state, userId)).thenReturn(filtered);
 
         // input string with dash should be normalized to enum constant Semi_new
-        SearchResult result = productService.searchProductsByState("Semi-new");
+        SearchResult result = productService.searchProductsByState("Semi-new", userId);
 
         assertEquals(filtered, result.getProducts());
         assertNull(result.getMessage());
@@ -102,10 +104,10 @@ class ProductServiceTest {
     void givenValidSemiNewStateWithSpace_whenSearchProductsByState_thenReturnFilteredProductsWithoutMessage() {
         ProductState state = ProductState.Semi_new;
         List<Product> filtered = List.of(new Product(5, "Filtered SemiNew Product", "Desc", state, ProductCategory.Books, "", null));
-        when(productDAO.getProductsByState(state)).thenReturn(filtered);
+        when(productDAO.getProductsByState(state, userId)).thenReturn(filtered);
 
         // input string with space should be normalized to enum constant Semi_new
-        SearchResult result = productService.searchProductsByState("Semi new");
+        SearchResult result = productService.searchProductsByState("Semi new", userId);
 
         assertEquals(filtered, result.getProducts());
         assertNull(result.getMessage());

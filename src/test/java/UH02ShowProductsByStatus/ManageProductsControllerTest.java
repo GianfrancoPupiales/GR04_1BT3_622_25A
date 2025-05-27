@@ -6,13 +6,16 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpSession;
 import model.dto.SearchResult;
 import model.entities.Product;
+import model.entities.User;
 import model.enums.ProductCategory;
 import model.enums.ProductState;
 import model.service.ProductService;
 import controllers.ManageProductsController;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -38,6 +41,19 @@ class ManageProductsControllerTest {
 
     @Mock
     RequestDispatcher dispatcher;
+
+    @Mock
+    HttpSession session;
+
+    @Mock
+    User mockUser;
+
+    @BeforeEach
+    void setup() {
+        when(req.getSession()).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(mockUser);
+        when(mockUser.getUserId()).thenReturn(1);
+    }
 
     @Test
     void whenGetProductsByStateWithValidState_thenSetProductsAndForwardWithoutMessage() throws Exception {

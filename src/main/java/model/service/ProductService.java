@@ -4,8 +4,10 @@ import model.dao.ProductDAO;
 import model.dto.SearchResult;
 import model.entities.Product;
 import model.enums.ProductCategory;
+import model.enums.ProductState;
 import model.utils.ProductCategoryHelper;
 import model.utils.ProductSearchHelper;
+import model.utils.ProductStateHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +100,26 @@ public class ProductService {
         return new SearchResult(products, message);
     }
 
-    public SearchResult searchProductsByState(Object stateParam) {
-        return null;
+    public SearchResult searchProductsByState(Object inputState) {
+        List<Product> products;
+        String message = null;
+
+        if (ProductCategoryHelper.isAllOrNull(inputState)) {
+            products = productDAO.findAll();
+        } else {
+            Optional<ProductState> stateOpt = ProductStateHelper.parseState(String.valueOf(inputState));
+            if (stateOpt.isPresent()) {
+                products = productDAO.getProductsByState(stateOpt.get());
+                if (products.isEmpty()) {
+                    message = "There are no products with this state";
+                }
+            } else {
+                products = productDAO.findAll();
+                if (inputState != null && !inputState.toString().equalsIgnoreCase("all")) {
+                    message = "Invalid status, showing all products";
+                }
+            }
+        }
+        return new SearchResult(products, message);
     }
 }

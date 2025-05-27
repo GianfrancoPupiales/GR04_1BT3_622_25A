@@ -177,7 +177,8 @@ Pruebas unitarias con InMemoryProfileDAO: Verificaque al guardar un perfil, se p
     void givenProduct_whenSelectingOwner_thenSystemDisplaysOwnerProfile() {
         // Arrange: crear usuario y producto
         User owner = new User(1, "123456789", "password");
-        Product product = new Product(1, "Book", "Books", "Repaired", owner);
+
+        Product product = new Product(1, "Book", "Books", "New", owner);
 
         // Act: simular que el usuario selecciona el nombre del dueño del producto
         User selectedProfile = product.getUser();  // o una llamada a un método que simule la acción en la UI

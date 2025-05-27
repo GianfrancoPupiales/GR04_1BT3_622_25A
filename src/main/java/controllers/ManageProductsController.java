@@ -54,22 +54,10 @@ public class ManageProductsController extends HttpServlet {
         // Control logic
         String route = Optional.ofNullable(req.getParameter("route")).orElse("list");
         String view = Optional.ofNullable(req.getParameter("view")).filter(v -> !v.isEmpty()).orElse("user");
-        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
 
         switch (route) {
             case "list":
-                if (!title.isEmpty()) {
-                    getProductsByTitle(req, resp);
-                } else if ("home".equals(view)) {
-                    viewProductsByCategory(req, resp);
-                } else if ("home".equals(view)){
-                    getProductsByState(req, resp);
-                } else {
-                    viewMyProducts(req, resp);
-                }
-
-                handleListRoute(req, resp, view);
-
+                this.handleListRoute(req, resp, view);
                 break;
             case "add":
                 this.addProduct(req, resp);
@@ -100,15 +88,20 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
-    private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view) throws ServletException, IOException {
+    private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view)
+            throws ServletException, IOException {
         String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+
         if (!title.isEmpty()) {
             getProductsByTitle(req, resp);
         } else if ("home".equals(view)) {
             viewProductsByCategory(req, resp);
+        } else if ("home".equals(view)) {
+            getProductsByState(req, resp);
         } else {
             viewMyProducts(req, resp);
         }
+
     }
 
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -178,13 +171,15 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
-    private void forwardWithMessage(HttpServletRequest req, HttpServletResponse resp, String messageType, String message) throws ServletException, IOException {
+    private void forwardWithMessage(HttpServletRequest req, HttpServletResponse resp, String messageType,
+            String message) throws ServletException, IOException {
         req.setAttribute("messageType", messageType);
         req.setAttribute("message", message);
         req.getRequestDispatcher("ManageProductsController?route=list").forward(req, resp);
     }
 
-    private void forwardProductsView(HttpServletRequest req, HttpServletResponse resp, List<Product> products, String jspPath) throws ServletException, IOException {
+    private void forwardProductsView(HttpServletRequest req, HttpServletResponse resp, List<Product> products,
+            String jspPath) throws ServletException, IOException {
         req.setAttribute("products", products);
         req.getRequestDispatcher(jspPath).forward(req, resp);
     }
@@ -198,7 +193,8 @@ public class ManageProductsController extends HttpServlet {
         return getProductService().findAvailableProductsByUserId(getUser(req).getUserId());
     }
 
-    private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    private void saveExistingProduct(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
 
         product.setTitle(req.getParameter("txtTitle"));
@@ -219,7 +215,6 @@ public class ManageProductsController extends HttpServlet {
 
         processProductSave(req, resp, product, true);
     }
-
 
     private void saveNewProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         Product product = parseProductFromRequest(req);
@@ -289,8 +284,10 @@ public class ManageProductsController extends HttpServlet {
         return 0;
     }
 
-    private void processProductSave(HttpServletRequest req, HttpServletResponse resp, Product product, boolean isUpdate) throws IOException, ServletException {
-        boolean success = isUpdate ? getProductService().updateProduct(product) : getProductService().createProduct(product);
+    private void processProductSave(HttpServletRequest req, HttpServletResponse resp, Product product, boolean isUpdate)
+            throws IOException, ServletException {
+        boolean success = isUpdate ? getProductService().updateProduct(product)
+                : getProductService().createProduct(product);
 
         String messageType = success ? "info" : "error";
         String message = success
@@ -310,7 +307,8 @@ public class ManageProductsController extends HttpServlet {
         forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
     }
 
-    public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String categoryParam = request.getParameter("category");
 
         int userId = getUser(request).getUserId();
@@ -319,9 +317,8 @@ public class ManageProductsController extends HttpServlet {
 
         request.setAttribute("products", result.getProducts());
 
-        ProductCategoryHelper.parseCategory(categoryParam).ifPresent(category ->
-                request.setAttribute("selectedCategory", category)
-        );
+        ProductCategoryHelper.parseCategory(categoryParam)
+                .ifPresent(category -> request.setAttribute("selectedCategory", category));
 
         if (result.getMessage() != null) {
             request.setAttribute("message", result.getMessage());
@@ -330,8 +327,8 @@ public class ManageProductsController extends HttpServlet {
         request.getRequestDispatcher("jsp/HOME.jsp").forward(request, response);
     }
 
-
-    public void getProductsByTitle(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void getProductsByTitle(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
         String view = Optional.ofNullable(req.getParameter("view")).orElse("user");
         int userId = getUser(req).getUserId();
@@ -352,7 +349,6 @@ public class ManageProductsController extends HttpServlet {
             resp.sendRedirect("ManageProductsController?route=list&view=" + view);
         }
     }
-
     public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String stateParam = req.getParameter("state");
         SearchResult result = productService.searchProductsByState(stateParam);
@@ -369,5 +365,4 @@ public class ManageProductsController extends HttpServlet {
 
         req.getRequestDispatcher("jsp/HOME.jsp").forward(req, resp);
     }
-
 }

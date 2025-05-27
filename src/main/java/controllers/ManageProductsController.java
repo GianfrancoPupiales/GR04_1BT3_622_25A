@@ -91,15 +91,17 @@ public class ManageProductsController extends HttpServlet {
     private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view)
             throws ServletException, IOException {
         String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
+        String category = Optional.ofNullable(req.getParameter("category")).orElse("").trim();
+        String state = Optional.ofNullable(req.getParameter("state")).orElse("").trim();
 
         if (!title.isEmpty()) {
             getProductsByTitle(req, resp);
-        } else if ("home".equals(view)) {
+        } else if (!category.isEmpty()) {
             viewProductsByCategory(req, resp);
-        } else if ("home".equals(view)) {
+        } else if (!state.isEmpty()) {
             getProductsByState(req, resp);
         } else {
-            viewMyProducts(req, resp);
+            viewProducts(req, resp);
         }
 
     }

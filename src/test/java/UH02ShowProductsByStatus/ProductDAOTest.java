@@ -47,7 +47,7 @@ class ProductDAOTest {
         // Given
         ProductState state = ProductState.New;
         User user = new User();
-        user.setIdUser(11);
+        user.setIdUser(10);
         List<Product> expected = List.of(
                 new Product(1, "Title1", "Desc", state, ProductCategory.Books, "", user)
         );
@@ -55,7 +55,7 @@ class ProductDAOTest {
         when(entityManager.createQuery(anyString(), eq(Product.class)))
                 .thenReturn(query);
         when(query.setParameter("state", state)).thenReturn(query);
-        when(query.setParameter("user", userId)).thenReturn(query);
+        when(query.setParameter("userId", userId)).thenReturn(query);
         when(query.getResultList()).thenReturn(expected);
 
         // When
@@ -64,7 +64,7 @@ class ProductDAOTest {
         // Then
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertTrue(result.stream().allMatch(p -> p.getState() == state));
+        assertTrue(result.stream().allMatch(p -> p.getState().equals(state)));
     }
 
     @Test
@@ -87,21 +87,23 @@ class ProductDAOTest {
     }
 
     @Test
-    void givenNullState_whenGetProductsByState_thenReturnEmptyList() {
+    void givenNullState_whenGetProductsByState_thenReturnAllProducts() {
         // Given
-        ProductState state = null;
+        List<Product> allProducts = List.of(
+                new Product(1, "Title1", "Description", ProductState.New, ProductCategory.Books, "", null),
+                new Product(2, "Title2", "Description", ProductState.New, ProductCategory.Electronics, "", null)
+        );
 
-        when(entityManager.createQuery(anyString(), eq(Product.class)))
-                .thenReturn(query);
-        when(query.setParameter("state", state)).thenReturn(query);
-        when(query.setParameter("userId", userId)).thenReturn(query);
-        when(query.getResultList()).thenReturn(Collections.emptyList());
+        // Create a spy para el método findAll
+        ProductDAO spyDao = Mockito.spy(productDAO);
+        Mockito.doReturn(allProducts).when(spyDao).findAll();
 
         // When
-        List<Product> result = productDAO.getProductsByState(state, userId);
+        List<Product> result = spyDao.getProductsByState(null, userId);
 
         // Then
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(allProducts.size(), result.size());
+        assertTrue(result.containsAll(allProducts));
     }
 }

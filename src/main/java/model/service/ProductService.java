@@ -113,7 +113,7 @@ public class ProductService {
         String stateStr = String.valueOf(inputState);
 
         if (ProductCategoryHelper.isAllOrNull(inputState)) {
-            return new SearchResult(productDAO.findAll(), null);
+            return new SearchResult(productDAO.findAvailableProductsExceptUser(userId), null);
         }
 
         Optional<ProductState> stateOpt = ProductStateHelper.parseState(stateStr);
@@ -125,7 +125,7 @@ public class ProductService {
         }
 
         String message = (!"all".equalsIgnoreCase(stateStr)) ? "Invalid status, showing all products" : null;
-        return new SearchResult(productDAO.findAll(), message);
+        return new SearchResult(productDAO.findAvailableProductsExceptUser(userId), message);
     }
 
 

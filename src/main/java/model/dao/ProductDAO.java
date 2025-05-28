@@ -115,7 +115,7 @@ public class ProductDAO extends GenericDAO<Product> {
             if (state == null) {
                 return findAll();
             }
-            String jpql = "SELECT p FROM Product p WHERE p.state = :state AND p.user.idUser <> :userId";
+            String jpql = "SELECT p FROM Product p WHERE p.state = :state AND p.user.idUser <> :userId AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("state", state)
                     .setParameter("userId", userId)

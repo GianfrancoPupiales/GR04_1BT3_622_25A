@@ -257,7 +257,7 @@ public class ProfileController extends HttpServlet {
 
     private String saveProfilePhoto(Part photoPart, String existingPhoto) throws IOException {
         if (photoPart != null && photoPart.getSize() > 0) {
-            String uploadPath = "C:\\trukea\\images\\profiles";
+            String uploadPath = "/app/uploads/profiles";
             FileStorageService photoStorageService = new FileStorageService(uploadPath);
             return photoStorageService.savePhoto(photoPart);
         } else {

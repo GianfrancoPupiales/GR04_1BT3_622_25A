@@ -13,7 +13,7 @@ import java.nio.file.Files;
 @WebServlet("/product-images/*")
 public class ProductImageController extends HttpServlet {
 
-    private final String basePath = "C:\\trukea\\images\\products";
+    private final String basePath = "/app/uploads/products";
 
     @Override
     public void init() throws ServletException {

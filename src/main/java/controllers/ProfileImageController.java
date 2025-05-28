@@ -14,7 +14,7 @@ import java.nio.file.Files;
 public class ProfileImageController extends HttpServlet {
 
     // Ruta donde están almacenadas las fotos en el disco
-    private final String basePath = "C:\\trukea\\images\\profiles";
+    private final String basePath = "/app/uploads/profiles";
 
     @Override
     public void init() throws ServletException {

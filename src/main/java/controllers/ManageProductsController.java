@@ -351,7 +351,9 @@ public class ManageProductsController extends HttpServlet {
             resp.sendRedirect("ManageProductsController?route=list&view=" + view);
         }
     }
-    public void getProductsByState(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    public void getProductsByState(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String stateParam = req.getParameter("state");
         int userId = getUser(req).getUserId();
         SearchResult result = productService.searchProductsByState(stateParam, userId);

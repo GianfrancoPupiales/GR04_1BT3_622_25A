@@ -96,14 +96,15 @@ public class ManageProductsController extends HttpServlet {
 
         if (!title.isEmpty()) {
             getProductsByTitle(req, resp);
-        } else if (!category.isEmpty()) {
-            viewProductsByCategory(req, resp);
         } else if (!state.isEmpty()) {
             getProductsByState(req, resp);
+        } else if (!category.isEmpty()) {
+            viewProductsByCategory(req, resp);
+        } else if ("home".equalsIgnoreCase(view)) {
+            viewProductsByCategory(req, resp);
         } else {
-            viewProducts(req, resp);
+            viewMyProducts(req, resp);
         }
-
     }
 
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

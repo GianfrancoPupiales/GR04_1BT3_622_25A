@@ -57,7 +57,7 @@ public class ManageProductsController extends HttpServlet {
 
         switch (route) {
             case "list":
-                this.handleListRoute(req, resp, view);
+                this.handleListRoute(req, resp,view);
                 break;
             case "add":
                 this.addProduct(req, resp);
@@ -88,24 +88,28 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
-    private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view)
-            throws ServletException, IOException {
-        String title = Optional.ofNullable(req.getParameter("title")).orElse("").trim();
-        String category = Optional.ofNullable(req.getParameter("category")).orElse("").trim();
-        String state = Optional.ofNullable(req.getParameter("state")).orElse("").trim();
+    private void handleListRoute(HttpServletRequest req, HttpServletResponse resp, String view) throws ServletException, IOException {
+        System.out.println("handleListRoute called with view: " + view);
+        String title = req.getParameter("title");
+        String state = req.getParameter("state");
+        String category = req.getParameter("category");
 
-        if (!title.isEmpty()) {
-            getProductsByTitle(req, resp);
-        } else if (!state.isEmpty()) {
-            getProductsByState(req, resp);
-        } else if (!category.isEmpty()) {
-            viewProductsByCategory(req, resp);
-        } else if ("home".equalsIgnoreCase(view)) {
-            viewProductsByCategory(req, resp);
+        if ("home".equalsIgnoreCase(view)) {
+            if (title != null && !title.isEmpty()) {
+                getProductsByTitle(req, resp);
+            } else if (state != null && !state.isEmpty()) {
+                getProductsByState(req, resp);
+            } else if (category != null && !category.isEmpty()) {
+                viewProductsByCategory(req, resp);
+            } else {
+                viewProducts(req, resp);
+            }
         } else {
             viewMyProducts(req, resp);
         }
     }
+
+
 
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idParam = req.getParameter("idProduct");
@@ -216,6 +220,16 @@ public class ManageProductsController extends HttpServlet {
         }
         product.setState(state);
 
+        // Guardar producto y chequear resultado
+        boolean success = getProductService().updateProduct(product);
+
+        if (success) {
+            Product updated = getProductService().findProductById(product.getIdProduct());
+            System.out.println("[saveExistingProduct] Producto actualizado en BD: " + updated);
+        } else {
+            System.out.println("[saveExistingProduct] ERROR al actualizar producto");
+        }
+
         processProductSave(req, resp, product, true);
     }
 
@@ -307,8 +321,13 @@ public class ManageProductsController extends HttpServlet {
 
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Product> products = getProductsByUserId(req);
+        System.out.println("[viewMyProducts] Productos obtenidos del usuario: " + products.size());
+        for (Product p : products) {
+            System.out.println("[viewMyProducts] Producto: " + p);
+        }
         forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
     }
+
 
     public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

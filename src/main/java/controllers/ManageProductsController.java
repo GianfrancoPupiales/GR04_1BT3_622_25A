@@ -109,8 +109,6 @@ public class ManageProductsController extends HttpServlet {
         }
     }
 
-
-
     private void selectProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String idParam = req.getParameter("idProduct");
         if (idParam == null || !idParam.matches("\\d+")) {
@@ -220,16 +218,6 @@ public class ManageProductsController extends HttpServlet {
         }
         product.setState(state);
 
-        // Guardar producto y chequear resultado
-        boolean success = getProductService().updateProduct(product);
-
-        if (success) {
-            Product updated = getProductService().findProductById(product.getIdProduct());
-            System.out.println("[saveExistingProduct] Producto actualizado en BD: " + updated);
-        } else {
-            System.out.println("[saveExistingProduct] ERROR al actualizar producto");
-        }
-
         processProductSave(req, resp, product, true);
     }
 
@@ -239,55 +227,58 @@ public class ManageProductsController extends HttpServlet {
     }
 
     private Product parseProductFromRequest(HttpServletRequest req) throws IOException, ServletException {
-        String txtId = req.getParameter("txtIdProduct");
-        int idProduct = parseProductId(txtId);
+        int idProduct = parseProductId(req.getParameter("txtIdProduct"));
         String title = req.getParameter("txtTitle");
         String description = req.getParameter("txtDescription");
-        String categoryStr = req.getParameter("category");
-        String stateStr = req.getParameter("txtState");
-        String existingPhoto = req.getParameter("existingPhoto"); // Foto previa si no se sube nueva
 
-        // Manejo de estado
-        ProductState state = null;
-        try {
-            if (stateStr != null && !stateStr.isEmpty()) {
-                // Convertimos guiones medios a guion bajo para que coincida con enum
-                stateStr = stateStr.replace("-", "_").replace(" ", "_");
-                state = ProductState.valueOf(stateStr);
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid state value: " + stateStr);
-            state = ProductState.New; // Estado por defecto
-        }
+        ProductState state = parseProductState(req.getParameter("txtState"));
+        ProductCategory category = parseProductCategory(req.getParameter("category"));
 
-        // Manejo de categoria
-        ProductCategory category = null;
-        try {
-            if (categoryStr != null && !categoryStr.isEmpty()) {
-                category = ProductCategory.valueOf(categoryStr);
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid category value: " + categoryStr);
-            // Manejar error o asignar un valor por defecto
-            category = ProductCategory.Other;
-        }
-
-        // Manejo de foto subida
-        Part photoPart = req.getPart("photo");
-        String photoFileName;
-        if (photoPart != null && photoPart.getSize() > 0) {
-            String uploadPath = "/app/uploads/products";
-            FileStorageService storageService = new FileStorageService(uploadPath);
-            photoFileName = storageService.savePhoto(photoPart);
-
-        } else {
-            // Si no hay foto nueva, conservar la existente
-            photoFileName = existingPhoto;
-        }
+        String photoFileName = resolvePhotoFileName(req);
 
         User user = getUser(req);
 
         return new Product(idProduct, title, description, state, category, photoFileName, user);
+    }
+
+    private ProductState parseProductState(String stateStr) {
+        if (stateStr == null || stateStr.isEmpty()) {
+            return ProductState.New; // valor por defecto
+        }
+
+        String normalized = stateStr.replace("-", "_").replace(" ", "_");
+
+        try {
+            return ProductState.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid state value: " + stateStr + ", usando valor por defecto New.");
+            return ProductState.New;
+        }
+    }
+
+    private ProductCategory parseProductCategory(String categoryStr) {
+        if (categoryStr == null || categoryStr.isEmpty()) {
+            return ProductCategory.Other; // valor por defecto
+        }
+
+        try {
+            return ProductCategory.valueOf(categoryStr);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid category value: " + categoryStr + ", usando valor por defecto Other.");
+            return ProductCategory.Other;
+        }
+    }
+
+    private String resolvePhotoFileName(HttpServletRequest req) throws IOException, ServletException {
+        Part photoPart = req.getPart("photo");
+
+        if (photoPart != null && photoPart.getSize() > 0) {
+            String uploadPath = "/app/uploads/products";
+            FileStorageService storageService = new FileStorageService(uploadPath);
+            return storageService.savePhoto(photoPart);
+        } else {
+            return req.getParameter("existingPhoto"); // conservar la foto anterior si no hay nueva
+        }
     }
 
     private int parseProductId(String idParam) {
@@ -321,13 +312,8 @@ public class ManageProductsController extends HttpServlet {
 
     private void viewMyProducts(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Product> products = getProductsByUserId(req);
-        System.out.println("[viewMyProducts] Productos obtenidos del usuario: " + products.size());
-        for (Product p : products) {
-            System.out.println("[viewMyProducts] Producto: " + p);
-        }
         forwardProductsView(req, resp, products, "jsp/MY_PRODUCT.jsp");
     }
-
 
     public void viewProductsByCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

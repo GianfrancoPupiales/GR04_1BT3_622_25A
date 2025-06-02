@@ -37,6 +37,7 @@ public class ProductDAO extends GenericDAO<Product> {
             String jpql = "SELECT p FROM Product p WHERE p.user.idUser = :idUser AND p.isAvailable = true";
             return em.createQuery(jpql, Product.class)
                     .setParameter("idUser", idUser)
+                    .setHint("jakarta.persistence.cache.storeMode", "REFRESH")
                     .getResultList();
         } catch (Exception e) {
             return List.of();

@@ -5,6 +5,8 @@ pool:
   name: 'My agent Pool'
 
 steps:
+- script: mvn -version
+  displayName: 'Verificar instalación de Maven'
 - task: Maven@1
   inputs:
     mavenPomFile: 'pom.xml'
